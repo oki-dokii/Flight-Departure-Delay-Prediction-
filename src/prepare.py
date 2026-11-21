@@ -77,16 +77,19 @@ def departure_times(frame, zones, scheduled_minutes, actual_minutes, delay):
     return scheduled, actual
 
 
-def clean_month(frame, zones, *, start=START, end=DEVELOPMENT_END):
-    counts = {"input": len(frame)}
+def clean_month(raw_frame, zones, *, start=START, end=DEVELOPMENT_END):
+    counts = {"input": len(raw_frame)}
+    columns = sorted(REQUIRED)
+    frame = raw_frame[columns].copy()
 
     def keep(mask, step):
         nonlocal frame
         before = len(frame)
-        frame = frame.loc[mask].copy()
+        if not mask.all():
+            frame = frame.loc[mask]
         counts[step] = {"before": before, "after": len(frame)}
 
-    keep(~frame.duplicated(), "exact_duplicates")
+    keep(~raw_frame.duplicated(), "exact_duplicates")
     keep(frame["Cancelled"].eq(0), "cancelled_or_unknown")
     counts["diverted_retained_before_time_checks"] = int(frame["Diverted"].eq(1).sum())
     keep(frame["Origin"].map(zones).notna(), "unknown_origin_zone")
@@ -100,14 +103,14 @@ def clean_month(frame, zones, *, start=START, end=DEVELOPMENT_END):
         frame, frame["Origin"].map(zones), scheduled_minutes.loc[frame.index],
         actual_minutes.loc[frame.index], delay.loc[frame.index]
     )
-    frame[TIME], frame[OBSERVED] = scheduled, actual
+    frame = frame.assign(**{TIME: scheduled, OBSERVED: actual})
     keep(scheduled.notna() & actual.notna(), "unresolved_or_inconsistent_departure_time")
     keep(frame[TIME].between(start, end, inclusive="left"), "outside_date_window")
 
     computed = (frame[OBSERVED] - frame[TIME]).dt.total_seconds() / 60
     if not computed.eq(frame["DepDelay"]).all():
         raise ValueError("Computed delay differs from BTS DepDelay")
-    frame["LATE"] = computed.ge(15).astype("uint8")
+    frame = frame.assign(LATE=computed.ge(15).astype("uint8"))
     frame["Tail_Number"] = frame["Tail_Number"].astype("string").str.strip().replace("", pd.NA)
     frame["tail_number_missing"] = frame["Tail_Number"].isna()
     scheduled_duration = pd.to_numeric(frame["CRSElapsedTime"], errors="coerce")
@@ -119,7 +122,11 @@ def clean_month(frame, zones, *, start=START, end=DEVELOPMENT_END):
     frame["actual_arrival_utc"] = frame[OBSERVED] + pd.to_timedelta(duration, unit="min")
     counts["missing_tail_retained"] = int(frame["tail_number_missing"].sum())
     counts["diverted_retained"] = int(frame["Diverted"].eq(1).sum())
-    return frame, counts
+    cleaned = raw_frame.loc[frame.index].copy()
+    for name in [TIME, OBSERVED, "LATE", "Tail_Number", "tail_number_missing",
+                 "scheduled_arrival_utc", "actual_arrival_utc"]:
+        cleaned[name] = frame[name]
+    return cleaned, counts
 
 
 def prepare(raw, output):
@@ -160,13 +167,15 @@ def prepare(raw, output):
                     zones[origin] = finder.timezone_at(lng=airport.longitude_deg, lat=airport.latitude_deg)
 
             cleaned, counts = clean_month(frame, zones)
+            del frame
             cleaned.insert(0, "flight_id", prefix + cleaned.index.astype(str))
             cleaned.sort_values(TIME, kind="stable", inplace=True)
             table = pa.Table.from_pandas(cleaned, preserve_index=False)
             if writer is None:
                 schema = table.schema
-                writer = pq.ParquetWriter(partial, schema, compression="zstd")
+                writer = pq.ParquetWriter(partial, schema, compression="zstd", compression_level=6)
             writer.write_table(table.cast(schema, safe=True))
+            del table, cleaned
             report[prefix.rstrip("-")] = counts
             print(json.dumps({prefix.rstrip("-"): counts}), flush=True)
 
