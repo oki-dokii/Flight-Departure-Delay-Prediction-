@@ -1,0 +1,6 @@
+numpy==2.2.6
+pandas==2.2.3
+pyarrow==20.0.0
+scikit-learn==1.6.1
+timezonefinder==6.5.9
+tzdata==2025.2

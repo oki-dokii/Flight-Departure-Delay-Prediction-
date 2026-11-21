@@ -1,0 +1,67 @@
+{
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_1.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_1.zip",
+    "sha256": "868387dcedaef1b8d8392e608e642219fde50d594c3cf2094aec858167629ccf",
+    "downloaded_utc": "2026-11-21T07:14:08.237283+00:00"
+  },
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_2.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_2.zip",
+    "sha256": "12dc8dbdb3c8b3c20d4c00a8b188196ae202f781a8760871ae502a9c733d0ecd",
+    "downloaded_utc": "2026-11-21T07:15:00.406479+00:00"
+  },
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_3.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_3.zip",
+    "sha256": "9c80fbc2112cdbf3f0613ec2001ba019b3ad75511cd69657080736e7eda9cef4",
+    "downloaded_utc": "2026-11-21T07:15:17.952849+00:00"
+  },
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_4.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_4.zip",
+    "sha256": "f3718431e988e2afd53a1714dfca37f67355b6fc06b02eb506bffa39300d608c",
+    "downloaded_utc": "2026-11-21T07:15:39.548212+00:00"
+  },
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_5.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_5.zip",
+    "sha256": "17c3419d7169b313b2bc8ddd3fd57e1e2d4d959c35f2da17f6a5610d4bac7d63",
+    "downloaded_utc": "2026-11-21T07:16:40.264357+00:00"
+  },
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_6.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_6.zip",
+    "sha256": "087b75e4e059516ca1181e58955d062f341933adb2706e5b2404ed10c9ecbdc6",
+    "downloaded_utc": "2026-11-21T07:18:25.112658+00:00"
+  },
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_7.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_7.zip",
+    "sha256": "74309a3a734d5104b4c212390c06eb3acacff15124b9cea49ba7d69a609a0d19",
+    "downloaded_utc": "2026-11-21T07:18:39.261823+00:00"
+  },
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_8.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_8.zip",
+    "sha256": "405668b8a807266236a635efbc1e9364abfb756db1a5c895e45abc9c7b7684f1",
+    "downloaded_utc": "2026-11-21T07:18:47.734453+00:00"
+  },
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_9.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_9.zip",
+    "sha256": "adc722b1c14944451b20ddcdbeec69bbc092310ab8044f758b8f4b82fde8d017",
+    "downloaded_utc": "2026-11-21T07:19:13.185950+00:00"
+  },
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_10.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_10.zip",
+    "sha256": "05d14d3fd67fa3e04b97c4d6bc7386f4a6c1cda13d2506cf0e9f0a6c620ed111",
+    "downloaded_utc": "2026-11-21T07:20:44.949309+00:00"
+  },
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_11.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_11.zip",
+    "sha256": "6d5b68eea3ebb25f3cb2843e701a6c809b5455301b3bbd7802a20d522ed770c8",
+    "downloaded_utc": "2026-11-21T07:21:19.014005+00:00"
+  },
+  "On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_12.zip": {
+    "url": "https://www.transtats.bts.gov/PREZIP/On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_12.zip",
+    "sha256": "a2af96d186bc9997fef47382b8589198281c9a722286d88f30032af8ee7dcd0f",
+    "downloaded_utc": "2026-11-21T07:21:01.371159+00:00"
+  },
+  "airports.csv": {
+    "url": "https://raw.githubusercontent.com/davidmegginson/ourairports-data/d1cf45405deea3f617af99914b9d05e3175910dc/airports.csv",
+    "sha256": "b0d63d08c4a06d8bd872bd2aff645bd79711f72d2721f625a914ba4e69ccd4ee",
+    "downloaded_utc": "2026-11-21T07:18:43.248792+00:00"
+  }
+}
