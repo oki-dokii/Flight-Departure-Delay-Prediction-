@@ -1,0 +1,17 @@
+{
+  "release": "https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/phase-a-data-v1",
+  "assets": [
+    {
+      "name": "cleaning_counts.json",
+      "size": 6813,
+      "digest": "sha256:f0833613ece3c139aa42e744722b8e1cf6eb21002be672475c0cd4d33045efe9",
+      "browser_download_url": "https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/download/phase-a-data-v1/cleaning_counts.json"
+    },
+    {
+      "name": "flights_development.parquet",
+      "size": 265113328,
+      "digest": "sha256:8166d5f05de4ace74dd75d69ee2867686f45237105599a927f9a519382a29e57",
+      "browser_download_url": "https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/download/phase-a-data-v1/flights_development.parquet"
+    }
+  ]
+}

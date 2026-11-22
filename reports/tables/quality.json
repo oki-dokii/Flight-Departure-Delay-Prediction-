@@ -1,0 +1,18 @@
+{
+  "rows": 5749041,
+  "late_fraction": 0.21383148946059002,
+  "delay_label_disagreements": 0,
+  "outside_histogram": 48742,
+  "delay_quantiles": {
+    "0.0": -60.0,
+    "0.01": -15.0,
+    "0.5": -2.0,
+    "0.9": 46.0,
+    "0.99": 223.0,
+    "1.0": 4352.0
+  },
+  "already_departed_6h": 0,
+  "already_departed_1h": 1,
+  "repeated_schedule_key_rows": 0,
+  "delay_utc_disagreements": 0
+}

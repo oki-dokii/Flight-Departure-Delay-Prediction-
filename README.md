@@ -39,3 +39,14 @@ print(summary)
 The harness reports ROC-AUC, PR-AUC (average precision) and accuracy for the model and majority-class baseline, with mean and population standard deviation across folds and seeds. The example is a smoke test. Use the same folds and seeds for both prediction checkpoints.
 
 Run the protocol tests with `python -m unittest discover -s tests -v`.
+
+## Person 2: development analysis
+
+Install `requirements-eda.txt` in a Python 3.12 virtual environment. Place the release's development parquet and cleaning counts in `data/processed/`, then run:
+
+```bash
+python -m src.eda
+python -m unittest discover -s tests -v
+```
+
+Open `notebooks/01_eda.ipynb` with that environment to regenerate and view the analysis. Outputs are written to `reports/figures/`, `reports/tables/`, and `COLUMN_AUDIT.csv`. No test dataset is read. Conditional audit entries remain blocked pending P1/P3 review; derived features need separate availability approval. The report skeleton is `reports/report.tex`.

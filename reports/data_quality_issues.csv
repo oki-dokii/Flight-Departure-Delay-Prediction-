@@ -1,0 +1,5 @@
+issue,count,owner,status,action
+tail_assignment,0.0,P3,pending,Confirm assignment availability; keep conditional features blocked
+arrival_clock_validation,,P1,pending,Validate reconstructed arrival against destination-local clock
+repeated_schedule_keys,0.0,P1,review,Investigate distinct records; do not automatically delete
+already_departed_1h,1.0,P1/P3,review,Define population consistently at checkpoint
