@@ -7,3 +7,6 @@ __pycache__/
 !/data/raw/.gitkeep
 /data/processed/*
 !/data/processed/.gitkeep
+/data/sample/*
+!/data/sample/.gitkeep
+!/data/sample/feature_manifest.json
