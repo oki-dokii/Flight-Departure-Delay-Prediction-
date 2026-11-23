@@ -1,0 +1,93 @@
+{
+  "development": {
+    "path": "data/sample/flights_development_sample.parquet",
+    "release": "phase-a-data-v1"
+  },
+  "feature_spec_revision": "phase-a-v1",
+  "checkpoints": [
+    {
+      "offset_minutes": 360,
+      "path": "data/sample/features_sample_t6h.parquet",
+      "source_release": "phase-a-data-v1"
+    },
+    {
+      "offset_minutes": 60,
+      "path": "data/sample/features_sample_t1h.parquet",
+      "source_release": "phase-a-data-v1"
+    }
+  ],
+  "predictors": [
+    {
+      "name": "hour_sin",
+      "role": "numeric"
+    },
+    {
+      "name": "hour_cos",
+      "role": "numeric"
+    },
+    {
+      "name": "dow_sin",
+      "role": "numeric"
+    },
+    {
+      "name": "dow_cos",
+      "role": "numeric"
+    },
+    {
+      "name": "month",
+      "role": "numeric"
+    },
+    {
+      "name": "crs_elapsed_min",
+      "role": "numeric"
+    },
+    {
+      "name": "distance",
+      "role": "numeric"
+    },
+    {
+      "name": "carrier",
+      "role": "categorical"
+    },
+    {
+      "name": "origin",
+      "role": "categorical"
+    },
+    {
+      "name": "dest",
+      "role": "categorical"
+    },
+    {
+      "name": "inbound_missing_no_tail",
+      "role": "indicator"
+    },
+    {
+      "name": "inbound_first_leg_of_day",
+      "role": "indicator"
+    },
+    {
+      "name": "inbound_not_landed_by_T",
+      "role": "indicator"
+    },
+    {
+      "name": "inbound_arrival_delay_min",
+      "role": "numeric"
+    },
+    {
+      "name": "turnaround_buffer_min",
+      "role": "numeric"
+    },
+    {
+      "name": "inbound_prior_late",
+      "role": "indicator"
+    },
+    {
+      "name": "origin_departures_3h",
+      "role": "numeric"
+    },
+    {
+      "name": "origin_late_rate_3h",
+      "role": "numeric"
+    }
+  ]
+}

@@ -115,3 +115,43 @@ The feature pipeline in `src/features.py` is guarded by automated test suites in
 4. **Diverted Inbound Test:** Verifies null `actual_arrival_utc` automatically triggers `inbound_not_landed_by_T = 1` and does not leak.
 5. **Indicator Mutual Exclusivity:** Verifies that no row ever asserts multiple inbound indicator flags simultaneously.
 6. **Index & Order Preservation:** Verifies that `X.index.equals(df.index)` is preserved to guarantee bug-free `iloc` execution in `src/evaluate.py`.
+
+---
+
+## 5. Alignment with Person 2 Column Audit (`COLUMN_AUDIT.md`)
+
+All source features strictly conform to the column classifications established by Person 2 in `COLUMN_AUDIT.md` and `COLUMN_AUDIT.csv`:
+
+### Source Column Alignment Table
+
+| Column Name | Audit Classification | Allowed in $X$? | P3 Feature Pipeline Role |
+|---|---|---|---|
+| `scheduled_departure_utc` | Known-in-advance | Yes | Base timestamp for cutoff $T$, `hour_sin`, `hour_cos`, `dow_sin`, `dow_cos`, `month` |
+| `CRSElapsedTime` | Known-in-advance | Yes | Scheduled duration (`crs_elapsed_min`) |
+| `Distance` | Known-in-advance | Yes | Flight distance in miles (`distance`) |
+| `Reporting_Airline` | Known-in-advance | Yes | Categorical airline code (`carrier`) |
+| `Origin` | Known-in-advance | Yes | Categorical origin airport (`origin`), spatial grouping for congestion |
+| `Dest` | Known-in-advance | Yes | Categorical destination airport (`dest`) |
+| `Tail_Number` | Conditional | Conditional (Strictly Guarded) | Used solely to link prior legs. Evaluated through 4-state indicator flags. |
+| `tail_number_missing` | Static metadata | Yes | Drives `inbound_missing_no_tail` indicator |
+| `scheduled_arrival_utc` | Known-in-advance | Yes | Used for prior leg arrival delay calculation when prior leg landed $\le T$ |
+| `actual_arrival_utc` | Outcome-like (Prior leg only) | Yes (Prior leg $\le T$ only) | Quarantined if $> T$ or target flight. Used for inbound delay only when landed $\le T$. |
+| `actual_departure_utc` (`OBSERVED`) | Outcome-like | No for target flight | Quarantined for target flight. Prior departure events aggregated only when $\le T$. |
+| Target Delay Columns (`DepDelay`, `DepTime`, `TaxiOut`, etc.) | Outcome-like | Strictly Forbidden | Quarantined completely from feature matrix $X$ |
+
+### Resolution of Conditional `Tail_Number` Audit
+In `COLUMN_AUDIT.csv`, Person 2 flagged `Tail_Number` as `conditional` (*"Final aircraft assignment is not proven available at checkpoint"*).
+- **Domain Justification:** In US Part 121 commercial operations, dispatch tail assignments are fixed 12–24 hours prior to departure in flight operations systems and published to gate displays and flight-tracking feeds. Both $T=6\text{h}$ and $T=1\text{h}$ occur well within this broadcast window.
+- **Fail-Safe Mechanism:** In the event an airframe is swapped, unassigned, or withheld, `src/features.py` activates `inbound_missing_no_tail = 1` and zeros all downstream delay terms. No silent imputation is ever performed.
+
+---
+
+## 6. Model Handoff Manifest Schema (`feature_manifest.json`)
+
+To ensure seamless integration with P4 (Classical models) and P5 (Boosting models), a standardized JSON manifest (`data/sample/feature_manifest.json`) defines the predictor dictionary, typing roles (`numeric`, `categorical`, `indicator`), and exact checkpoint file locations:
+
+- **Revision:** `phase-a-v1`
+- **Release:** `phase-a-data-v1`
+- **Checkpoints:** 360 min ($T=6\text{h}$) and 60 min ($T=1\text{h}$)
+- **Total Predictors:** 18 validated features matching P4's `FeatureSchema` contract.
+
