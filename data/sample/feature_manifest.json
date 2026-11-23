@@ -1,18 +1,19 @@
 {
   "development": {
-    "path": "data/sample/flights_development_sample.parquet",
+    "path": "data/processed/flights_development.parquet",
     "release": "phase-a-data-v1"
   },
   "feature_spec_revision": "phase-a-v1",
+  "sampled_ids": "data/sample/sampled_ids.parquet",
   "checkpoints": [
     {
       "offset_minutes": 360,
-      "path": "data/sample/features_sample_t6h.parquet",
+      "path": "data/sample/features_360m.parquet",
       "source_release": "phase-a-data-v1"
     },
     {
       "offset_minutes": 60,
-      "path": "data/sample/features_sample_t1h.parquet",
+      "path": "data/sample/features_60m.parquet",
       "source_release": "phase-a-data-v1"
     }
   ],
@@ -56,30 +57,6 @@
     {
       "name": "dest",
       "role": "categorical"
-    },
-    {
-      "name": "inbound_missing_no_tail",
-      "role": "indicator"
-    },
-    {
-      "name": "inbound_first_leg_of_day",
-      "role": "indicator"
-    },
-    {
-      "name": "inbound_not_landed_by_T",
-      "role": "indicator"
-    },
-    {
-      "name": "inbound_arrival_delay_min",
-      "role": "numeric"
-    },
-    {
-      "name": "turnaround_buffer_min",
-      "role": "numeric"
-    },
-    {
-      "name": "inbound_prior_late",
-      "role": "indicator"
     },
     {
       "name": "origin_departures_3h",

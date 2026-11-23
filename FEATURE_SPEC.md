@@ -51,17 +51,33 @@ These features are known months in advance upon schedule publication and carry z
 | `dow_cos` | Float | `scheduled_departure_utc` | Booking | $\cos(2\pi \cdot \text{dayofweek} / 7)$ | None |
 | `month` | UInt8 | `scheduled_departure_utc` | Booking | Calendar month (1–12) | None |
 | `crs_elapsed_min` | Float | `CRSElapsedTime` | Booking | Scheduled gate-to-gate block duration in minutes | None |
+| `distance` | Float | `Distance` | Booking | Flight distance in miles | None |
 | `carrier` | Category | `Reporting_Airline` | Booking | Two-letter IATA airline code | None |
 | `origin` | Category | `Origin` | Booking | Three-letter IATA origin airport code | None |
 | `dest` | Category | `Dest` | Booking | Three-letter IATA destination airport code | None |
 
 ---
 
-### Group B: Inbound Aircraft Chain (`Tail_Number`)
+### Group B: Airport Congestion & Upstream Delays by $T$
 
-The single largest driver of flight departure delays is the arrival status of the incoming aircraft assigned to that route. The previous leg's details are linked via `Tail_Number` and chronological sequence.
+Reflects congestion and ground delay cascades at the origin airport leading up to the checkpoint.
 
-To prevent leakage, the incoming leg's actual landing time (`actual_arrival_utc`) is evaluated against $\text{Cutoff}_T$.
+> **CRITICAL PROTOCOL SAFEGUARD (Self-Exclusion):** Only departures that **actually pushed back at or before $\text{Cutoff}_T$** (`actual_departure_utc <= Cutoff_T`) are used to compute the historical delay rate. Future departures (`> Cutoff_T`) are strictly excluded.
+>
+> Furthermore, **the target flight itself is strictly excluded from its own congestion window**, even if it departed unusually early prior to cutoff.
+
+| Feature Name | Type | Source Columns | Availability | Definition / Formula | Leak Risk |
+|---|---|---|---|---|---|
+| `origin_departures_3h` | Int32 | `Origin`, `OBSERVED`, $\text{Cutoff}_T$ | $T$ | Number of other flights that actually departed from this origin in $[\text{Cutoff}_T - 3\text{h}, \text{Cutoff}_T]$ (target flight excluded) | None (backward window with self-exclusion) |
+| `origin_late_rate_3h` | Float | `Origin`, `OBSERVED`, `LATE`, $\text{Cutoff}_T$ | $T$ | Fraction of other flights departing from this origin in $[\text{Cutoff}_T - 3\text{h}, \text{Cutoff}_T]$ that left $\ge 15\text{m}$ late (target flight excluded) | None (backward window with self-exclusion) |
+
+---
+
+### Group C: Experimental / Opt-In Inbound Aircraft Chain (`Tail_Number`)
+
+> **LEAKAGE & AUDIT RESOLUTION:** BTS data provides retrospective final aircraft tail assignments rather than live dispatch feeds at checkpoint $T$. Following Person 2's column audit classification (`conditional` — *"Final aircraft assignment is not proven available at checkpoint"*), all tail-derived features are **strictly excluded from the primary audited predictor set** (`AUDITED_PREDICTORS`). They are quarantined into an experimental module (`EXPERIMENTAL_TAIL_PREDICTORS`) accessible solely via `include_tail=True`.
+
+When live dispatch feed evidence or ACARS/ADS-B transponder logging is integrated in Phase B, the previous leg's details are linked via `Tail_Number` and evaluated against $\text{Cutoff}_T$.
 
 #### 4-State Inbound Indicator Architecture:
 To prevent conflation between missing tails, first flights, and airborne aircraft, four mutually-exclusive states are defined:
@@ -73,27 +89,14 @@ To prevent conflation between missing tails, first flights, and airborne aircraf
    - Its `actual_arrival_utc` is `null` (e.g. diverted flight with no reliable gate arrival).
 4. **Normal Landed State (All three indicators = 0):** The inbound flight has safely arrived at the gate at or before $\text{Cutoff}_T$. Its actual arrival delay and turnaround time are fully observable.
 
-| Feature Name | Type | Source Columns | Availability | Definition / Treatment | Leak Risk |
-|---|---|---|---|---|---|
-| `inbound_missing_no_tail` | UInt8 (0/1) | `tail_number_missing` | $T$ | Tail number unavailable on flight manifest | None |
-| `inbound_first_leg_of_day` | UInt8 (0/1) | `Tail_Number`, `TIME` | $T$ | First scheduled leg of current calendar day | None |
-| `inbound_not_landed_by_T` | UInt8 (0/1) | `actual_arrival_utc`, $\text{Cutoff}_T$ | $T$ | Inbound leg not arrived at gate prior to cutoff | None (explicit null check prevents leak) |
-| `inbound_arrival_delay_min` | Float | `actual_arrival_utc`, `scheduled_arrival_utc` | Only if landed $\le \text{Cutoff}_T$ | Actual arrival delay of prior leg in minutes. Zero fill when any of above 3 indicators is 1. | Quarantined if landed $> T$ |
-| `turnaround_buffer_min` | Float | `scheduled_departure_utc`, `actual_arrival_utc` | Only if landed $\le \text{Cutoff}_T$ | $\text{CRSDepTime}_\text{UTC} - \text{actual\_arrival\_utc}$ in minutes. `NaN` fill when not landed by $T$. | Quarantined if landed $> T$ |
-| `inbound_prior_late` | Float | Prior leg `LATE` | Only if landed $\le \text{Cutoff}_T$ | Binary indicator whether prior leg arrived $\ge 15\text{m}$ late. 0 fill when not landed. | Quarantined if landed $> T$ |
-
----
-
-### Group C: Airport Congestion & Upstream Delays by $T$
-
-Reflects congestion and ground delay cascades at the origin airport leading up to the checkpoint.
-
-> **CRITICAL FIX:** Only departures that **actually pushed back at or before $\text{Cutoff}_T$** (`actual_departure_utc <= Cutoff_T`) are used to compute the historical delay rate. Future departures (`> Cutoff_T`) are strictly excluded.
-
-| Feature Name | Type | Source Columns | Availability | Definition / Formula | Leak Risk |
-|---|---|---|---|---|---|
-| `origin_departures_3h` | Int32 | `Origin`, `OBSERVED`, $\text{Cutoff}_T$ | $T$ | Number of flights that actually departed from this origin in $[\text{Cutoff}_T - 3\text{h}, \text{Cutoff}_T]$ | None (backward window only) |
-| `origin_late_rate_3h` | Float | `Origin`, `OBSERVED`, `LATE`, $\text{Cutoff}_T$ | $T$ | Fraction of flights departing from this origin in $[\text{Cutoff}_T - 3\text{h}, \text{Cutoff}_T]$ that left $\ge 15\text{m}$ late | None (backward window only) |
+| Feature Name | Type | Role | Source Columns | Status |
+|---|---|---|---|---|
+| `inbound_missing_no_tail` | UInt8 (0/1) | indicator | `tail_number_missing` | Experimental (Opt-in) |
+| `inbound_first_leg_of_day` | UInt8 (0/1) | indicator | `Tail_Number`, `TIME` | Experimental (Opt-in) |
+| `inbound_not_landed_by_T` | UInt8 (0/1) | indicator | `actual_arrival_utc`, $\text{Cutoff}_T$ | Experimental (Opt-in) |
+| `inbound_arrival_delay_min` | Float | numeric | `actual_arrival_utc`, `scheduled_arrival_utc` | Experimental (Opt-in) |
+| `turnaround_buffer_min` | Float | numeric | `scheduled_departure_utc`, `actual_arrival_utc` | Experimental (Opt-in) |
+| `inbound_prior_late` | Float | indicator | Prior leg `LATE` | Experimental (Opt-in) |
 
 ---
 
@@ -141,8 +144,8 @@ All source features strictly conform to the column classifications established b
 
 ### Resolution of Conditional `Tail_Number` Audit
 In `COLUMN_AUDIT.csv`, Person 2 flagged `Tail_Number` as `conditional` (*"Final aircraft assignment is not proven available at checkpoint"*).
-- **Domain Justification:** In US Part 121 commercial operations, dispatch tail assignments are fixed 12–24 hours prior to departure in flight operations systems and published to gate displays and flight-tracking feeds. Both $T=6\text{h}$ and $T=1\text{h}$ occur well within this broadcast window.
-- **Fail-Safe Mechanism:** In the event an airframe is swapped, unassigned, or withheld, `src/features.py` activates `inbound_missing_no_tail = 1` and zeros all downstream delay terms. No silent imputation is ever performed.
+- **Audit Decision & Pre-Merge Quarantine:** Because BTS tables provide the retrospective final aircraft assignment rather than timestamped live dispatch release snapshots, tail-derived features cannot guarantee live operational availability at $T=360\text{m}$ or $T=60\text{m}$.
+- **Resolution:** All tail-derived indicators and inbound delay variables are **strictly excluded from the primary audited predictor set**. The primary delivered feature matrices (`features_360m.parquet` and `features_60m.parquet`) contain only the 12 fully approved predictors (calendar, route, distance, scheduled duration, airline, origin, dest, and backward-looking airport congestion). Tail-derived features are maintained in code as experimental features under `include_tail=True` for Phase B exploration once live dispatch transponder feeds are connected.
 
 ---
 
@@ -153,5 +156,6 @@ To ensure seamless integration with P4 (Classical models) and P5 (Boosting model
 - **Revision:** `phase-a-v1`
 - **Release:** `phase-a-data-v1`
 - **Checkpoints:** 360 min ($T=6\text{h}$) and 60 min ($T=1\text{h}$)
-- **Total Predictors:** 18 validated features matching P4's `FeatureSchema` contract.
+- **Total Audited Predictors:** 12 validated features matching P4's `FeatureSchema` contract (`hour_sin`, `hour_cos`, `dow_sin`, `dow_cos`, `month`, `crs_elapsed_min`, `distance`, `carrier`, `origin`, `dest`, `origin_departures_3h`, `origin_late_rate_3h`).
+- **Sampled IDs Reference:** `data/sample/sampled_ids.parquet` (20,000 flights matching P4's exact sampler across Jan–Oct 2025).
 

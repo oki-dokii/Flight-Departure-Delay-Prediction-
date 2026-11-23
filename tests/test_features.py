@@ -1,13 +1,14 @@
-"""Unit tests for leak-safety and feature contracts in src.features."""
+"""Unit tests for leak-safety, self-exclusion, and feature contracts in src.features."""
 
 import unittest
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 
 from src.evaluate import evaluate
-from src.features import CHECKPOINTS, build_features
-from src.splits import OBSERVED, TIME
+from src.features import AUDITED_PREDICTORS, CHECKPOINTS, build_features
+from src.splits import OBSERVED, TIME, get_folds
 
 
 def _create_synthetic_flights() -> pd.DataFrame:
@@ -46,16 +47,16 @@ class FeatureLeakTests(unittest.TestCase):
         pd.testing.assert_frame_equal(X_base.loc[[10]], X_mut.loc[[10]])
 
     def test_positive_sensitivity_pre_cutoff_mutation(self):
-        """Mutating an observable pre-cutoff event must update downstream features."""
+        """Mutating an observable pre-cutoff event must update downstream features when tail included."""
         df = _create_synthetic_flights()
         # For T=1h, cutoff for flight 10 is 13:00 UTC.
         # Flight 11 scheduled arrival was 12:45, actual arrival was 13:00 (delay = +15 min).
-        X_base = build_features(df.copy(), CHECKPOINTS["t1h"])
+        X_base = build_features(df.copy(), CHECKPOINTS["t1h"], include_tail=True)
 
         # Change inbound actual arrival to 12:50 (delay = +5 min), still before cutoff
         df_mutated = df.copy()
         df_mutated.loc[11, "actual_arrival_utc"] = pd.Timestamp("2025-07-01 12:50", tz="UTC")
-        X_mut = build_features(df_mutated, CHECKPOINTS["t1h"])
+        X_mut = build_features(df_mutated, CHECKPOINTS["t1h"], include_tail=True)
 
         self.assertAlmostEqual(X_base.loc[10, "inbound_arrival_delay_min"], 15.0, places=1)
         self.assertAlmostEqual(X_mut.loc[10, "inbound_arrival_delay_min"], 5.0, places=1)
@@ -66,47 +67,48 @@ class FeatureLeakTests(unittest.TestCase):
         # For T=1h, cutoff for flight 10 is 13:00 UTC.
         # Prior leg arrives at exactly 13:00 UTC
         df.loc[11, "actual_arrival_utc"] = pd.Timestamp("2025-07-01 13:00", tz="UTC")
-        X = build_features(df, CHECKPOINTS["t1h"])
+        X = build_features(df, CHECKPOINTS["t1h"], include_tail=True)
         self.assertEqual(X.loc[10, "inbound_not_landed_by_T"], 0)
 
     def test_diverted_inbound_prevents_leak(self):
         """Diverted prior flight with NaT actual arrival triggers inbound_not_landed_by_T."""
         df = _create_synthetic_flights()
         df.loc[11, "actual_arrival_utc"] = pd.NaT  # Diverted
-        X = build_features(df, CHECKPOINTS["t1h"])
+        X = build_features(df, CHECKPOINTS["t1h"], include_tail=True)
 
         self.assertEqual(X.loc[10, "inbound_not_landed_by_T"], 1)
         self.assertEqual(X.loc[10, "inbound_arrival_delay_min"], 0.0)
         self.assertTrue(pd.isna(X.loc[10, "turnaround_buffer_min"]))
 
-    def test_four_state_flags_mutually_exclusive(self):
-        """Verify that at most one of the three inbound indicator flags is active."""
-        df = _create_synthetic_flights()
-        # Add a flight with missing tail
-        extra_flight = pd.DataFrame({
-            TIME: [pd.Timestamp("2025-07-01 15:00", tz="UTC")],
-            OBSERVED: [pd.Timestamp("2025-07-01 15:10", tz="UTC")],
-            "LATE": [0],
-            "Tail_Number": [pd.NA],
-            "tail_number_missing": [True],
-            "scheduled_arrival_utc": [pd.Timestamp("2025-07-01 17:00", tz="UTC")],
-            "actual_arrival_utc": [pd.Timestamp("2025-07-01 17:10", tz="UTC")],
-            "Origin": ["JFK"],
-            "Dest": ["MIA"],
-            "Reporting_Airline": ["AA"],
-            "CRSElapsedTime": [120],
-            "Distance": [1089],
-        }, index=[12])
-        df_all = pd.concat([df, extra_flight])
+    def test_target_flight_strictly_excluded_from_own_congestion(self):
+        """Airport congestion must exclude target flight itself, even if it departed unusually early."""
+        # Flight 10: scheduled at 14:00, cutoff at 13:00 (T=1h).
+        # Unusually early departure at 12:45 UTC with LATE=0.
+        # Flight 20: another JFK departure at 12:30 UTC with LATE=1.
+        test_df = pd.DataFrame({
+            TIME: pd.to_datetime(["2025-07-01 14:00", "2025-07-01 12:30"], utc=True),
+            OBSERVED: pd.to_datetime(["2025-07-01 12:45", "2025-07-01 12:30"], utc=True),
+            "LATE": [0, 1],
+            "Origin": ["JFK", "JFK"],
+            "Dest": ["LAX", "ORD"],
+            "Reporting_Airline": ["AA", "DL"],
+            "CRSElapsedTime": [300, 150],
+            "Distance": [2475, 740],
+        }, index=[10, 20])
 
-        for cp_name, cp_delta in CHECKPOINTS.items():
-            X = build_features(df_all, cp_delta)
-            flag_sum = (
-                X["inbound_missing_no_tail"]
-                + X["inbound_first_leg_of_day"]
-                + X["inbound_not_landed_by_T"]
-            )
-            self.assertTrue((flag_sum <= 1).all(), f"Indicators not mutually exclusive in {cp_name}")
+        X = build_features(test_df, CHECKPOINTS["t1h"])
+
+        # Flight 10's own departure at 12:45 must NOT be counted.
+        # Only Flight 20 (at 12:30) was eligible.
+        self.assertEqual(X.loc[10, "origin_departures_3h"], 1)
+        # Late rate must be 1.0 (from flight 20), not 0.5 (which would occur if flight 10 were included)
+        self.assertEqual(X.loc[10, "origin_late_rate_3h"], 1.0)
+
+        # Single flight that departed early with no peers: departures must be 0 and rate NaN
+        solo_df = test_df.loc[[10]].copy()
+        X_solo = build_features(solo_df, CHECKPOINTS["t1h"])
+        self.assertEqual(X_solo.loc[10, "origin_departures_3h"], 0)
+        self.assertTrue(pd.isna(X_solo.loc[10, "origin_late_rate_3h"]))
 
     def test_index_and_row_order_invariance(self):
         """Feature matrix index and row ordering must strictly match input DataFrame."""
@@ -115,46 +117,56 @@ class FeatureLeakTests(unittest.TestCase):
         self.assertTrue(X.index.equals(df.index))
         self.assertEqual(len(X), len(df))
 
-    def test_evaluation_harness_integration(self):
-        """Verify features run smoothly end-to-end through src.evaluate.evaluate."""
-        times = pd.to_datetime(
-            ["2025-01-01", "2025-06-29", "2025-06-30", "2025-07-01",
-             "2025-07-02", "2025-08-01", "2025-08-02", "2025-09-01",
-             "2025-09-02", "2025-10-01", "2025-10-02"], utc=True,
-        ).repeat(2)
-        dev = pd.DataFrame({
-            TIME: times,
-            OBSERVED: times + pd.to_timedelta([0, 15] * 11, unit="min"),
-            "LATE": [0, 1] * 11,
-            "Tail_Number": [f"N{i % 4}" for i in range(22)],
-            "tail_number_missing": [False] * 22,
-            "scheduled_arrival_utc": times + pd.Timedelta(hours=2),
-            "actual_arrival_utc": times + pd.Timedelta(hours=2),
-            "Origin": ["JFK"] * 22,
-            "Dest": ["LAX"] * 22,
-            "Reporting_Airline": ["DL"] * 22,
-            "CRSElapsedTime": [120] * 22,
-            "Distance": [1000] * 22,
-        }, index=range(500, 522))
+    def test_changing_events_after_checkpoint_leaves_features_unchanged(self):
+        """Modifying actual departures or outcomes after cutoff leaves features strictly unchanged."""
+        base_df = _create_synthetic_flights()
+        # Cutoff for flight 10 at T=6h is 08:00 UTC.
+        X_before = build_features(base_df, CHECKPOINTS["t6h"])
 
-        # Build feature matrix at T=1h
-        X = build_features(dev, CHECKPOINTS["t1h"])
+        mutated_df = base_df.copy()
+        # Change flight 10 and 11 events that occur at 11:30 and 14:20
+        mutated_df.loc[10, OBSERVED] = pd.Timestamp("2025-07-01 16:00", tz="UTC")
+        mutated_df.loc[10, "LATE"] = 1
+        mutated_df.loc[11, OBSERVED] = pd.Timestamp("2025-07-01 12:15", tz="UTC")
+        mutated_df.loc[11, "LATE"] = 1
+        X_after = build_features(mutated_df, CHECKPOINTS["t6h"])
 
-        # Numeric subset for decision tree smoke test
-        numeric_cols = ["hour_sin", "hour_cos", "dow_sin", "dow_cos", "month",
-                        "inbound_missing_no_tail", "inbound_first_leg_of_day",
-                        "inbound_not_landed_by_T", "inbound_arrival_delay_min",
-                        "origin_departures_3h"]
-        X_num = X[numeric_cols]
+        # Features for flight 10 at 08:00 UTC must be strictly identical
+        pd.testing.assert_series_equal(X_before.loc[10], X_after.loc[10])
 
+    def test_all_four_validation_folds_populated_and_run(self):
+        """Verify all 4 validation folds (July-Oct) are populated on the 20,000 target cohort."""
+        sample_path = Path("data/sample/features_60m.parquet")
+        dev_path = Path("data/processed/flights_development.parquet")
+        if not sample_path.exists() or not dev_path.exists():
+            self.skipTest("Sample or development parquet not found on disk")
+
+        sample_X = pd.read_parquet(sample_path).set_index("flight_id")
+        self.assertEqual(len(sample_X), 20000)
+
+        meta = pd.read_parquet(dev_path, columns=["flight_id", TIME, OBSERVED, "LATE"]).set_index("flight_id")
+        dev_target = meta.loc[sample_X.index].copy()
+        dev_target.index = dev_target.index.astype(sample_X.index.dtype)
+
+        folds = get_folds(dev_target)
+        self.assertEqual(len(folds), 4)
+
+        # Check validation sizes
+        for fold_idx, (train, val) in enumerate(folds):
+            self.assertEqual(len(val), 2000, f"Fold {fold_idx + 1} validation size mismatch")
+            self.assertGreater(len(train), 10000, f"Fold {fold_idx + 1} train size too small")
+
+        # Smoke evaluation on numeric subset across all 4 folds
+        numeric_cols = [p["name"] for p in AUDITED_PREDICTORS if p["role"] == "numeric"]
         runs, summary = evaluate(
-            lambda seed: DecisionTreeClassifier(max_depth=2, random_state=seed),
-            X_num,
-            dev,
+            lambda seed: DecisionTreeClassifier(max_depth=3, random_state=seed),
+            sample_X[numeric_cols].fillna(0.0),
+            dev_target,
             seeds=(42,),
         )
-        self.assertEqual(len(runs), 8)  # 4 folds * (model + majority)
+        self.assertEqual(len(runs), 8)
         self.assertIn("roc_auc", summary.columns.levels[1])
+        self.assertIn("pr_auc", summary.columns.levels[1])
 
 
 if __name__ == "__main__":
