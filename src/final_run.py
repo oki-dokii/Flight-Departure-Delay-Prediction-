@@ -11,7 +11,7 @@ from sklearn.metrics import average_precision_score, roc_auc_score
 from src.evaluate import revision, training_sample
 from src.models_boosting import MODELS, make_booster
 from src.models_classical import classical_factories
-from src.run_classical import METADATA, checkpoint_features, paired_metadata, read_manifest
+from src.run_classical import METADATA, _read_parquet, checkpoint_features, paired_metadata, read_manifest
 from src.splits import DEVELOPMENT_END, OBSERVED, TEST_END, TEST_START, TIME, get_folds
 
 FINAL = Path("data/processed/final_once")
@@ -30,7 +30,7 @@ def run(manifest, config, holdout_manifest=None):
     if holdout_manifest:
         if settings.get("frozen_revision") != revision():
             raise ValueError("Final scoring requires the frozen code revision")
-        all_ids = pd.read_parquet(dev.development, columns=["flight_id"]).flight_id
+        all_ids = _read_parquet(dev.development, ["flight_id"]).flight_id
         if len(all_ids) != len(metadata) or not metadata.index.isin(all_ids).all():
             raise ValueError("Final refit requires complete development matrices")
         holdout = read_manifest(holdout_manifest)
@@ -39,7 +39,7 @@ def run(manifest, config, holdout_manifest=None):
             raise ValueError("Holdout feature definition differs from development")
         out = FINAL
         out.mkdir(parents=True, exist_ok=False)
-        test = pd.read_parquet(holdout.development, columns=["flight_id", *METADATA]).set_index(
+        test = _read_parquet(holdout.development, ["flight_id", *METADATA]).set_index(
             "flight_id", verify_integrity=True)
         if not test[TIME].between(TEST_START, TEST_END, inclusive="left").all():
             raise ValueError("Holdout metadata outside frozen test window")
