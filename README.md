@@ -50,3 +50,13 @@ python -m unittest discover -s tests -v
 ```
 
 Open `notebooks/01_eda.ipynb` with that environment to regenerate and view the analysis. Outputs are written to `reports/figures/`, `reports/tables/`, and `COLUMN_AUDIT.csv`. No test dataset is read. Conditional audit entries remain blocked pending P1/P3 review; derived features need separate availability approval. The report skeleton is `reports/report.tex`.
+
+## P5 boosting smoke runs
+
+Install `requirements-boosting.txt` in the project environment. The five model names are `adaboost`, `gradient_boosting`, `xgboost`, `lightgbm`, and `catboost`. On macOS, XGBoost and LightGBM require the OpenMP runtime (`libomp`).
+
+```bash
+python -m src.run_boosting --schedule-only --model xgboost
+```
+
+To evaluate both P3 checkpoints, replace `--schedule-only` with `--input-manifest PATH` using the same manifest as P4. See [boosting results and tuning plan](reports/p5_boosting.md).
