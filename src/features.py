@@ -154,7 +154,6 @@ def _add_airport_congestion_features(
     three_hours = pd.Timedelta(hours=3)
 
     target_origins = df["Origin"].values if "Origin" in df.columns else np.array([])
-    has_target_obs = OBSERVED in df.columns and "LATE" in df.columns
 
     # Group full development set by Origin
     grouped_observed = valid_observed.groupby("Origin")
@@ -180,12 +179,11 @@ def _add_airport_congestion_features(
         late_sums = late_cumsum[idx_right] - late_cumsum[idx_left]
 
         # Self-exclusion check: if target flight departed early and fell inside its own window, exclude it
-        if has_target_obs:
-            target_actuals = df.loc[match_idx, OBSERVED].values
-            target_lates = df.loc[match_idx, "LATE"].values
-            is_self = (target_actuals >= window_starts) & (target_actuals <= window_ends)
-            counts = counts - is_self.astype(int)
-            late_sums = late_sums - (is_self & (target_lates == 1)).astype(int)
+        own_events = sorted_group.reindex(match_idx)
+        own_times = own_events[OBSERVED].values
+        is_self = (own_times >= window_starts) & (own_times <= window_ends)
+        counts -= is_self.astype(int)
+        late_sums -= (is_self & own_events["LATE"].eq(1).values).astype(int)
 
         rates = np.full(len(counts), np.nan, dtype="float32")
         valid_counts_mask = counts > 0

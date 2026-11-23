@@ -100,6 +100,10 @@ class FeatureLeakTests(unittest.TestCase):
 
         # Flight 10's own departure at 12:45 must NOT be counted.
         # Only Flight 20 (at 12:30) was eligible.
+        # A separate history pool can already exclude the target flight.
+        separate = build_features(test_df.loc[[10]], pd.Timedelta(hours=1), history_df=test_df.loc[[20]])
+        self.assertEqual(separate.loc[10, "origin_departures_3h"], 1)
+
         self.assertEqual(X.loc[10, "origin_departures_3h"], 1)
         # Late rate must be 1.0 (from flight 20), not 0.5 (which would occur if flight 10 were included)
         self.assertEqual(X.loc[10, "origin_late_rate_3h"], 1.0)
