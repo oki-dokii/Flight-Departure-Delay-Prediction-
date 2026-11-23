@@ -1,0 +1,7 @@
+timestamp,status,rows
+scheduled_arrival_utc,checked,5749041
+scheduled_arrival_utc,missing,0
+scheduled_arrival_utc,mismatch,153
+actual_arrival_utc,checked,5732258
+actual_arrival_utc,missing,16783
+actual_arrival_utc,mismatch,79

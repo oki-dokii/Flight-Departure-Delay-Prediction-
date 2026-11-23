@@ -288,13 +288,13 @@ def evaluate_configuration(name, factory, X, development, checkpoint, folds):
     elapsed = perf_counter() - start
     record_pca()
 
-    runs = per_run.loc[per_run["estimator"].eq("model"), ["fold", "seed", *METRICS]].reset_index(drop=True)
+    runs = per_run.loc[per_run["estimator"].eq("model"), ["fold", "seed", *METRICS, "revision", "parameters", "runtime_seconds", "train_rows", "validation_rows"]].reset_index(drop=True)
     baseline = per_run.loc[
         per_run["estimator"].eq("majority"), ["fold", "seed", *METRICS]
     ].reset_index(drop=True)
     if list(runs[["fold", "seed"]].itertuples(index=False, name=None)) != keys:
         raise ValueError(f"{name} has missing, duplicate, or unexpected P1 fold/seed results")
-    if name == "majority" and not runs.equals(baseline):
+    if name == "majority" and not runs[baseline.columns].equals(baseline):
         raise ValueError("Explicit majority results differ from P1's majority results")
 
     statistics = {

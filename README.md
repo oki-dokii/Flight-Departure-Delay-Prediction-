@@ -60,3 +60,7 @@ python -m src.run_boosting --schedule-only --model xgboost
 ```
 
 To evaluate both P3 checkpoints, replace `--schedule-only` with `--input-manifest PATH` using the same manifest as P4. See [boosting results and tuning plan](reports/p5_boosting.md).
+
+## Phase B data and protocol
+
+Use the [Phase B dataset release](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/phase-b-data-v1) and [P1 protocol handoff](reports/p1_phase_b.md). The [paired pilot results](results/results_summary.md) exercise the revised training protocol at both checkpoints.
