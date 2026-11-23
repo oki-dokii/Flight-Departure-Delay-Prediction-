@@ -31,11 +31,12 @@ def get_folds(frame):
     if not scheduled.between(START, DEVELOPMENT_END, inclusive="left").all():
         raise ValueError("get_folds accepts only the frozen development period")
 
+    eligible = observed > scheduled - pd.Timedelta(hours=1)
     folds = []
     for start, end in VALIDATION_WINDOWS:
         cutoff = start - GAP
-        train = np.flatnonzero((scheduled < cutoff) & (observed < cutoff))
-        validate = np.flatnonzero(scheduled.between(start, end, inclusive="left"))
+        train = np.flatnonzero(eligible & (scheduled < cutoff) & (observed < cutoff))
+        validate = np.flatnonzero(eligible & scheduled.between(start, end, inclusive="left"))
         if not len(train) or not len(validate):
             raise ValueError(f"Empty train or validation set for {start:%Y-%m}")
         folds.append((train, validate))
@@ -48,8 +49,9 @@ def get_test_split(frame):
     observed = utc_column(frame, OBSERVED)
     development = scheduled.between(START, DEVELOPMENT_END, inclusive="left")
     test = scheduled.between(TEST_START, TEST_END, inclusive="left")
-    train = np.flatnonzero(development & (observed < DEVELOPMENT_END))
-    holdout = np.flatnonzero(test)
+    eligible = observed > scheduled - pd.Timedelta(hours=1)
+    train = np.flatnonzero(eligible & development & (observed < DEVELOPMENT_END))
+    holdout = np.flatnonzero(eligible & test)
     if not len(train) or not len(holdout):
         raise ValueError("Final evaluation requires both development and holdout data")
     return train, holdout
