@@ -1,0 +1,117 @@
+column,dtype,type,allowed,allowed_6h,allowed_1h,justification
+flight_id,string,static,no,no,no,Technical identifier or count; exclude from predictors
+Year,int64,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+Quarter,int64,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+Month,int64,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+DayofMonth,int64,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+DayOfWeek,int64,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+FlightDate,string,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+Reporting_Airline,string,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+DOT_ID_Reporting_Airline,int64,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+IATA_CODE_Reporting_Airline,string,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+Tail_Number,string,static,conditional,conditional,conditional,Final aircraft assignment is not proven available at checkpoint
+Flight_Number_Reporting_Airline,int64,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+OriginAirportID,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+OriginAirportSeqID,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+OriginCityMarketID,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+Origin,string,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+OriginCityName,string,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+OriginState,string,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+OriginStateFips,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+OriginStateName,string,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+OriginWac,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+DestAirportID,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+DestAirportSeqID,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+DestCityMarketID,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+Dest,string,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+DestCityName,string,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+DestState,string,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+DestStateFips,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+DestStateName,string,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+DestWac,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+CRSDepTime,int64,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+DepTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+DepDelay,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+DepDelayMinutes,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+DepDel15,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+DepartureDelayGroups,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+DepTimeBlk,string,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+TaxiOut,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+WheelsOff,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+WheelsOn,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+TaxiIn,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+CRSArrTime,int64,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+ArrTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+ArrDelay,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+ArrDelayMinutes,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+ArrDel15,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+ArrivalDelayGroups,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+ArrTimeBlk,string,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+Cancelled,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+CancellationCode,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Diverted,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+CRSElapsedTime,double,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
+ActualElapsedTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+AirTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Flights,double,static,no,no,no,Technical identifier or count; exclude from predictors
+Distance,double,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+DistanceGroup,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
+CarrierDelay,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+WeatherDelay,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+NASDelay,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+SecurityDelay,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+LateAircraftDelay,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+FirstDepTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+TotalAddGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+LongestAddGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+DivAirportLandings,int64,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+DivReachedDest,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+DivActualElapsedTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+DivArrDelay,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+DivDistance,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div1Airport,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div1AirportID,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div1AirportSeqID,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div1WheelsOn,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div1TotalGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div1LongestGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div1WheelsOff,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div1TailNum,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div2Airport,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div2AirportID,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div2AirportSeqID,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div2WheelsOn,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div2TotalGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div2LongestGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div2WheelsOff,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div2TailNum,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div3Airport,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div3AirportID,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div3AirportSeqID,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div3WheelsOn,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div3TotalGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div3LongestGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div3WheelsOff,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div3TailNum,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div4Airport,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div4AirportID,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div4AirportSeqID,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div4WheelsOn,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div4TotalGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div4LongestGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div4WheelsOff,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div4TailNum,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div5Airport,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div5AirportID,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div5AirportSeqID,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div5WheelsOn,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div5TotalGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div5LongestGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div5WheelsOff,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+Div5TailNum,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+scheduled_departure_utc,"timestamp[ns, tz=UTC]",known-in-advance,conditional,conditional,conditional,Requires review of outcome-assisted DST reconstruction and arrival clock validation
+actual_departure_utc,"timestamp[ns, tz=UTC]",outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+LATE,uint8,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
+tail_number_missing,bool,static,conditional,conditional,conditional,Final aircraft assignment is not proven available at checkpoint
+scheduled_arrival_utc,"timestamp[ns, tz=UTC]",known-in-advance,conditional,conditional,conditional,Requires review of outcome-assisted DST reconstruction and arrival clock validation
+actual_arrival_utc,"timestamp[ns, tz=UTC]",outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
