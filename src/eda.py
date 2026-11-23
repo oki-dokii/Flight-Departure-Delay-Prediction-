@@ -112,9 +112,9 @@ def run():
     quality['delay_utc_disagreements']=int(df.DepDelay.ne((df[OBSERVED]-df[TIME]).dt.total_seconds()/60).sum())
     pd.DataFrame([
         dict(issue='tail_assignment',count=int(df.tail_number_missing.sum()),owner='P3',status='pending',action='Confirm assignment availability; keep conditional features blocked'),
-        dict(issue='arrival_clock_validation',count=None,owner='P1',status='pending',action='Validate reconstructed arrival against destination-local clock'),
-        dict(issue='repeated_schedule_keys',count=quality['repeated_schedule_key_rows'],owner='P1',status='review',action='Investigate distinct records; do not automatically delete'),
-        dict(issue='already_departed_1h',count=quality['already_departed_1h'],owner='P1/P3',status='review',action='Define population consistently at checkpoint')
+        dict(issue='arrival_clock_validation',count=len(pd.read_csv(out/'arrival_exceptions.csv')),owner='P1',status='resolved',action='Phase B masks mismatched destination-local arrival clocks'),
+        dict(issue='repeated_schedule_keys',count=quality['repeated_schedule_key_rows'],owner='P1',status='resolved',action='No repeated keys in this release; retain distinct flight IDs'),
+        dict(issue='already_departed_1h',count=quality['already_departed_1h'],owner='P1',status='resolved',action='Exclude departures at or before the 1h checkpoint from both model cohorts')
     ]).to_csv(ROOT/'reports/data_quality_issues.csv',index=False)
     (out/'quality.json').write_text(json.dumps(quality,indent=2))
     folds=[dict(fold=i,train=len(t),validation=len(v),train_late=float(df.iloc[t].LATE.mean()),validation_late=float(df.iloc[v].LATE.mean())) for i,(t,v) in enumerate(get_folds(df),1)]

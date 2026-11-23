@@ -3,7 +3,6 @@ import argparse
 from itertools import product
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 
 from src.evaluate import SEEDS
@@ -39,6 +38,14 @@ def aggregate(classical, boosting, experiment, output, test_scores=None):
     output.mkdir(parents=True, exist_ok=True)
     master.to_csv(output / "master_results.csv", index=False)
     summary.assign(experiment=experiment).to_csv(output / "results_summary.csv", index=False)
+
+    lines = [f"# {experiment}", "", "| Model | Checkpoint | Validation ROC-AUC | Validation PR-AUC | Test ROC-AUC | Test PR-AUC |",
+             "| --- | ---: | ---: | ---: | ---: | ---: |"]
+    for row in summary.itertuples():
+        scores = [f"{getattr(row, m + '_mean'):.3f} ± {getattr(row, m + '_std'):.3f}" for m in METRICS]
+        final = [f"{getattr(row, 'test_' + m):.3f}" if test_scores else "Pending" for m in METRICS]
+        lines.append("| " + " | ".join([row.model, f"{row.checkpoint_minutes // 60} h", *scores, *final]) + " |")
+    (output / "results_summary.md").write_text("\n".join(lines) + "\n")
 
 
 if __name__ == "__main__":

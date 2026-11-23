@@ -1,0 +1,29 @@
+{
+  "seed": 42,
+  "models": {
+    "60": {
+      "majority": {},
+      "decision_tree": {},
+      "random_forest": {},
+      "logistic": {},
+      "pca_logistic": {},
+      "adaboost": {},
+      "gradient_boosting": {},
+      "xgboost": {},
+      "lightgbm": {},
+      "catboost": {}
+    },
+    "360": {
+      "majority": {},
+      "decision_tree": {},
+      "random_forest": {},
+      "logistic": {},
+      "pca_logistic": {},
+      "adaboost": {},
+      "gradient_boosting": {},
+      "xgboost": {},
+      "lightgbm": {},
+      "catboost": {}
+    }
+  }
+}

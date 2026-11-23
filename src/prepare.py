@@ -12,7 +12,7 @@ import pandas as pd
 from timezonefinder import TimezoneFinder
 
 from src.download import RAW
-from src.splits import DEVELOPMENT_END, OBSERVED, START, TIME
+from src.splits import DEVELOPMENT_END, OBSERVED, START, TEST_END, TEST_START, TIME
 
 OUTPUT = Path("data/processed")
 REQUIRED = {"FlightDate", "Origin", "Tail_Number", "Cancelled", "Diverted",
@@ -129,7 +129,7 @@ def clean_month(raw_frame, zones, *, start=START, end=DEVELOPMENT_END):
     return cleaned, counts
 
 
-def prepare(raw, output):
+def prepare(raw, output, *, holdout=False):
     import pyarrow as pa
     import pyarrow.parquet as pq
 
@@ -139,12 +139,12 @@ def prepare(raw, output):
     finder = TimezoneFinder()
     zones = {}
     output.mkdir(parents=True, exist_ok=True)
-    target = output / "flights_development.parquet"
+    target = output / ("flights_holdout.parquet" if holdout else "flights_development.parquet")
     partial = target.with_suffix(".part")
     writer = None
     report = {}
     try:
-        for month in range(1, 11):
+        for month in (range(11, 13) if holdout else range(1, 11)):
             archive = raw / f"On_Time_Reporting_Carrier_On_Time_Performance_1987_present_2025_{month}.zip"
             with ZipFile(archive) as source:
                 tables = [name for name in source.namelist() if name.lower().endswith(".csv")]
@@ -166,7 +166,17 @@ def prepare(raw, output):
                     airport = airports.loc[origin]
                     zones[origin] = finder.timezone_at(lng=airport.longitude_deg, lat=airport.latitude_deg)
 
-            cleaned, counts = clean_month(frame, zones)
+            cleaned, counts = clean_month(frame, zones, start=TEST_START if holdout else START,
+                                          end=TEST_END if holdout else DEVELOPMENT_END)
+            if holdout:
+                for dest, group in cleaned.groupby("Dest"):
+                    airport = airports.loc[dest]
+                    tz = ZoneInfo(finder.timezone_at(lng=airport.longitude_deg, lat=airport.latitude_deg))
+                    for name, clock in [("scheduled_arrival_utc", "CRSArrTime"), ("actual_arrival_utc", "ArrTime")]:
+                        local = group[name].dt.tz_convert(tz)
+                        expected = hhmm_minutes(group[clock]) % 1440
+                        bad = local.notna() & expected.notna() & (local.dt.hour * 60 + local.dt.minute != expected)
+                        cleaned.loc[group.index[bad], name] = pd.NaT
             del frame
             cleaned.insert(0, "flight_id", prefix + cleaned.index.astype(str))
             cleaned.sort_values(TIME, kind="stable", inplace=True)
