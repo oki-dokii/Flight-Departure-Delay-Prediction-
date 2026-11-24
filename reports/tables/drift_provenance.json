@@ -1,0 +1,10 @@
+{
+  "manifest": "data/sample/feature_manifest.json",
+  "manifest_sha256": "fcfbe360589bb4dfbe7fb1ee83f8c13c9bcf6fcf5d85c9991b12b6f81b3bae26",
+  "release": "phase-a-data-v1",
+  "feature_cohort_rows": 20000,
+  "composition_cohort": "full paired eligible development",
+  "feature_cohort": "paired eligible manifest population",
+  "performance": "reports/tables/calibration_summary.csv",
+  "cell": "carrier x origin-local 6-hour scheduled band"
+}

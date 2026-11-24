@@ -1,0 +1,5 @@
+issue,count,owner,status,action
+tail_assignment,0,P3,pending,Confirm assignment availability; keep conditional features blocked
+arrival_clock_validation,232,P1,pending,Verify masking in actual analysis release; Phase A is not masked
+repeated_schedule_keys,0,P1,clear,Investigate repeated keys; retain distinct flight IDs
+already_departed_1h,1,P1,exclusion_required,Frozen folds exclude these targets from both cohorts

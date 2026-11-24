@@ -1,0 +1,20 @@
+{
+  "A-SCHED": {
+    "status": "approved", "approved_by": "P2 Phase B task specification; development pilot scope",
+    "statement": "Schedule timestamps are correct and known at T. Development ambiguous-wall-clock count must be zero. No approval of outcome-assisted test reconstruction.",
+    "checkpoints": [360, 60],
+    "sources": ["scheduled_departure_utc"],
+    "features": ["hour_sin", "hour_cos", "dow_sin", "dow_cos", "month", "origin_departures_3h", "origin_late_rate_3h"]
+  },
+  "A-HISTORY": {
+    "status": "approved", "approved_by": "P2; conditional operational interpretation for the supplied pilot",
+    "statement": "Other retained flights' gate departures and late labels are assumed available from an operational feed by event time; use only events <= T and exclude the target. BTS monthly publication is not that feed. Availability latency has not been verified.",
+    "checkpoints": [360, 60], "sources": ["actual_departure_utc", "LATE"],
+    "features": ["origin_departures_3h", "origin_late_rate_3h"]
+  },
+  "D1": {
+    "status": "pending", "approved_by": "pending P1/P3 written feed and continuity approval",
+    "statement": "Tail chains are excluded from primary G0-G2. G3 ablation assumes schedule, assignment and prior-leg arrival from an operational feed at T. Group G3 alone does not grant approval.",
+    "checkpoints": [360, 60], "sources": [], "features": []
+  }
+}

@@ -75,3 +75,21 @@ python -m src.plot_boosting reports/p5_phase_b_pilot
 ```
 
 For a frozen full-scale feature group, pass its manifest and a separate output directory. Each outer fold and seed shares P1's month-stratified training draw across candidates. The summary step also writes `aggregator_inputs/` for the `--boosting` argument of P1's results aggregator. Pair it with classical results from the same experiment.
+
+## P2 Phase B audit, drift and calibration
+
+See [P2 checks, findings and handoffs](reports/p2_phase_b.md). Use a **new Python 3.12 environment** with the three requirements files; `requirements-p2-lock.txt` records the resolved pinned environment. From the repository root:
+
+```sh
+python -m src.build_sample_features
+python -m src.p2_evidence
+python -m src.p2_registry
+python -m src.calibration --manifest data/sample/feature_manifest.json
+python -m src.drift --manifest data/sample/feature_manifest.json
+python -m unittest discover -s tests -v
+latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=output/pdf reports/report.tex
+```
+
+Both analysis CLIs use the reviewed derived-feature gate; `--manifest` supports later full-scale matrices and calibration `--config` accepts the rehearsal configuration format. The supplied pilot uses the **unmasked Phase A** file; full P3 group matrices, weather/inbound EDA and selected-model calibration remain pending. No final scorer is invoked.
+
+`python -m src.eda` regenerates the source audit, tables and figures. It writes computed issues to `reports/data_quality_generated.csv` and observations to `reports/eda_generated.md`; curated audit prose, limitations, reviews, issue rows and prior observations are preserved. New source audit decisions belong in `src.eda.audit_columns`, derived feature definitions in `src.p2_registry`, and written scoped approvals in `reports/audit_assumptions.json`.

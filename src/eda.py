@@ -32,9 +32,9 @@ def audit_columns(schema):
         if c in schedule: kind,allowed,reason='known-in-advance','yes','Published schedule/calendar; assumes schedule known at checkpoint'
         if c in static: kind,allowed,reason='static','yes','Route or carrier-independent airport geography known from schedule'
         if c in outcomes or c.startswith('Div'): kind,allowed,reason='outcome-like','no','Target-flight operational outcome; EDA/label only'
-        if c in ('Tail_Number','tail_number_missing'): kind,allowed,reason='static','conditional','Final aircraft assignment is not proven available at checkpoint'
+        if c in ('Tail_Number','tail_number_missing'): kind,allowed,reason='static','conditional','D1: tail assignment unverified at T; excluded primary G0-G2; G3 pending named feed approval'
         if c in ('flight_id','Flights'): kind,allowed,reason='static','no','Technical identifier or count; exclude from predictors'
-        if c in ('scheduled_departure_utc','scheduled_arrival_utc'): allowed,reason='conditional','Requires review of outcome-assisted DST reconstruction and arrival clock validation'
+        if c in ('scheduled_departure_utc','scheduled_arrival_utc'): allowed,reason='conditional','A-SCHED: schedule known at T; development ambiguity count in p2 evidence; arrival review remains conditional'
         rows.append(dict(column=c,dtype=str(field.type),type=kind,allowed=allowed,allowed_6h=allowed,allowed_1h=allowed,justification=reason))
     return pd.DataFrame(rows)
 
@@ -48,6 +48,18 @@ def approved_features(frame,audit):
         raise ValueError('Unapproved feature columns')
     return frame
 
+def write_audit(schema, root):
+    """Regenerate the source inventory from reviewed code rules."""
+    audit = audit_columns(schema)
+    validate_audit(schema.names, audit)
+    audit.to_csv(root / 'COLUMN_AUDIT.csv', index=False)
+    return audit
+
+def write_issues(rows, root):
+    """Keep computed findings separate from the hand-curated issue register."""
+    pd.DataFrame(rows).to_csv(root / 'reports/data_quality_generated.csv', index=False)
+
+
 def run():
     import matplotlib
     matplotlib.use('Agg')
@@ -56,8 +68,7 @@ def run():
     pf=pq.ParquetFile(path)
     out=ROOT/'reports/tables'; out.mkdir(parents=True,exist_ok=True)
     figs=ROOT/'reports/figures'; figs.mkdir(exist_ok=True)
-    audit=audit_columns(pf.schema_arrow); validate_audit(pf.schema_arrow.names,audit)
-    audit.to_csv(ROOT/'COLUMN_AUDIT.csv',index=False)
+    audit=write_audit(pf.schema_arrow, ROOT)
     cols=['flight_id',TIME,OBSERVED,'LATE','DepDelay','DepDel15','CRSDepTime','FlightDate','DayOfWeek','Reporting_Airline','Origin','Dest','tail_number_missing','Diverted','Flight_Number_Reporting_Airline']
     df=pd.read_parquet(path,columns=cols); validate_development(df)
     df['month']=pd.to_datetime(df.FlightDate).dt.month
@@ -110,12 +121,12 @@ def run():
     keys=['FlightDate','Reporting_Airline','Flight_Number_Reporting_Airline','Origin','Dest','CRSDepTime']
     quality['repeated_schedule_key_rows']=int(df.duplicated(keys,keep=False).sum())
     quality['delay_utc_disagreements']=int(df.DepDelay.ne((df[OBSERVED]-df[TIME]).dt.total_seconds()/60).sum())
-    pd.DataFrame([
+    write_issues([
         dict(issue='tail_assignment',count=int(df.tail_number_missing.sum()),owner='P3',status='pending',action='Confirm assignment availability; keep conditional features blocked'),
-        dict(issue='arrival_clock_validation',count=len(pd.read_csv(out/'arrival_exceptions.csv')),owner='P1',status='resolved',action='Phase B masks mismatched destination-local arrival clocks'),
-        dict(issue='repeated_schedule_keys',count=quality['repeated_schedule_key_rows'],owner='P1',status='resolved',action='No repeated keys in this release; retain distinct flight IDs'),
-        dict(issue='already_departed_1h',count=quality['already_departed_1h'],owner='P1',status='resolved',action='Exclude departures at or before the 1h checkpoint from both model cohorts')
-    ]).to_csv(ROOT/'reports/data_quality_issues.csv',index=False)
+        dict(issue='arrival_clock_validation',count=len(pd.read_csv(out/'arrival_exceptions.csv')),owner='P1',status='pending' if len(pd.read_csv(out/'arrival_exceptions.csv')) else 'clear',action='Verify masking in actual analysis release; Phase A is not masked'),
+        dict(issue='repeated_schedule_keys',count=quality['repeated_schedule_key_rows'],owner='P1',status='pending' if quality['repeated_schedule_key_rows'] else 'clear',action='Investigate repeated keys; retain distinct flight IDs'),
+        dict(issue='already_departed_1h',count=quality['already_departed_1h'],owner='P1',status='exclusion_required' if quality['already_departed_1h'] else 'clear',action='Frozen folds exclude these targets from both cohorts')
+    ], ROOT)
     (out/'quality.json').write_text(json.dumps(quality,indent=2))
     folds=[dict(fold=i,train=len(t),validation=len(v),train_late=float(df.iloc[t].LATE.mean()),validation_late=float(df.iloc[v].LATE.mean())) for i,(t,v) in enumerate(get_folds(df),1)]
     pd.DataFrame(folds).to_csv(out/'folds.csv',index=False)
@@ -125,7 +136,7 @@ def run():
         if actual!=steps['outside_date_window']['after']: raise ValueError('Cleaning count mismatch')
     with path.open('rb') as f: digest=hashlib.file_digest(f,'sha256').hexdigest()
     (out/'provenance.json').write_text(json.dumps(dict(sha256=digest,rows=len(df),min_utc=str(df[TIME].min()),max_utc=str(df[TIME].max()),cleaning_counts_reconciled=True),indent=2))
-    (ROOT/'reports/eda_observations.md').write_text('# Development observations\n\n'+f'Late prevalence: {df.LATE.mean():.2%}. Median delay: {df.DepDelay.median():g} minutes; 99th percentile: {df.DepDelay.quantile(.99):g} minutes.\n\n'+'\n\n'.join(notes)+'\n\nThese are associations, not causal effects. Airport/route displays select by volume. No test data was loaded.\n')
+    (ROOT/'reports/eda_generated.md').write_text('# Development observations\n\n'+f'Late prevalence: {df.LATE.mean():.2%}. Median delay: {df.DepDelay.median():g} minutes; 99th percentile: {df.DepDelay.quantile(.99):g} minutes.\n\n'+'\n\n'.join(notes)+'\n\nThese are associations, not causal effects. Airport/route displays select by volume. No test data was loaded.\n')
     return quality
 
 if __name__=='__main__': print(json.dumps(run(),indent=2))

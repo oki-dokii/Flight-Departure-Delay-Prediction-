@@ -1,5 +1,8 @@
 issue,count,owner,status,action
 tail_assignment,0.0,P3,pending,Confirm assignment availability; keep conditional features blocked
-arrival_clock_validation,232,P1,resolved,Phase B masks mismatched destination-local arrival clocks
+arrival_clock_validation,232.0,P1,pending_analysis_release,Local P2 file is unmasked Phase A; P1 Phase B masking asset separate; no arrival predictors used
 repeated_schedule_keys,0.0,P1,resolved,No repeated keys in this release; retain distinct flight IDs
 already_departed_1h,1.0,P1,resolved,Exclude departures at or before the 1h checkpoint from both model cohorts
+A-SCHED,0.0,P1/P2,approved_development_only,Computed zero ambiguous local scheduled clocks; P1 must resolve fall-back test-window schedule before final run
+D1,,P1/P3,pending_G3_approval,Exclude tails primary G0-G2; named operational-feed and continuity approval required for G3
+weather_registry,,P3,pending,Deliver G2/G3 matrices and station observation lag units licence download evidence

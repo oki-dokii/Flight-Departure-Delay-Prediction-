@@ -1,20 +1,38 @@
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
-\graphicspath{{p5_phase_b_pilot/}{reports/p5_phase_b_pilot/}}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{float}
+\graphicspath{{reports/figures/}{figures/}{p5_phase_b_pilot/}{reports/p5_phase_b_pilot/}}
 \title{Flight Departure Delay Prediction}
+\author{Phase B team report; P2 audit and analysis contribution}
 \begin{document}
 \maketitle
 \section{Problem and checkpoints}
-Owner: P1/P3. Pending reviewed contribution.
+The target is \(\mathrm{LATE}=1\) when gate departure occurs at least 15 minutes after its scheduled gate departure. Takeoff delay is a different outcome. We predict at 360 minutes (six hours) and 60 minutes (one hour) before scheduled UTC gate departure. Every input must be available at or before that flight's checkpoint; ambiguous availability is blocked. Both horizons use the same eligible flights still awaiting departure at the one-hour checkpoint. The repository is \url{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-}.
 \section{Dataset and EDA}
-Owner: P2. Pending reviewed contribution.
+The source is the BTS Reporting Carrier On-Time Performance table: monthly electronically reported domestic nonstop flight operations of reporting carriers. The recorded BTS source is public US government data; the airport coordinate metadata from the pinned OurAirports snapshot is public domain under the terms referenced in \texttt{DATA\_SOURCES.md}. Source archive receipts in \texttt{data/download\_manifest.json} record URLs, hashes and download dates (the reference collection was November 21, 2026). Release download dates are distinct from collection dates. Weather station mapping, provider licence, units, lag and download date are pending P3 delivery.
+
+The analyzed Phase A development file contains 5,749,041 flights with late fraction 21.3831\%. Its size is 265,113,328 bytes and its verified SHA-256 is recorded in \texttt{reports/tables/p2\_evidence.json}. This is the original unmasked Phase A file, not P1's separately published arrival-masked Phase B asset. We use no arrival predictor in the P2 pilot analyses. The common eligible population contains 5,749,040 targets; one departure exactly one hour early is excluded by the frozen split function. Its event can remain in history for other targets.
+
+EDA uses development rows only: origin-local scheduled hour/day, month, carrier, origin, route, holidays, delays and missingness. These describe associations, with group counts exported alongside rates. The late fraction decreases from July through September and rebounds in October; it is not monotone. Carrier and airport differences may reflect route mix and shared shocks. No full-development descriptive mapping is authorized as a learned predictor. Source null counts for scheduled elapsed minutes and distance are both zero in this release; silent coercion/filling in the builder remains a review concern for new inputs.
 \section{Cleaning and UTC handling}
-Owner: P1. Pending reviewed contribution.
+P1 owns cleaning and UTC facts. The documented pipeline removes exact duplicates, cancellations or unknown cancellation status, unmatched origin zones and unusable departure fields; it retains diverted flights with usable departures and preserves missing tails explicitly. It interprets BTS local FlightDate and HHMM using the origin zone, treating 2400 as next midnight. TimezoneFinder 6.5.9 and tzdata 2025.2 are pinned. DepDelay supplies elapsed time to reconstruct actual departure and the published actual local clock is checked separately. Equality of reconstructed UTC delay with DepDelay is partly by construction, not independent validation.
+
+\textbf{A-SCHED} assumes schedule timestamps are correct and known at T. A computation over development local scheduled clocks finds zero ambiguous fall-back rows; the conservative union of US-origin timezone ambiguity sets is empty. Thus the outcome-assisted branch cannot choose between distinct schedule instants for these development rows. The assumption does not validate retrospective schedule versioning or the closed test window: local 01:00--01:59 on November 2 can have two readings in DST-observing origins, and P1 must resolve the outcome-assisted choice before final scoring.
+
+The committed arrival checks record 153 scheduled-arrival clock mismatches, 79 actual-arrival mismatches and 16,783 actual arrivals unavailable for comparison. P1's Phase B copy masks mismatched timestamps; that masking is not present in P2's analyzed Phase A file. No raw ZIPs or test-period flight records were opened.
 \section{Split design and evaluation}
-Owner: P1. Pending reviewed contribution.
+Four expanding training windows validate on July, August, September and October. Both scheduled and observed training departures must precede the cutoff one day before validation begins. All selection uses \texttt{get\_folds()} positional indices with \texttt{.iloc}. Preprocessing is fitted within the training draw. Development uses scheduled UTC times in [2025-01-01, 2025-10-31); the following 48 hours are excluded. The closed test begins \textbf{2025-11-02 00:00 UTC}. Its count and metrics are pending P1's single final run after freeze.
+
+Seeds 42, 73 and 101 vary common month-stratified training draws (about 90\% of available training flights, capped at about 500,000). Validation retains all eligible rows in the declared cohort. PR-AUC means average precision and is the selection metric; ROC-AUC is reported alongside it. The harness reports population standard deviation (ddof=0) across four folds times three seeds. That pooled spread mostly reflects fold drift, so P2 also exports within-fold between-seed spread. Pilot and full-population results are kept explicitly separate.
 \section{Column audit}
-Owner: P2. Pending reviewed contribution.
+The source CSV contains exactly one row per source Parquet field and is validated for exact schema equality. The separate derived feature registry records group, source lineage, transformation, checkpoint availability, available-at rule, named assumption, approval and leak risk. Unknown fields, duplicate/missing rows and unapproved conditional inputs fail closed. Existing raw-frame approval remains conservative. The P2 manifest gate checks both checkpoints before analysis; it does not modify the shared harness.
+
+Target-flight operational outcomes (including DepDelay, actual departures/arrivals and post-flight delay causes) are forbidden predictors. Conditional source schedule timestamps can support only the reviewed transformations under A-SCHED. A-HISTORY explicitly assumes other flights' gate departures and labels are available from an operational feed by event time, with events no later than T and the target excluded. Counts describe retained usable departure history, not all scheduled airport demand.
+
+\textbf{D1} excludes all tail-derived features from primary G0--G2. They are registered as pending G3 ablation inputs, requiring written P1/P3 approval that schedules, assignment and prior-leg arrival are available from an operational feed at T, plus continuity checks. Merely selecting G3 does not grant approval. The claim in FEATURE\_SPEC that tail assignment is published six hours ahead conflicts with the conditional audit and must be reconciled. No G2/G3 matrices or weather provenance were supplied; those approvals and EDA remain pending.
 \section{Feature engineering}
 Owner: P3. Pending reviewed contribution.
 \section{Classical models and PCA comparison}
@@ -54,10 +72,71 @@ The operational comparison covers all ten model configurations at 5\%, 10\% and 
 \caption{Mean absolute probability contributions on the October pilot sample.}
 \end{figure}
 \section{Results}
-Owner: P4/P5. Pending reviewed contribution.
+The final selected-configuration table is pending full-scale validation and P1's single final test run. Earlier boosting numbers describe P5's selected pilot experiment; P2 calibration below uses rehearsal defaults and must not be confused with those tuned candidates. Final test flight count: pending.
+\begin{center}\small
+\begin{tabular}{llcccc}\toprule
+Model & Checkpoint & Val ROC-AUC & Val PR-AUC & Test ROC-AUC & Test PR-AUC \\
+\midrule
+Majority & 6h & pending & pending & pending & pending \\
+Majority & 1h & pending & pending & pending & pending \\
+Decision Tree & 6h & pending & pending & pending & pending \\
+Decision Tree & 1h & pending & pending & pending & pending \\
+Random Forest & 6h & pending & pending & pending & pending \\
+Random Forest & 1h & pending & pending & pending & pending \\
+Logistic (no PCA) & 6h & pending & pending & pending & pending \\
+Logistic (no PCA) & 1h & pending & pending & pending & pending \\
+PCA + logistic & 6h & pending & pending & pending & pending \\
+PCA + logistic & 1h & pending & pending & pending & pending \\
+AdaBoost & 6h & pending & pending & pending & pending \\
+AdaBoost & 1h & pending & pending & pending & pending \\
+Gradient Boosting & 6h & pending & pending & pending & pending \\
+Gradient Boosting & 1h & pending & pending & pending & pending \\
+XGBoost & 6h & pending & pending & pending & pending \\
+XGBoost & 1h & pending & pending & pending & pending \\
+LightGBM & 6h & pending & pending & pending & pending \\
+LightGBM & 1h & pending & pending & pending & pending \\
+CatBoost & 6h & pending & pending & pending & pending \\
+CatBoost & 1h & pending & pending & pending & pending \\
+\bottomrule\end{tabular}\end{center}
+Validation cells will contain mean $\pm$ population std over folds and seeds. Test cells will contain the single final score. The paired PCA/no-PCA comparison and majority reference remain explicit.
 \section{Extra analysis}
-Owner: Shared, coordinated by P2. Pending reviewed contribution.
+\subsection{P2: temporal drift (development only)}
+Full eligible validation late rates are 28.44\%, 22.55\%, 16.56\% and 19.35\% for July--October, versus 20.98\%, 22.12\%, 22.24\% and 21.65\% in their own training windows. A Kitagawa decomposition over carrier by origin-local six-hour scheduled band attributes respectively -0.040, -0.142, -0.227 and -0.030 percentage points to composition change, and +7.507, +0.575, -5.457 and -2.275 points to within-cell rate change. Unsupported cells carry the observed rate across periods, assigning their contribution to composition; all supports/masses are exported. This is descriptive, not causal.
+
+Feature drift uses only the paired pilot. PSI uses training-fold numeric deciles or training categorical shares (a 1\% rare threshold), an explicit rare/unseen bucket and separate missing bins. Thresholds 0.1/0.25 are conventions. Numeric KS is an effect size only, without p-values. Time-deterministic calendar fields are flagged and excluded from the ranking. The largest non-calendar PSI is origin late rate over three hours in July: 0.1387 at one hour and 0.1156 at six hours. Full-population feature PSI is pending P3 matrices.
+
+Normalized AP is $(\mathrm{AP}-\pi)/(1-\pi)$, with validation prevalence $\pi$; AP/prevalence lift and paired model differences at identical fold/seed are also exported. For the rehearsal LightGBM pilot, seed-averaged values are:
+\begin{center}\begin{tabular}{lrrrr}\toprule
+Fold & AP 6h & Norm. AP 6h & AP 1h & Norm. AP 1h \\\midrule
+1 & 0.4857 & 0.2798 & 0.5099 & 0.3136 \\
+2 & 0.4038 & 0.2078 & 0.4437 & 0.2607 \\
+3 & 0.3072 & 0.1748 & 0.3664 & 0.2452 \\
+4 & 0.3552 & 0.2141 & 0.3615 & 0.2218 \\
+\bottomrule\end{tabular}\end{center}
+Fold means explain 99.07\% and 99.76\% of its pooled AP variance at six hours and one hour. The corresponding within-fold seed RMS standard deviations are 0.0064 and 0.0030. These seeds represent training-draw variation. Winter conditions and holidays may shift the unseen regime; no winter statistics were inspected.
+\begin{figure}[htbp]\centering
+\includegraphics[width=.75\linewidth]{drift_prevalence.png}
+\caption{Full paired eligible development prevalence: each validation month against its own training window.}
+\end{figure}
+\begin{figure}[htbp]\centering
+\includegraphics[width=.75\linewidth]{drift_psi.png}
+\caption{Paired pilot non-calendar feature PSI, averaged across folds; training-only bins.}
+\end{figure}
+\subsection{P2: calibration (paired development pilot)}
+Unchanged model factories and the rehearsal configuration produced probabilities for every validation flight across all four folds, three seeds and two checkpoints: 240 model runs and 480,000 probability rows. Brier skill compares with the training-draw base-rate predictor on the same validation fold; mean reference Brier is 0.1711. The most-frequent majority classifier gives zero late probability, a separate hard baseline.
+
+LightGBM's default pilot has mean Brier 0.1556 at six hours and 0.1520 at one hour, with mean per-run Brier skill 0.0862 and 0.1085. Its ECE is 0.0407 and 0.0367. Mean prediction minus observed rate is +0.0204 and +0.0140. AdaBoost's mean Brier skill is negative at both horizons despite useful AP: ranking quality does not establish calibrated risk. These defaults are not the selected P5 configurations.
+
+Reliability bins use validation-probability quantiles for evaluation only, collapsing ties; per-bin n and prediction ranges are exported. Intervals resample whole scheduled-UTC days (200 replicates, 95\% percentile bounds), retaining within-day dependence and conditioning on the fitted model and bins. They do not include refitting uncertainty or remove all cross-day dependence. Figures show seed 42; CSVs cover all seeds. Class weighting/scale\_pos\_weight and model-specific probability behavior can distort calibration. No calibrator was fitted on validation/test; optional inner-training recalibration is deferred.
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{calibration_lightgbm_60.png}
+\caption{One-hour default LightGBM pilot reliability by fold; 95\% day-block observed-rate intervals. All-model diagrams are exported separately.}
+\end{figure}
+\paragraph{Pending feature-group ablation.} Figure slot: P3 G0--G3 ablation and checkpoint comparison, pending frozen matrices and G3 approval. No weather/inbound EDA is substituted from raw arrivals. The earlier P5 lift figure supplies the pilot operational-lift slot; full-scale selected-model lift remains pending.
 \section{Limitations}
-Owner: P2. Pending reviewed contribution.
-Final test starts 2025-11-02 UTC. Test count and results pending final run. Required results: ROC-AUC and average precision mean and population standard deviation across folds and seeds, for both checkpoints. Include majority baseline, Decision Tree, Random Forest, paired PCA/no-PCA classifier and all five boosting methods.
+Reporting-carrier domestic coverage limits transfer to other operators and international flights. Excluding cancellations and unusable departures conditions the target and undercounts congestion. January--October of one year cannot characterize recurring seasonality or the closed November--December regime. Carrier/airport effects are confounded by route mix and shared shocks.
+
+BTS monthly reporting is retrospective, not a live feed. A-SCHED and A-HISTORY are explicit operational interpretations, not evidence of schedule versioning or latency. D1 excludes unverified tail assignments from primary inputs; the G3 operational-feed and continuity assumptions remain pending approval. The zero development DST ambiguity count does not settle outcome-assisted schedule reconstruction in the fall-back test window. Arrival clocks have 153 scheduled mismatches, 79 actual mismatches and 16,783 actual arrivals not comparable; P2's Phase A file is unmasked and no arrival predictor is used. Weather station mapping, coverage, units, observation/report time, lag, licence and download date remain pending.
+
+Feature PSI and calibration use only the paired pilot and rehearsal defaults; full-scale/tuned conclusions await teammates' matrices/configurations. Seeds vary the training draw; pooled std largely measures fold drift and is not an independent-seed confidence interval. Quantile ECE and block intervals have sampling and temporal-dependence limits. UTC calendar encoding, silent numeric coercion/filling and ordered month extrapolation require P3/P4/P5 review/ablations. Final test starts 2025-11-02 UTC; its flight count and results remain pending P1's single final run.
 \end{document}
