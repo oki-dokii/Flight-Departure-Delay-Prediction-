@@ -27,7 +27,7 @@ Each feature group is exported as paired 360m and 60m Parquets with its own mani
 |---|---|---|---|
 | **G0** | `hour_sin`, `hour_cos`, `dow_sin`, `dow_cos`, `month`, `crs_elapsed_min`, `distance`, `carrier`, `origin`, `dest` | 10 | Approved (Static schedule & route) |
 | **G1** | **G0** + `origin_departures_3h`, `origin_late_rate_3h` | 12 | Approved (Phase A audited set) |
-| **G2** | **G1** + `wx_temp_c`, `wx_wind_speed_kt`, `wx_wind_gust_kt`, `wx_visibility_mi`, `wx_precip_1h_mm`, `wx_weather_missing` | 18 | **Primary Audited Phase B Set** |
+| **G2** | **G1** + `wx_temp_c`, `wx_wind_speed_kt`, `wx_wind_gust_kt`, `wx_visibility_mi`, `wx_precip_1h_mm`, `weather_missing` | 18 | **Primary Audited Phase B Set** |
 | **G3** | **G2** + `inbound_missing_no_tail`, `inbound_first_leg_of_day`, `inbound_not_landed_by_T`, `inbound_arrival_delay_min`, `turnaround_buffer_min`, `inbound_prior_late` | 24 | **Decision D1 Ablation Only** |
 
 ---
@@ -40,6 +40,20 @@ Each feature group is exported as paired 360m and 60m Parquets with its own mani
 4. **Weather Backward `asof` Join (Decision D2):**
    - **Source:** Iowa Environmental Mesonet (IEM) ASOS/METAR hourly archive (`https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py`), Public Domain / Open Data.
    - **Join Rule:** `pd.merge_asof(..., direction="backward", allow_exact_matches=True)` matching `obs_time_utc <= Cutoff_T` per mapped origin station (`data/weather/station_map.csv`).
-   - **Staleness Policy:** Observations older than **6 hours** relative to `Cutoff_T`, or unmapped stations, set `wx_weather_missing = 1` (`uint8`) and leave numeric weather values as `NaN` (imputed fold-locally by downstream pipelines).
+   - **Staleness Policy:** Observations older than **6 hours** relative to `Cutoff_T`, or unmapped stations, set `weather_missing = 1` (`uint8`) and leave numeric weather values as `NaN` (imputed fold-locally by downstream pipelines).
 5. **Decision D1 Resolution (Tail-Chain Features):** BTS provides retrospective final aircraft tail assignments rather than live dispatch feeds. Tail-derived inbound features are omitted from the primary audited set (**G2**) and isolated in **G3** as a clearly labelled ablation under the operational-feed assumption, computed on P1's arrival-audited `flights_development_phase_b.parquet`.
 6. **Positional Index Invariance & `FeatureSchema` Compliance:** `X.index.equals(df.index)` is strictly enforced; `indicator` columns are strictly binary `{0, 1}` with zero `NaN`s; `flight_id` is stored as the first physical column.
+
+---
+
+## 4. Assumptions for Person 2 (Audit & Limitations Handoff)
+
+### Weather Availability Assumptions (Decision D2)
+1. **Retrospective Archive vs. Live METAR Feed:** Surface observations come from the Iowa Environmental Mesonet (IEM) ASOS/METAR archive (routine hourly METAR + SPECI reports, Public Domain / Open Data). We assume an operational model at checkpoint $T$ has access to the latest METAR/SPECI report issued at or before $\text{Cutoff}_T$ (`obs_time_utc <= Cutoff_T`), and we do **not** use future forecast/TAF products.
+2. **Station Mapping & Coverage:** Origin IATA codes are mapped deterministically to ASOS/ICAO stations via OurAirports (`data/weather/station_map.csv`), covering **347 / 349** origins (`99.4%`). Unmapped origins or reports older than **6 hours** (`Cutoff_T - obs_time_utc > 6h`) are explicitly flagged with `weather_missing = 1` and `NaN` numeric values (imputed fold-locally).
+3. **Zero-Imputation of Unreported Gusts/Precip:** When a station files a valid METAR report with wind speed present but no gust field, `wx_wind_gust_kt` is set to `0.0` (meaning no gust reported); similarly, missing `p01i` on a valid report is set to `0.0 mm`.
+
+### Tail-Chain Analysis Assumptions (Decision D1 Ablation — G3)
+1. **Operational-Feed Assumption:** BTS On-Time records contain the **retrospective final** `Tail_Number` operated for each flight, not a timestamped live dispatch assignment snapshot. **G3** explicitly assumes that the aircraft rotation linking the target flight to its preceding scheduled leg was already known in airline operations systems at checkpoint $T$ ($6\text{h}$ or $1\text{h}$ prior to departure).
+2. **Last-Minute Tail Swaps:** If an airline swapped aircraft within 6h/1h of departure, BTS records only the final airframe. Because live swap timestamps are absent from BTS, G3 represents an upper-bound ablation of rotation-driven delay propagation rather than a strictly live-verified headline result (which remains **G2**).
+3. **Prior-Leg Observability & Arrival-Clock Audit:** G3 is built exclusively on P1's arrival-audited `flights_development_phase_b.parquet` (where 232 mismatched destination-local arrival clocks are masked to `null`). Prior-leg `actual_arrival_utc` and `LATE` are exposed **only** when `actual_arrival_utc <= Cutoff_T`; airborne, diverted, or masked-clock inbound legs trigger `inbound_not_landed_by_T = 1` with zeroed delay and `NaN` turnaround buffer.

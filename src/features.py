@@ -56,7 +56,7 @@ WEATHER_PREDICTORS: List[Dict[str, str]] = [
     {"name": "wx_wind_gust_kt", "role": "numeric"},
     {"name": "wx_visibility_mi", "role": "numeric"},
     {"name": "wx_precip_1h_mm", "role": "numeric"},
-    {"name": "wx_weather_missing", "role": "indicator"},
+    {"name": "weather_missing", "role": "indicator"},
 ]
 
 EXPERIMENTAL_TAIL_PREDICTORS: List[Dict[str, str]] = [
@@ -209,15 +209,18 @@ def _add_airport_congestion_features(
     valid_observed = pool[[OBSERVED, "Origin", "LATE"]].dropna(subset=[OBSERVED, "Origin"])
     three_hours = pd.Timedelta(hours=3)
 
-    target_origins = df["Origin"].astype(str).values if "Origin" in df.columns else np.array([])
+    target_pos_by_origin = (
+        df.groupby("Origin", observed=True).indices if "Origin" in df.columns else {}
+    )
     has_target_obs = OBSERVED in df.columns and "LATE" in df.columns
 
     # Group full development set by Origin
     grouped_observed = valid_observed.groupby("Origin", observed=True)
     for origin, group in grouped_observed:
-        match_idx = df.index[target_origins == str(origin)]
-        if len(match_idx) == 0:
+        pos = target_pos_by_origin.get(origin)
+        if pos is None or len(pos) == 0:
             continue
+        match_idx = df.index[pos]
 
         origin_cutoffs = cutoff.loc[match_idx]
         sorted_group = group.sort_values(OBSERVED)
@@ -267,13 +270,13 @@ def _add_weather_features(
 
     Strictly backward-looking via pd.merge_asof(..., direction='backward').
     Observations older than WEATHER_STALENESS_LIMIT (6 hours) or unmapped origins
-    receive wx_weather_missing = 1 and NaN numeric measurements.
+    receive weather_missing = 1 and NaN numeric measurements.
     """
     wx_cols = ["wx_temp_c", "wx_wind_speed_kt", "wx_wind_gust_kt", "wx_visibility_mi", "wx_precip_1h_mm"]
     if weather_obs is None or weather_obs.empty or "Origin" not in df.columns:
         for col in wx_cols:
             X[col] = np.float32(np.nan)
-        X["wx_weather_missing"] = np.uint8(1)
+        X["weather_missing"] = np.uint8(1)
         return X
 
     if station_map is not None and not station_map.empty:
@@ -328,7 +331,7 @@ def _add_weather_features(
 
     for col in wx_cols:
         X[col] = out_vals[col]
-    X["wx_weather_missing"] = out_missing
+    X["weather_missing"] = out_missing
     return X
 
 

@@ -67,14 +67,22 @@ def run_ablation(groups: List[str]) -> None:
     df_runs.to_csv(runs_path, index=False)
 
     summary_df = (
-        df_runs.groupby(["group", "group_label", "checkpoint_minutes"], sort=False)[["pr_auc", "roc_auc", "accuracy"]]
-        .agg(["mean", "std"])
+        df_runs.groupby(["group", "group_label", "checkpoint_minutes"], sort=False)
+        .agg(
+            pr_auc_mean=("pr_auc", "mean"),
+            pr_auc_std=("pr_auc", lambda s: s.std(ddof=0)),
+            roc_auc_mean=("roc_auc", "mean"),
+            roc_auc_std=("roc_auc", lambda s: s.std(ddof=0)),
+            accuracy_mean=("accuracy", "mean"),
+            accuracy_std=("accuracy", lambda s: s.std(ddof=0)),
+            feature_code_revision=("revision", "first"),
+        )
+        .reset_index()
     )
-    summary_df.columns = [f"{m}_{s}" for m, s in summary_df.columns]
-    summary_df = summary_df.reset_index()
     summary_path = TABLES_DIR / "p3_ablation_results.csv"
     summary_df.to_csv(summary_path, index=False)
-    print(f"\nSaved ablation summary to {summary_path.relative_to(ROOT)}")
+    print(f"\nSaved ablation summary (ddof=0, revision={summary_df['feature_code_revision'].iloc[0]}) "
+          f"to {summary_path.relative_to(ROOT)}")
 
     # Compute incremental deltas per checkpoint
     delta_rows = []
@@ -92,6 +100,7 @@ def run_ablation(groups: List[str]) -> None:
                     "feature_addition": desc,
                     "delta_pr_auc": by_group.loc[g_curr, "pr_auc_mean"] - by_group.loc[g_prev, "pr_auc_mean"],
                     "delta_roc_auc": by_group.loc[g_curr, "roc_auc_mean"] - by_group.loc[g_prev, "roc_auc_mean"],
+                    "feature_code_revision": by_group.loc[g_curr, "feature_code_revision"],
                 })
     deltas_df = pd.DataFrame(delta_rows)
     deltas_path = TABLES_DIR / "p3_ablation_deltas.csv"

@@ -86,7 +86,7 @@
       "role": "numeric"
     },
     {
-      "name": "wx_weather_missing",
+      "name": "weather_missing",
       "role": "indicator"
     },
     {
