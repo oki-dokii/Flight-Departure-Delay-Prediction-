@@ -38,7 +38,7 @@ The analysis commands accept `--manifest` for full P3 matrices and `--group` for
 - P1/P3 arrival-masked release is not the local analysis file. P2 avoids arrival predictors entirely. Existing arrival-check counts are checked from the committed CSV; masking is not claimed.
 - Optional recalibration is deferred; no calibrator was fitted to validation/test. P4/P5 must provide selected configs for later calibration reruns, and paired no-month ablations. Final test count and scores remain pending P1's single run.
 
-## Acceptance checklist and evidence
+## Acceptance checklist and evidence — initial pilot, 2026-11-24
 
 | Check | Result | Evidence |
 | --- | --- | --- |
@@ -64,3 +64,16 @@ The prior committed folds.csv had pre-eligibility counts: the new generated tabl
 - Evidence and narrative: reports/p2_phase_b.md, reports/drift_analysis.md, reports/calibration_analysis.md, reports/limitations.md, reports/report.tex, output/pdf/report.pdf, reports/tables/{p2_*,drift_*,calibration_*} and reports/figures/{drift_*,calibration_*}. Ignored runtime pilot matrices and per-flight calibration probabilities stay under data/sample and data/processed.
 
 Needed next: **P1** settle fall-back test schedule reconstruction, publish/reconcile masked full release and retain the single-run freeze; **P3** deliver frozen group manifests, weather provenance and continuity/assignment evidence, justify UTC calendar or run local-time ablation; **P4/P5** provide selected configs and paired no-month comparisons, then rerun full-scale calibration/drift with the same commands. Keep G3 outside primary headline results. No GitHub push was performed.
+
+
+## Weather review update — 2026-11-25
+
+See reports/weather_audit.md and reports/tables/weather_predictor_audit.csv. Reviewed P3 065c2a1 and P4 0c41969 as source/metadata snapshots, without merging their model, feature, split or harness changes. All six weather candidates remain conditional/pending; external source lineage stays in WEATHER_SOURCE_AUDIT.csv. The delivered wx_weather_missing alias is blocked. The user selected canonical **weather_missing**; P3 must regenerate code/manifests/matrices/hashes under that name and acknowledge alignment with P4.
+
+Static station mapping: 349 unique origin/station pairs; 347 single IEM catalog matches within the declared 5 km review threshold. PBI and PPG are unresolved. This is not development weather coverage. Unit conversions were checked against primary IEM documentation; observation timestamp alone does not prove availability at T. Missing gust/precipitation zero fills, partial-variable nulls with report flag zero, receipt/revision timing and station identity remain explicit blockers. No mixed-period weather artifact or holdout data were opened.
+
+Full G0–G3 matrices and selected P4/P5 validation probability exports were absent locally and from published release assets at inspection. Therefore full weather/inbound EDA, full weather feature drift, and selected-model reliability/Brier findings remain pending. No default-pilot result was relabelled. The new src/selected_calibration.py consumes selected exports without fitting, checks exact validation IDs/labels/day/fit identity and reproduces AP/ROC-AUC/Brier, then reuses quantile bins and day-block bootstrap. The synthetic complete handoff test covers both checkpoints, all folds and seeds. The template and exact handoff requirements are in reports/weather_audit.md.
+
+Changes for this update are local on P2-features. Main and teammates' code were left unchanged. No automatic push is implied by this follow-up.
+
+Verification for the weather update: all **51 tests pass** in the Python 3.12 environment, including station/missingness guards, external source audit collisions, blocked weather aliases, and a complete synthetic selected-probability handoff without model refitting. The source audit still matches all 116 source fields; the registry has 25 rows (the original 18, six weather candidates and the blocked legacy alias). The updated PDF compiles to 9 pages, has no overfull/underfull/LaTeX warnings and was visually inspected. Main and P3/P4/P5 feature/model/protocol files are unchanged; no real November/December flight or observation rows were read.

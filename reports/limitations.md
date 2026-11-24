@@ -11,3 +11,14 @@
 - **Calibration and model selection:** Day-block bootstrap intervals preserve shared within-day shocks, condition on fitted models/fixed bins and do not remove all cross-day dependence. ECE depends on bins and sample support. Class weights and scale_pos_weight can distort probabilities relative to prevalence; tuned configs must be rechecked. Selection and reporting on the same validation months can favor selected models. No calibrator was fitted on validation/test, and optional inner-training recalibration was deferred.
 
 All numerical evidence above was read or computed by the P2 evidence, EDA, drift or calibration commands and is recorded in reports/tables/. Curated limitations, audit prose and review comments are separate from generator outputs.
+
+
+## Weather handoff review — 2026-11-25
+
+P3's source/manifests and metadata now exist on revision 065c2a1, but the full matrices are not published in the inspected release or present locally. The user-selected name is weather_missing; P3 exports wx_weather_missing and must rename/regenerate it, while P4 already expects weather_missing. All six weather candidates remain pending approval at both checkpoints. External weather source audit rows are separate from the source-Parquet inventory.
+
+The static mapping has 349 unique origin/station pairs; 347 match one current IEM catalog location within 5 km, while PBI/PPG remain unresolved. This does not establish 2025 sensor history or development flight-weighted coverage. Whole-year coverage flags were not used as development statistics. IEM public-domain terms and variable units were checked against its primary documentation; the underlying observation artifact and download digest were not independently verified.
+
+The backward join enforces observation time <= T and a six-hour maximum age, not receipt/publication time <= T. Historical revisions and keep-last duplicates have no availability timestamps. Preprocessing converts missing precipitation to dry and some missing gusts to zero without sufficient evidence; weather_missing only represents absent/stale/unmapped reports, so available reports may still lack individual variables. Preserve and report partial nulls. A-WEATHER stays pending until named timing/missingness/station assumptions are reviewed. The loader reads a mixed-period archive; P2 did not run it and needs a development-only context/sidecar.
+
+Actual P4/P5 selected validation probabilities and provenance are required for selected-model reliability and Brier reporting. Committed scores/recipes and the prior default-config pilot cannot substitute for those exports. No new selected-model or full weather/inbound results are claimed. G3 remains D1 ablation-only, pending its operational-feed/assignment/continuity approval. See weather_audit.md for the exact handoff contract.

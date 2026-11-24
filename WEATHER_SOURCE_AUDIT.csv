@@ -1,0 +1,11 @@
+column,type,allowed,allowed_6h,allowed_1h,justification
+weather:station,observed-by-T,conditional,conditional,conditional,"A-WEATHER pending: verify station, receipt time, lag and missingness"
+weather:obs_time_utc,observed-by-T,conditional,conditional,conditional,"A-WEATHER pending: verify station, receipt time, lag and missingness"
+weather:available_at_utc,observed-by-T,conditional,conditional,conditional,"A-WEATHER pending: verify station, receipt time, lag and missingness"
+station_map:origin_iata,observed-by-T,conditional,conditional,conditional,"A-WEATHER pending: verify station, receipt time, lag and missingness"
+station_map:station_id,observed-by-T,conditional,conditional,conditional,"A-WEATHER pending: verify station, receipt time, lag and missingness"
+weather:tmpf,observed-by-T,conditional,conditional,conditional,"A-WEATHER pending: verify station, receipt time, lag and missingness"
+weather:sknt,observed-by-T,conditional,conditional,conditional,"A-WEATHER pending: verify station, receipt time, lag and missingness"
+weather:gust,observed-by-T,conditional,conditional,conditional,"A-WEATHER pending: verify station, receipt time, lag and missingness"
+weather:vsby,observed-by-T,conditional,conditional,conditional,"A-WEATHER pending: verify station, receipt time, lag and missingness"
+weather:p01i,observed-by-T,conditional,conditional,conditional,"A-WEATHER pending: verify station, receipt time, lag and missingness"

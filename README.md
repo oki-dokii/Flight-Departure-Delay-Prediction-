@@ -93,3 +93,15 @@ latexmk -pdf -interaction=nonstopmode -halt-on-error -outdir=output/pdf reports/
 Both analysis CLIs use the reviewed derived-feature gate; `--manifest` supports later full-scale matrices and calibration `--config` accepts the rehearsal configuration format. The supplied pilot uses the **unmasked Phase A** file; full P3 group matrices, weather/inbound EDA and selected-model calibration remain pending. No final scorer is invoked.
 
 `python -m src.eda` regenerates the source audit, tables and figures. It writes computed issues to `reports/data_quality_generated.csv` and observations to `reports/eda_generated.md`; curated audit prose, limitations, reviews, issue rows and prior observations are preserved. New source audit decisions belong in `src.eda.audit_columns`, derived feature definitions in `src.p2_registry`, and written scoped approvals in `reports/audit_assumptions.json`.
+
+### P2 weather and selected-prediction handoff
+
+The user-selected missing indicator is `weather_missing`; P3 must rename its delivered `wx_weather_missing` and regenerate matrices/manifests/hashes. The [weather audit](reports/weather_audit.md) records the six pending candidates, timing/missingness findings and PBI/PPG mapping review. `WEATHER_SOURCE_AUDIT.csv` inventories external lineage separately from the source-Parquet audit. None of these rows grants checkpoint approval while A-WEATHER is pending.
+
+After P4/P5 deliver their actual selected validation exports and matching provenance, copy and fill [the handoff template](reports/templates/selected_calibration_handoff.json), then run:
+
+```sh
+python -m src.selected_calibration --handoff PATH_TO_FILLED_HANDOFF.json
+```
+
+This reads the selected probabilities without refitting, checks exact validation identities and reproduced scores, and writes calibration metrics/figures separately under `reports/selected_calibration/`. Full G2/G3 EDA/drift and selected-model conclusions remain pending actual audited matrices and prediction exports; the earlier default-config pilot remains labelled as such. Do not run the mixed-period weather loader for P2 analysis.

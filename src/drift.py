@@ -71,7 +71,7 @@ def kitagawa(train, valid):
     return result.reset_index()
 
 
-def run(manifest, group='G1', performance=Path('reports/tables/calibration_summary.csv')):
+def run(manifest, group='G1', performance=Path('reports/tables/calibration_summary.csv'), output=Path('reports')):
     inputs=read_manifest(manifest)
     doc=json.loads(manifest.read_text())
     import pyarrow.parquet as pq
@@ -79,7 +79,11 @@ def run(manifest, group='G1', performance=Path('reports/tables/calibration_summa
     audit=pd.read_csv('COLUMN_AUDIT.csv')
     validate_audit(pq.read_schema(inputs.development).names,audit)
     registry=pd.read_csv('FEATURE_REGISTRY.csv',keep_default_na=False)
-    for cp in inputs.checkpoints: approve_manifest(doc,audit,registry,cp.minutes,group)
+    external=Path('WEATHER_SOURCE_AUDIT.csv')
+    external_audits=(pd.read_csv(external),) if external.exists() else ()
+    for cp in inputs.checkpoints:
+        approve_manifest(doc,audit,registry,cp.minutes,group,source_audits=external_audits)
+    scope='paired pilot' if inputs.sampled_ids is not None else 'full paired development'
     meta=paired_metadata(inputs); folds=get_folds(meta)
     rows,bins,definitions=[],[],[]
     for cp in inputs.checkpoints:
@@ -93,7 +97,8 @@ def run(manifest, group='G1', performance=Path('reports/tables/calibration_summa
                     calendar_by_construction=feature in CALENDAR,train_rows=len(train),validation_rows=len(valid)))
                 bins.append(detail.assign(checkpoint_minutes=cp.minutes,fold=fold,feature=feature))
                 definitions.append(dict(checkpoint_minutes=cp.minutes,fold=fold,feature=feature,**definition))
-    out=Path('reports/tables'); figs=Path('reports/figures'); figs.mkdir(exist_ok=True)
+    out=output/'tables'; figs=output/'figures'
+    out.mkdir(parents=True,exist_ok=True); figs.mkdir(parents=True,exist_ok=True)
     pd.DataFrame(rows).to_csv(out/'drift_features.csv',index=False)
     pd.concat(bins).to_csv(out/'drift_bins.csv',index=False)
     (out/'drift_bin_definitions.json').write_text(json.dumps(definitions,indent=2)+'\n')
@@ -138,7 +143,7 @@ def run(manifest, group='G1', performance=Path('reports/tables/calibration_summa
     pd.DataFrame(spread).to_csv(out/'drift_seed_spread.csv',index=False)
     (out/'drift_provenance.json').write_text(json.dumps(dict(manifest=str(manifest),
         manifest_sha256=inputs.fingerprint,release=inputs.release,feature_cohort_rows=len(meta),
-        composition_cohort='full paired eligible development',feature_cohort='paired eligible manifest population',
+        composition_cohort='full paired eligible development',feature_cohort=scope+' eligible manifest population',
         performance=str(performance),cell='carrier x origin-local 6-hour scheduled band'),indent=2)+'\n')
     import matplotlib
     matplotlib.use('Agg')
@@ -153,7 +158,7 @@ def run(manifest, group='G1', performance=Path('reports/tables/calibration_summa
     for cp,g in mean.groupby('checkpoint_minutes'):
         fig,ax=plt.subplots(figsize=(9,5))
         for name,model in g.groupby('model'): ax.plot(model.fold,model.normalized_ap,'o-',label=name)
-        ax.set(xlabel='Fold (Jul–Oct)',ylabel='(AP − prevalence) / (1 − prevalence)',title=f'Paired pilot validation: {cp} min',xticks=[1,2,3,4])
+        ax.set(xlabel='Fold (Jul–Oct)',ylabel='(AP − prevalence) / (1 − prevalence)',title=f'{scope}: {cp} min',xticks=[1,2,3,4])
         ax.legend(fontsize=7,ncol=2);fig.tight_layout();fig.savefig(figs/f'drift_normalized_ap_{cp}.png',dpi=150);plt.close(fig)
 
 
@@ -162,4 +167,5 @@ if __name__=='__main__':
     p.add_argument('--manifest',type=Path,required=True)
     p.add_argument('--group',default='G1')
     p.add_argument('--performance',type=Path,default=Path('reports/tables/calibration_summary.csv'))
+    p.add_argument('--output',type=Path,default=Path('reports'))
     run(**vars(p.parse_args()))

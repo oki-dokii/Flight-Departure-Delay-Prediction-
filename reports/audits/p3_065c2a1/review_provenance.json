@@ -1,0 +1,16 @@
+{
+  "reviewed_revision": "065c2a1507c3bea3bd649bcf3ad75bc1c6308664",
+  "source_sha256": {
+    "data/weather/station_map.csv": "2009a4836e6bf18f02e53936e3944ddc3af0fcd5d03c3e7563bd4ecbdb23404c",
+    "data/weather/weather_manifest.json": "95f09df1457470e60b26fc4d4abd80a87e363dda657b86874b4cb0d95ea4d549",
+    "data/manifests/manifest_G0.json": "9f344e94a4ad23f35f21f3ba1faa79a49ccad33f94d629917737ad7765585fe4",
+    "data/manifests/manifest_G1.json": "4327e89b7969930603b714eae3079620ba770506191624fc8230e272614a87b8",
+    "data/manifests/manifest_G2.json": "6920730bdec460082673ee8122fc888df79c0c59539c8743f79a29d2bc103d28",
+    "data/manifests/manifest_G3.json": "a022210b95c069ada3f25213670ed3b740932ccec27368eb4d45f5c98110813f",
+    "results/feature_SHA256SUMS": "fb56f696b8ab6ee0ea0c08c8af9fba52f2a57850890ac1410a9bcb1d3ac81ec4",
+    "src/weather.py": "197160d30327ca9b606b4301a3308544be2ab7077df37460598c149d4801ea48",
+    "src/features.py": "4d6102494185f6ff877306dbd7df50308835ddaf7a81f5648dc9fc5088bf57bd",
+    "src/build_phase_b_features.py": "ef541ff96d8aecaed91e2de252f40c6ca494f52c1365287c5286dd1a373c27c3"
+  },
+  "scope": "source and metadata review only; no weather observations, raw ZIPs or holdout rows read"
+}

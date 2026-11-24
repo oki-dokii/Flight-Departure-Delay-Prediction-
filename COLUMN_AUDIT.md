@@ -25,3 +25,8 @@ A-HISTORY explicitly assumes other flights' gate departures and late labels reac
 No weather manifest or G2/G3 matrix was delivered. Weather feature names, station mapping, observation/report times, lag, units, licence and download date remain pending P3. Unknown weather fields will be blocked until registered and approved.
 
 All P2 statistics use `data/processed/flights_development.parquet`, SHA-256 `8166d5f05de4ace74dd75d69ee2867686f45237105599a927f9a519382a29e57`, the **unmasked Phase A** release. Arrival-mask claims do not apply to this file. Derived feature drift/calibration use the regenerated 20,000-flight paired pilot; population prevalence/decomposition use the full eligible development population. No raw files or holdout records were opened.
+
+
+## Weather review update — 2026-11-25
+
+The delivered P3 G2/G3 manifests are inventoried from revision 065c2a1. Six weather candidates remain pending in FEATURE_REGISTRY.csv. WEATHER_SOURCE_AUDIT.csv holds namespaced external sources; it does not add rows to COLUMN_AUDIT.csv. The gate accepts explicit external source audits while preserving exact raw schema coverage, rejects duplicate/colliding source names and requires an approved scoped A-WEATHER assumption. Canonical weather_missing was chosen by the user; the delivered wx_weather_missing alias is blocked pending P3 regeneration. No availability or G3 approval is implied. Detailed evidence, unit conversions, unresolved PBI/PPG mappings and missing/receipt-time findings are in reports/weather_audit.md.

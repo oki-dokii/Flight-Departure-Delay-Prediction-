@@ -8,13 +8,17 @@ GROUPS = ('G0', 'G1', 'G2', 'G3')
 
 
 def approve_manifest(manifest, audit, registry, checkpoint, group,
-                     assumptions=None):
+                     assumptions=None, source_audits=()):
     if checkpoint not in (360, 60) or group not in GROUPS:
         raise ValueError('Unknown checkpoint or group')
     if assumptions is None:
         assumptions = json.loads(Path('reports/audit_assumptions.json').read_text())
     if isinstance(manifest, (str, Path)):
         manifest = json.loads(Path(manifest).read_text())
+    # External weather lineage has its own namespaced audit. The source-Parquet
+    # inventory remains exactly equal to the Parquet schema.
+    if source_audits:
+        audit = pd.concat([audit, *source_audits], ignore_index=True)
     for table, key in ((audit, 'column'), (registry, 'name')):
         if table[key].isna().any() or table[key].duplicated().any():
             raise ValueError('Duplicate or missing audit/registry rows')

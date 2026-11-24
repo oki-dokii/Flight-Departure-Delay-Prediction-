@@ -82,7 +82,10 @@ def run(manifest, config, group='G1', bootstrap=200, output=Path('reports'), mod
     validate_audit(pq.read_schema(inputs.development).names, audit)
     registry = pd.read_csv('FEATURE_REGISTRY.csv', keep_default_na=False)
     doc = json.loads(manifest.read_text())
-    for cp in inputs.checkpoints: approve_manifest(doc, audit, registry, cp.minutes, group)
+    external = Path('WEATHER_SOURCE_AUDIT.csv')
+    external_audits = (pd.read_csv(external),) if external.exists() else ()
+    for cp in inputs.checkpoints:
+        approve_manifest(doc, audit, registry, cp.minutes, group, source_audits=external_audits)
     metadata = paired_metadata(inputs)
     folds = get_folds(metadata)
     settings = json.loads(config.read_text())
@@ -137,7 +140,7 @@ def run(manifest, config, group='G1', bootstrap=200, output=Path('reports'), mod
     return summary
 
 
-def plot(output):
+def plot(output, title='Development paired pilot'):
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
@@ -154,7 +157,7 @@ def plot(output):
             ax.set(title=name, xlabel='Mean predicted risk', ylabel='Observed late rate', xlim=(0,1), ylim=(0,1))
             ax.legend(fontsize=7)
         for ax in list(axes.flat)[len(names):]: ax.axis('off')
-        fig.suptitle(f'Development paired pilot: {cp} min; seed 42; 95% day-block intervals')
+        fig.suptitle(f'{title}: {cp} min; seed 42; 95% day-block intervals')
         fig.tight_layout()
         fig.savefig(output/f'figures/calibration_{cp}.png', dpi=140)
         plt.close(fig)
@@ -168,7 +171,7 @@ def plot(output):
                     ax.fill_between(b.predicted, b.observed_lo, b.observed_hi, alpha=.15)
             ax.plot([0,1], [0,1], '--', color='gray', linewidth=1)
             ax.set(xlabel='Mean predicted late probability', ylabel='Observed late fraction',
-                   xlim=(0,1), ylim=(0,1), title=f'LightGBM default pilot: {cp} min, seed 42')
+                   xlim=(0,1), ylim=(0,1), title=f'LightGBM, {title}: {cp} min, seed 42')
             ax.legend()
             fig.tight_layout()
             fig.savefig(output/f'figures/calibration_lightgbm_{cp}.png', dpi=160)
