@@ -1,6 +1,7 @@
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
+\graphicspath{{p5_phase_b_pilot/}{reports/p5_phase_b_pilot/}}
 \title{Flight Departure Delay Prediction}
 \begin{document}
 \maketitle
@@ -19,7 +20,39 @@ Owner: P3. Pending reviewed contribution.
 \section{Classical models and PCA comparison}
 Owner: P4. Pending reviewed contribution.
 \section{Boosting models}
-Owner: P5. Pending reviewed contribution.
+The development pilot used 20,000 flights at checkpoints six hours and one hour before departure. We compared five boosting families on the same four chronological folds and three training seeds. Each fit chose its iteration count on the trailing fourteen calendar dates inside the training draw, with a one-day gap, before refitting on the outer training draw. We selected the highest mean average precision at each horizon. These estimates describe the development pilot and inform subsequent full-scale tuning.
+
+\begin{center}
+\begin{tabular}{lrrrr}
+ & \multicolumn{2}{c}{6 hours} & \multicolumn{2}{c}{1 hour} \\
+Model & ROC-AUC & PR-AUC & ROC-AUC & PR-AUC \\ \hline
+AdaBoost & 0.682 & 0.354 & 0.697 & 0.398 \\
+Gradient Boosting & 0.689 & 0.367 & 0.700 & 0.405 \\
+XGBoost & 0.697 & 0.383 & 0.700 & 0.415 \\
+LightGBM & 0.698 & 0.387 & 0.704 & 0.420 \\
+CatBoost & 0.693 & 0.376 & 0.703 & 0.409 \\
+\end{tabular}
+\end{center}
+
+At 6 hours, LightGBM achieved mean average precision 0.387 (fold--seed standard deviation 0.067). At a 10\% alert budget, precision was 46.0\% and lift was 2.15 times fold prevalence. The largest mean absolute permutation SHAP contributions in the October sample came from the cosine of scheduled UTC departure hour and the origin airport's late-departure rate over the previous three hours.
+
+At 1 hour, LightGBM achieved mean average precision 0.420 (fold--seed standard deviation 0.061). At a 10\% alert budget, precision was 50.3\% and lift was 2.34 times fold prevalence. The largest mean absolute permutation SHAP contributions in the October sample came from the origin airport's late-departure rate over the previous three hours and the cosine of scheduled UTC departure hour.
+
+Native categorical handling changed CatBoost mean average precision by +0.002 at six hours and -0.002 at one hour compared with one-hot input. For LightGBM the corresponding differences were -0.013 and -0.017. Each comparison uses the best tested settings for each encoding.
+
+The operational comparison covers all ten model configurations at 5\%, 10\% and 20\% alert budgets. An illustrative cost assigns one unit to each alert and five units to each missed delay. The SHAP analysis averages 32 random feature orderings over 128 October validation flights per horizon, using training flights as backgrounds. Correlated features limit causal interpretation.
+\begin{figure}[htbp]\centering
+\includegraphics[width=.95\linewidth]{lift.png}
+\caption{Validation lift by alert budget at each checkpoint.}
+\end{figure}
+\begin{figure}[htbp]\centering
+\includegraphics[width=.95\linewidth]{cost.png}
+\caption{Illustrative cost per flight as alert capacity changes.}
+\end{figure}
+\begin{figure}[htbp]\centering
+\includegraphics[width=.8\linewidth]{shap.png}
+\caption{Mean absolute probability contributions on the October pilot sample.}
+\end{figure}
 \section{Results}
 Owner: P4/P5. Pending reviewed contribution.
 \section{Extra analysis}
