@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 from scipy.sparse import issparse
 from scipy.sparse.linalg import ArpackError
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.compose import ColumnTransformer
 from sklearn.decomposition import PCA
 from sklearn.dummy import DummyClassifier
@@ -19,6 +20,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import FunctionTransformer, OneHotEncoder, StandardScaler
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils.sparsefuncs import min_max_axis
+from sklearn.utils.validation import check_is_fitted
 
 PCA_COMPONENTS = 2
 MISSING_CATEGORY = "__P4_MISSING__"
@@ -159,6 +161,37 @@ class CheckedPCA(PCA):
         return self._checked_fit(super().fit_transform, X, y)
 
 
+class VariancePCA(TransformerMixin, BaseEstimator):
+    """Fit the centered spectrum and materialize only the retained scores."""
+
+    def __init__(self, variance=0.9):
+        self.variance = variance
+
+    def fit(self, X, y=None):
+        if not 0 < self.variance < 1:
+            raise ValueError("PCA variance must be between zero and one")
+        if X.shape[0] < 2:
+            raise ValueError("PCA requires at least two training rows")
+        spectrum = PCA(svd_solver="covariance_eigh").fit(X)
+        ratios = spectrum.explained_variance_ratio_
+        if not np.isfinite(ratios).all():
+            raise ValueError("PCA requires finite, nonconstant training features")
+        self.explained_variance_ratio_ = ratios
+        self.n_components_ = int(np.searchsorted(ratios.cumsum(), self.variance)) + 1
+        self.components_ = spectrum.components_[:self.n_components_].copy()
+        self.center_ = spectrum.mean_ @ self.components_.T
+        self.training_shape_ = X.shape
+        nonzero = X.count_nonzero() if issparse(X) else np.count_nonzero(X)
+        self.training_density_ = nonzero / np.prod(X.shape)
+        return self
+
+    def transform(self, X):
+        check_is_fitted(self, "components_")
+        projected = X @ self.components_.T
+        projected -= self.center_
+        return projected
+
+
 def _preprocessor(schema, *, scale_numeric=False):
     numeric = [("impute", SimpleImputer(strategy="median", keep_empty_features=True))]
     if scale_numeric:
@@ -231,3 +264,28 @@ def classical_factories(schema):
         "logistic": partial(logistic, schema=schema),
         "pca_logistic": partial(pca_logistic, schema=schema),
     }
+
+
+def classical_from_recipe(schema, seed, recipe):
+    """Build a fresh estimator from the selected, JSON-serializable recipe."""
+    family = recipe["family"]
+    model = classical_factories(schema)[family](seed)
+    if family == "random_forest" and recipe.get("scaled", False):
+        model.set_params(preprocess=_preprocessor(schema, scale_numeric=True))
+    if "variance" in recipe:
+        if family not in {"logistic", "random_forest"}:
+            raise ValueError("Variance PCA requires a matched logistic or forest classifier")
+        pca = VariancePCA(variance=recipe["variance"])
+        if "pca" in model.named_steps:
+            model.set_params(pca=pca)
+        else:
+            model.steps.insert(-1, ("pca", pca))
+    return model.set_params(**recipe.get("parameters", {}))
+
+
+def phase_b_roster(pair):
+    controls = {
+        "logistic": ("logistic", "pca_logistic"),
+        "random_forest": ("pca_rf_control", "pca_rf"),
+    }
+    return ("majority", "decision_tree", "random_forest", *controls[pair])

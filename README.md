@@ -65,6 +65,18 @@ To evaluate both P3 checkpoints, replace `--schedule-only` with `--input-manifes
 
 Use the [Phase B dataset release](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/phase-b-data-v1) and [P1 protocol handoff](reports/p1_phase_b.md). The [paired pilot results](results/results_summary.md) exercise the revised training protocol at both checkpoints.
 
+## Phase B classical models and PCA
+
+Use the paired development manifest to tune Decision Tree and Random Forest and compare both classifiers with their PCA controls. The runner selects settings on common sampled training draws, then refits the selected settings on the full training portion of each validation fold.
+
+```bash
+python -m src.phase_b_classical --manifest data/sample/feature_manifest.json \
+  --group G1 --pilot --forest-jobs 4 --pca-forest-trees 64 --output data/processed/p4/pilot_g1
+python -m src.plot_classical data/processed/p4/pilot_g1 --output reports/p4_phase_b_pilot/G1
+```
+
+Use `--group G0 --pilot` with the same released manifest for a schedule-only projection. For full-scale work, pass P3’s complete manifest for each group, omit `--pilot`, and pass P2’s approved feature registry with `--audit` for G2. See the [P4 results and team handoff](reports/p4_phase_b.md) for the exports and shared rehearsal procedure.
+
 ## Phase B boosting and alert budgets
 
 Run the bounded P5 search on a paired development manifest with the boosting dependencies installed:

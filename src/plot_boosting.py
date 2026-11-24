@@ -1,6 +1,7 @@
 """Summarize and plot P5 validation outputs for a single feature manifest."""
 import argparse
 from pathlib import Path
+from shutil import copyfile
 
 import matplotlib
 matplotlib.use("Agg")
@@ -23,6 +24,8 @@ def summarize(folder):
         dest.mkdir(parents=True, exist_ok=True)
         group.drop(columns=["model", "checkpoint_minutes"]).assign(estimator="model").to_csv(
             dest / "runs.csv", index=False)
+    if (folder / "experiment.json").exists():
+        copyfile(folder / "experiment.json", folder / "aggregator_inputs" / "experiment.json")
     metric_cols = ["pr_auc", "roc_auc", *[c for c in runs if c.startswith(("precision_at", "lift_at", "cost_at"))]]
     grouped = runs.groupby(["model", "checkpoint"])[metric_cols]
     summary = grouped.mean().join(grouped.std(ddof=0), rsuffix="_std").reset_index()
