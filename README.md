@@ -64,3 +64,14 @@ To evaluate both P3 checkpoints, replace `--schedule-only` with `--input-manifes
 ## Phase B data and protocol
 
 Use the [Phase B dataset release](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/phase-b-data-v1) and [P1 protocol handoff](reports/p1_phase_b.md). The [paired pilot results](results/results_summary.md) exercise the revised training protocol at both checkpoints.
+
+## Phase B boosting and alert budgets
+
+Run the bounded P5 search on a paired development manifest with the boosting dependencies installed:
+
+```bash
+python -m src.phase_b_boosting --manifest data/sample/feature_manifest.json --output reports/p5_phase_b_pilot
+python -m src.plot_boosting reports/p5_phase_b_pilot
+```
+
+For a frozen full-scale feature group, pass its manifest and a separate output directory. Each outer fold and seed shares P1's month-stratified training draw across candidates. The summary step also writes `aggregator_inputs/` for the `--boosting` argument of P1's results aggregator. Pair it with classical results from the same experiment.

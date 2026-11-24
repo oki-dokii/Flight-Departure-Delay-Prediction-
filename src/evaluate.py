@@ -10,6 +10,7 @@ import pandas as pd
 from sklearn.dummy import DummyClassifier
 from sklearn.metrics import accuracy_score, average_precision_score, roc_auc_score
 
+from src.alert_metrics import alert_metrics
 from src.splits import TIME, TEST_START, get_folds, utc_column
 
 SEEDS = (42, 73, 101)
@@ -78,6 +79,7 @@ def evaluate(model_factory, X, development, seeds=SEEDS):
                 scores = probabilities[:, positive_column]
                 runs.append({
                     "estimator": name,
+                    **alert_metrics(y_validate, scores),
                     "revision": commit,
                     "train_rows": len(sample), "validation_rows": len(validate),
                     "runtime_seconds": perf_counter() - start,

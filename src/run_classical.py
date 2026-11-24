@@ -288,7 +288,7 @@ def evaluate_configuration(name, factory, X, development, checkpoint, folds):
     elapsed = perf_counter() - start
     record_pca()
 
-    runs = per_run.loc[per_run["estimator"].eq("model"), ["fold", "seed", *METRICS, "revision", "parameters", "runtime_seconds", "train_rows", "validation_rows"]].reset_index(drop=True)
+    runs = per_run.loc[per_run["estimator"].eq("model")].drop(columns="estimator").reset_index(drop=True)
     baseline = per_run.loc[
         per_run["estimator"].eq("majority"), ["fold", "seed", *METRICS]
     ].reset_index(drop=True)
