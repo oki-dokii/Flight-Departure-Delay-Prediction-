@@ -43,3 +43,22 @@ Permutation SHAP is calculated on up to 128 October validation flights for the w
 The [candidate scores](p5_phase_b_pilot/candidates.csv), [native encoding comparison](p5_phase_b_pilot/encoding.csv), [operations summary](p5_phase_b_pilot/summary.csv), and [selected boosting rows](p5_phase_b_pilot/selected_boosting_runs.csv) are reproducible from the README commands. Repeat the search on P3's frozen full development matrices for the final model selection.
 
 One-hot LightGBM ranked first at both horizons. Its mean average precision increased from 0.387 at six hours to 0.420 at one hour. At one hour, 50.3% of flights in its highest-risk decile departed late, for a mean fold-level lift of 2.34. The [pilot master results](../results/p5_phase_b_pilot/master_results.csv) combine the selected boosters with the existing matched P4 pilot. The [table by checkpoint](../results/p5_phase_b_pilot/results_summary.md) includes fold–seed spread.
+
+### Month ablation and calibration handoff
+
+On the 20,000-flight G1 pilot, four of five boosting families had lower mean average precision without calendar month at both checkpoints. LightGBM lost 0.0071 at six hours and 0.0054 at one hour. CatBoost gained 0.0028 and 0.0009 respectively. Each difference averages 12 paired runs using the same training draw, validation flights and selected hyperparameters. Each variant repeated chronological round selection. These differences describe the pilot and do not establish a full-development feature choice. See the [model averages](p5_month_pilot/mean_deltas.csv) and [individual differences](p5_month_pilot/paired_deltas.csv).
+
+Person 2 can read the 120 with-month validation probability files using the following command from a checkout containing the P2 calibration reader, this handoff and the Phase A development and paired pilot files.
+
+```sh
+python -m src.selected_calibration --handoff reports/p5_month_pilot/handoff.json
+```
+
+To reproduce the fits and package the prediction files from the repository root:
+
+```sh
+python -m src.p5_month_ablation --manifest data/sample/feature_manifest.json --selected reports/p5_phase_b_pilot/selected_boosting_runs.csv --output data/processed/p5_month_pilot
+python -m src.p5_calibration_handoff --manifest data/sample/feature_manifest.json --source data/processed/p5_month_pilot --output reports/p5_month_pilot
+```
+
+The full G0 and G1 checkpoint matrices are available in the Phase B feature release. The joint full-scale comparison still needs the corresponding P4 experiment identity and selected runs on the same revision and cohort. G2 additionally needs clearance of the weather availability audit.
