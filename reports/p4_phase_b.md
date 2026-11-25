@@ -41,6 +41,8 @@ The G0 non-PCA logistic control completed full-fold refits, with mean PR-AUC **0
 
 At 6h, the G1 tree search selected unbounded depth, a minimum leaf size of 200, and `ccp_alpha = 7.151055288574012e-06`. Pruning raised mean validation PR-AUC from 0.3649 to 0.3667 and ROC-AUC from 0.6807 to 0.6864 on the tuning draws. The average fitted leaf count fell from 1,901 to 470. [G1 pruning curves](p4_phase_b_full/G1/decision_tree_search_360m.pdf) · [Candidate fold scores](p4_phase_b_full/G1/decision_tree_search_360m.csv) · [Selected tree settings](p4_phase_b_full/G1/decision_tree_selection_360m.json)
 
+At 1h, eight tree structures completed the initial screen across all four validation folds and three seeds, yielding 96 fold scores. Depth 12 with a minimum leaf size of 50 led the completed trials at mean PR-AUC 0.3981. The remaining depth and pruning trials determine the selected 1h recipe. [Verified 1h screening scores](p4_phase_b_full/G1/decision_tree_screen_60m.csv)
+
 The matched G1 logistic search completed at both checkpoints. The 95% policy ranked first among the PCA targets at both horizons. At 6h, it scored 0.3560 PR-AUC and 0.6826 ROC-AUC, with paired changes of −0.0034 and −0.0033 against the control. At 1h, it scored 0.3908 PR-AUC and 0.6990 ROC-AUC, with paired changes of −0.0023 and −0.0020. These comparisons use all four validation folds and all three sampled training seeds. [Fold scores](p4_phase_b_full/G1/pca_logistic_search_scores.csv) · [Paired deltas](p4_phase_b_full/G1/pca_logistic_search_deltas.csv) · [Matched settings](p4_phase_b_full/G1/pca_logistic_search_recipes.json)
 
 ### PCA variance on the tuning draws
