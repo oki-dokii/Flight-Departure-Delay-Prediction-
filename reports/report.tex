@@ -66,6 +66,34 @@ The backward join enforces observation time no later than T and a six-hour age l
 \section{Feature engineering}
 \IfFileExists{p3_report_contribution.tex}{\input{p3_report_contribution.tex}}{\input{reports/p3_report_contribution.tex}}
 \section{Classical models and PCA comparison}
+\subsection{Full-development validation protocol}
+The benchmark used four chronological July--October validation folds and
+seeds 42, 73, and 101. Candidates shared month-stratified training draws
+targeting approximately 500,000 flights per fold and seed. Each candidate
+was scored on the eligible validation rows for its fold. Mean average
+precision (AP) ranked candidates, followed by mean ROC-AUC and then candidate
+order for ties. Completed full-fold refits used all eligible training rows
+for that fold. Screening and full-fold refits used the same validation
+windows.
+
+\paragraph{Decision tree.}
+The unpruned grid crossed maximum depths of 3, 6, 12, and unbounded with
+minimum leaf sizes of 10, 50, and 200. For each of the two leading structures,
+the search retained the unpruned score at $\alpha=0$ and evaluated
+$10^{-6}$, $10^{-5}$, $10^{-4}$, and $10^{-3}$, plus the 25th, 50th, and
+75th percentiles of the positive pruning alphas below the final path endpoint.
+The supplemental values came from that structure's first-fold training draw
+at seed 42. Cost-complexity pruning penalizes leaf count. Increasing
+$\alpha$ favors smaller subtrees.
+
+\paragraph{Random forest.}
+The initial 64-tree grid crossed depths of 12, 24, and unbounded with minimum
+leaf sizes of 10 and 50, using square-root feature sampling. The next stage
+compared square-root and 30\% feature sampling for the two leading
+structures. The leading configuration then received 128- and 256-tree
+trials. The G0 search used unweighted fitting.
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/0c419696e29dfe90be903ddb77c2a51028be41e1/src/phase_b_classical.py}{Frozen classical benchmark}.
+
 \IfFileExists{reports/report.tex}{%
   \newcommand{\pFourFullPath}{reports/p4_phase_b_full}%
 }{%
