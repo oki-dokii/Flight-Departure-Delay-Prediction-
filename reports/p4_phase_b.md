@@ -1,5 +1,54 @@
 # Phase B Classical Benchmark and Handoff
 
+The G0 decision tree and non-PCA logistic control completed full-fold refits at both checkpoints. P1 has 48 verified fold score rows with typed model settings. P2 has a calibration manifest for 48 validation Parquets covering 28,293,216 prediction rows across the two models, two horizons, four folds and three seeds. The Parquets live under `data/processed/p4/full_scale/` in the benchmark workspace. [P1 fold scores](p4_phase_b_full/G0/verified_full_fold_runs.csv) · [P1 recipes](p4_phase_b_full/G0/verified_full_fold_recipes.json) · [P2 validation manifest](p4_phase_b_full/G0/p2_handoff.json)
+
+## Full development benchmark
+
+The full benchmark uses the `phase-b-data-v1` arrival-audited development Parquet and the six G0–G2 checkpoint files from `phase-b-features-v1`. All six files and the development Parquet match their release checksums. Both G0 checkpoint files have identical predictor values. Comparisons by flight ID confirmed that G1 preserves all G0 values and that G2 preserves all G1 values at both checkpoints. [Development release](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/phase-b-data-v1) · [Feature release](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/phase-b-features-v1)
+
+The paired validation cohort has 2,357,768 flights across July–October. July has 616,011 validation flights and 28.44% late departures. September has 559,894 flights and 16.56% late departures. Each candidate sees the same validation flights, and P1’s stratified tuning draw has approximately 500,000 training flights per fold and seed. The selected configurations refit on each complete eligible training fold.
+
+P3’s `c9f5560` and `55d01cc` revisions resolve the `weather_missing` name and document the METAR feed and zero-fill assumptions. The published G2 matrices use the agreed column name and match P3’s updated checksums. P1’s sign-off on receipt-time availability remains pending. P2 still needs to review the missing gust and precipitation handling and the unresolved PBI and PPG mappings. The registry at `75a52dd` marks all six weather predictors pending at both checkpoints, and the classical runner enforces that gate before G2 fitting. [P3 feature specification](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/55d01cc/FEATURE_SPEC.md#L49-L59) · [P2 weather audit](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/75a52ddce266651e7efbd98b4c330951780870ef/reports/weather_audit.md)
+
+Finished group runs land in `data/processed/p4/full_scale/G0`, `G1`, and `G2`. The [full benchmark commands](../README.md#phase-b-classical-models-and-pca) verify and index the per-flight validation predictions, generate the pruning, forest, PCA, and importance figures, and write the results tables included in [the report](report.tex). P1 receives `runs.csv`, `selected_recipes.json`, and `experiment.json` per group. `selected_study.csv` supplies fold scores and typed configurations for both matched PCA families. P2 receives `p2_handoff.json`, `predictions/`, `prediction_index.csv`, `experiment.json`, and `selected_study.csv` per group. The index gives the Parquet row counts and SHA-256 checksums, and the JSON is ready for `src.selected_calibration` on P2’s branch. The November–December evaluation remains with P1.
+
+### G0 decision tree tuning at 6 hours
+
+The completed search ranked 27 configurations across 12 fold–seed fits. The selected tree had unbounded depth, a minimum leaf size of 200, and `ccp_alpha = 6.663750018267775e-06`. On the approximately 500,000-flight training draws, its mean validation PR-AUC was 0.3540 and ROC-AUC was 0.6816. With the same depth and leaf setting, the unpruned tree scored 0.3530 and 0.6761. Pruning reduced the average fitted leaf count from 1,896 to 457. [Depth, pruning and tree size curves](p4_phase_b_full/G0/decision_tree_search_360m.pdf) · [Candidate fold scores](p4_phase_b_full/G0/decision_tree_search_360m.csv) · [Selected tree settings](p4_phase_b_full/G0/decision_tree_selection_360m.json)
+
+The selected tree completed all 12 full-fold refits. The paired export reuses each fit at both checkpoints because the G0 predictor values match exactly. Mean PR-AUC was **0.3583**, mean ROC-AUC was **0.6855**, and mean Brier score was **0.1578** at both checkpoints. The 24 Parquets contain 14,146,608 verified validation predictions across both horizons and all seeds. P1’s tree recipe and fold scores and P2’s manifest and checksum index are under `data/processed/p4/full_scale/G0_tree/`.
+
+| Validation fold | Training flights | Validation flights | PR-AUC | ROC-AUC | Brier |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| July, three seeds | 3,369,902 | 616,011 | 0.4545 | 0.7012 | 0.1835 |
+| August, three seeds | 3,986,996 | 596,812 | 0.3838 | 0.6931 | 0.1637 |
+| September, three seeds | 4,586,912 | 559,894 | 0.2713 | 0.6711 | 0.1370 |
+| October, three seeds | 5,145,342 | 585,051 | 0.3237 | 0.6767 | 0.1469 |
+
+The full-fold permutation analysis ranked scheduled UTC hour cosine and carrier first. Across folds, seeds, and repeats, their mean PR-AUC drops were 0.1102 and 0.0478. [Full-fold importance](p4_phase_b_full/G0/decision_tree_full_fold_importance.pdf) · [October full-fold rules](p4_phase_b_full/G0/decision_tree_full_fold_october_rules.csv) · [Full-fold scores by month](p4_phase_b_full/G0/decision_tree_full_fold_summary.csv)
+
+The October tuning refit at seed 42 reproduced the saved PR-AUC of 0.3212 and ROC-AUC of 0.6723. On 3,999 stratified October validation flights, five permutations per predictor put scheduled UTC hour cosine first, with a mean PR-AUC drop of 0.0777. Carrier ranked second at 0.0512. The root split on hour cosine at 0.05016 separated training node late rates of 13.6% and 28.9%. [Permutation importance](p4_phase_b_full/G0/october_tree_tuning_importance.pdf) · [Repeat scores](p4_phase_b_full/G0/october_tree_tuning_importance.csv) · [October tree rules](p4_phase_b_full/G0/october_tree_tuning_rules.csv)
+
+### G0 forest and matched logistic tuning at 6 hours
+
+The selected forest used 256 trees, unbounded depth, a minimum leaf size of 10, and square-root feature sampling. It reached mean PR-AUC 0.3796 and ROC-AUC 0.7013 on the tuning draws. For the same remaining settings, 64 and 128 trees reached mean PR-AUC 0.3779 and 0.3791 and averaged 38.0 and 84.6 seconds per fit and score. The 256-tree fit averaged 173.1 seconds. [Forest tuning curve](p4_phase_b_full/G0/random_forest_search_360m.pdf) · [Fold scores](p4_phase_b_full/G0/random_forest_search_360m.csv) · [Selected forest settings](p4_phase_b_full/G0/random_forest_selection_360m.json)
+
+The matched forest selected 90% variance, with mean PR-AUC 0.3657 compared with 0.3615 at 95% and 0.3795 for its scaled non-PCA control. The 90% paired changes were −0.0138 PR-AUC and −0.0104 ROC-AUC. The logistic pair selected 95% variance. It scored 0.3499 PR-AUC, compared with 0.3458 at 90% and 0.3540 for its non-PCA control. The paired 95% changes were −0.0041 PR-AUC and −0.0029 ROC-AUC. These scores use the tuning draws. [Forest paired fold scores](p4_phase_b_full/G0/pca_forest_search_360m.csv) · [Forest matched settings](p4_phase_b_full/G0/pca_forest_selection_360m.json) · [Logistic paired fold scores](p4_phase_b_full/G0/pca_logistic_search_360m.csv) · [Logistic matched settings](p4_phase_b_full/G0/pca_logistic_selection_360m.json)
+
+The G0 non-PCA logistic control completed full-fold refits, with mean PR-AUC **0.3549**, ROC-AUC **0.6860**, and Brier **0.1620** at each horizon. The 24 per-flight Parquets and checksum index are in `data/processed/p4/full_scale/G0_logistic/`. In concurrent execution, the dense full-fold PCA attempt and a retry using a disk-backed projection exhausted local headroom. The temporary projection was removed and the verified exports were preserved. The paired full-fold PCA score remains pending. [Logistic control scores by month](p4_phase_b_full/G0/logistic_control_full_fold_summary.csv)
+
+### G1 tree and matched logistic tuning
+
+At 6h, the G1 tree search selected unbounded depth, a minimum leaf size of 200, and `ccp_alpha = 7.151055288574012e-06`. Pruning raised mean validation PR-AUC from 0.3649 to 0.3667 and ROC-AUC from 0.6807 to 0.6864 on the tuning draws. The average fitted leaf count fell from 1,901 to 470. [G1 pruning curves](p4_phase_b_full/G1/decision_tree_search_360m.pdf) · [Candidate fold scores](p4_phase_b_full/G1/decision_tree_search_360m.csv) · [Selected tree settings](p4_phase_b_full/G1/decision_tree_selection_360m.json)
+
+The matched G1 logistic search completed at both checkpoints. The 95% policy ranked first among the PCA targets at both horizons. At 6h, it scored 0.3560 PR-AUC and 0.6826 ROC-AUC, with paired changes of −0.0034 and −0.0033 against the control. At 1h, it scored 0.3908 PR-AUC and 0.6990 ROC-AUC, with paired changes of −0.0023 and −0.0020. These comparisons use all four validation folds and all three sampled training seeds. [Fold scores](p4_phase_b_full/G1/pca_logistic_search_scores.csv) · [Paired deltas](p4_phase_b_full/G1/pca_logistic_search_deltas.csv) · [Matched settings](p4_phase_b_full/G1/pca_logistic_search_recipes.json)
+
+### PCA variance on the tuning draws
+
+The July and October seed-42 draws contained 499,998 and 499,996 training flights. Both G0 draws required 50 components to reach 90% explained variance and 91 to reach 95%. Both G1 draws required 41 and 81 components at each checkpoint. The encoded width was 277 for G0 and 279 for G1, with densities of 3.61% and 4.30%. The faster initial rise of the G1 spectrum describes the scaled training features. Matched classifier validation scores determine the selected variance target. [Training spectra](p4_phase_b_full/pca_tuning_variance.pdf) · [Component counts and retained variance](p4_phase_b_full/pca_tuning_variance.csv)
+
+## Development pilot
+
 The P4 pilot uses the paired 20,000-flight development release. G0 uses a projection of the audited schedule/calendar predictors and G1 adds the two origin congestion predictors. Each search uses four chronological validation folds and P1’s common draws at seeds 42, 73, and 101. The selected recipes refit on every eligible training row in the pilot fold and score every eligible pilot validation row. The reserved test period stays with P1. [Implementation plan](../P4_PHASE_B_IMPLEMENTATION_PLAN.md) · [P1 protocol](p1_phase_b.md)
 
 ## Model selection and performance reporting
@@ -52,4 +101,4 @@ Merge the top-level keys from `selected_recipes.json` and P5’s `boosting_recip
 
 For the full-scale capacity check, add `--capacity-rehearsal` and use a separate output directory on P1’s scoring machine. That mode requires the complete development matrices, fits on every finally eligible development row, and times scoring a two-month development workload. It writes timings and peak process memory without publishing performance metrics from those overlapping rows. A local G0 sizing probe fit the 95% PCA logistic recipe on 499,996 sampled training flights and scored 585,051 October development flights. It retained 91 components, took 6.0 seconds to fit and 1.1 seconds to score, and reached 1.37 GiB peak process memory. This measures the sampled path on the released development data.
 
-The checked-in Phase A and P5 pilot tables represent their own experiments. Publish the full G0–G2 validation metrics and the one-time test results after P3’s audited matrices and the integrated run are available.
+The checked-in Phase A and P5 pilot tables represent their own experiments. P1’s integrated results table requires P5 scores with the matching full-scale manifests and fold digests.

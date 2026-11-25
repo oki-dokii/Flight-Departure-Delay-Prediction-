@@ -13,9 +13,19 @@ import pandas as pd
 
 from src.phase_b_classical import CHECKPOINTS
 
+TABLE_MODELS = {
+    "majority": "Majority",
+    "decision_tree": "Decision Tree",
+    "random_forest": "Random Forest",
+    "pca_rf_control": "Matched forest control",
+    "pca_rf": "Matched forest with PCA",
+    "logistic": "Matched logistic control",
+    "pca_logistic": "Matched logistic with PCA",
+}
+
 
 def score_curve(axis, rows, x, label=None):
-    stats = rows.groupby(x, sort=False).pr_auc.agg(["mean", lambda v: v.std(ddof=0)])
+    stats = rows.groupby(x, sort=False, observed=True).pr_auc.agg(["mean", lambda v: v.std(ddof=0)])
     axis.errorbar(stats.index, stats["mean"], yerr=stats.iloc[:, 1], marker="o", capsize=2, label=label)
 
 
@@ -23,6 +33,69 @@ def save(fig, target, title):
     fig.suptitle(title)
     fig.savefig(target)
     plt.close(fig)
+
+
+def write_report_table(output, identity, selected, deltas, importance):
+    group = identity["feature_group"]
+    lines = [
+        rf"\subsection{{Full development validation for {group}}}",
+        r"\begin{center}\small",
+        r"\begin{tabular}{lrrrr}",
+        r" & \multicolumn{2}{c}{6 hours} & \multicolumn{2}{c}{1 hour} \\",
+        r"Model & ROC-AUC & PR-AUC & ROC-AUC & PR-AUC \\ \hline",
+    ]
+    for model, label in TABLE_MODELS.items():
+        values = [label]
+        for minutes in CHECKPOINTS:
+            scores = selected.loc[selected.model.eq(model) & selected.checkpoint_minutes.eq(minutes)]
+            for metric in ("roc_auc", "pr_auc"):
+                values.append(rf"\({scores[metric].mean():.3f}\pm{scores[metric].std(ddof=0):.3f}\)")
+        lines.append(" & ".join(values) + r" \\")
+    lines.extend([r"\end{tabular}", r"\end{center}", ""])
+
+    for minutes in CHECKPOINTS:
+        scores = selected.loc[selected.checkpoint_minutes.eq(minutes)]
+        tree = scores.loc[scores.model.eq("decision_tree")]
+        forest = scores.loc[scores.model.eq("random_forest")]
+        params = json.loads(tree.parameters.iloc[0])["parameters"]
+        forest_params = json.loads(forest.parameters.iloc[0])["parameters"]
+        depth = params["classifier__max_depth"]
+        depth_text = f"maximum depth {depth}" if depth else "unbounded depth"
+        forest_depth = forest_params["classifier__max_depth"]
+        forest_depth_text = f"maximum depth {forest_depth}" if forest_depth else "unbounded depth"
+        max_features = forest_params["classifier__max_features"]
+        sampling = ("square-root feature sampling" if max_features == "sqrt"
+                    else rf"{max_features:.0%} feature sampling".replace("%", r"\%"))
+        checkpoint = "6 hours" if minutes == 360 else "1 hour"
+        top_feature = (importance.loc[importance.checkpoint_minutes.eq(minutes)]
+                       .groupby("feature").pr_auc_drop.mean().idxmax().replace("_", r"\_"))
+        lines.append(
+            f"At {checkpoint}, the selected tree used {depth_text}, "
+            f"a minimum leaf size of {params['classifier__min_samples_leaf']}, "
+            rf"and \(\alpha={params['classifier__ccp_alpha']:.6f}\). "
+            f"It averaged {tree.leaves.mean():.1f} fitted leaves. "
+            f"The selected forest used {forest_params['classifier__n_estimators']} trees, {forest_depth_text}, "
+            f"a minimum leaf size of {forest_params['classifier__min_samples_leaf']}, and {sampling}. "
+            f"It averaged {forest.runtime_seconds.mean():.1f} seconds for fitting and scoring. "
+            rf"The largest mean validation permutation effect was for \texttt{{{top_feature}}}."
+        )
+        for model, label in (("pca_rf", "forest"), ("pca_logistic", "logistic regression")):
+            pca = scores.loc[scores.model.eq(model)]
+            variance = json.loads(pca.parameters.iloc[0])["variance"]
+            retained = pca.retained_variance.mean()
+            components = pca.components.astype(int)
+            component_text = str(components.min())
+            if components.min() != components.max():
+                component_text += f"--{components.max()}"
+            change = deltas.loc[deltas.model.eq(model) & deltas.checkpoint_minutes.eq(minutes)]
+            lines.append(
+                f"PCA for {label} used a {variance:.0%} target and retained {component_text} components. "
+                f"It explained {retained:.2%} of training variance on average and changed mean paired PR-AUC by "
+                rf"\({change.delta_pr_auc.mean():+.3f}\) and ROC-AUC by \({change.delta_roc_auc.mean():+.3f}\)."
+                .replace("%", r"\%")
+            )
+        lines.append("")
+    (output / "classical_results.tex").write_text("\n".join(lines) + "\n")
 
 
 def render(folder, output):
@@ -116,6 +189,8 @@ def render(folder, output):
         axis.barh(stat.index, stat["mean"], xerr=stat.iloc[:, 1], capsize=2)
         axis.set(xlabel="Validation PR-AUC drop", title=f"{minutes // 60}h")
     save(fig, output / "permutation_importance.pdf", f"Selected tree permutation importance on {tag}")
+    if not identity["pilot"] and identity["fit_mode"] == "full_fold":
+        write_report_table(output, identity, selected, deltas, importance)
 
 
 if __name__ == "__main__":
