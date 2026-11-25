@@ -1,7 +1,7 @@
 \documentclass{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{graphicx}
-\usepackage{booktabs}
+\usepackage{booktabs,amsmath}
 \usepackage{hyperref}
 \usepackage{float}
 \graphicspath{{reports/figures/}{figures/}{p5_phase_b_pilot/}{reports/p5_phase_b_pilot/}{p4_phase_b_pilot/G1/}{reports/p4_phase_b_pilot/G1/}}
@@ -47,9 +47,9 @@ The source CSV contains exactly one row per source Parquet field and is validate
 
 Target-flight operational outcomes (including DepDelay, actual departures/arrivals and post-flight delay causes) are forbidden predictors. Conditional source schedule timestamps can support only the reviewed transformations under A-SCHED. A-HISTORY explicitly assumes other flights' gate departures and labels are available from an operational feed by event time, with events no later than T and the target excluded. Counts describe retained usable departure history, not all scheduled airport demand.
 
-\textbf{D1} excludes all tail-derived features from primary G0--G2. They are registered as pending G3 ablation inputs, requiring written P1/P3 approval that schedules, assignment and prior-leg arrival are available from an operational feed at T, plus continuity checks. Merely selecting G3 does not grant approval. The claim in FEATURE\_SPEC that tail assignment is published six hours ahead conflicts with the conditional audit and must be reconciled. P3 G2/G3 manifest and provenance metadata are now available on its branch, but the full matrix files were absent from this checkout and the inspected releases. Weather approval and full weather/inbound EDA remain pending.
+\textbf{D1} excludes all tail-derived features from primary G0--G2. They are registered as pending G3 ablation inputs, requiring written P1/P3 approval that schedules, assignment and prior-leg arrival are available from an operational feed at T, plus continuity checks. P3 released the full matrices and documented the retrospective tail-assignment assumption.
 \subsection{Weather audit update, November 25, 2026}
-P2 reviewed P3 revision 065c2a1 and P4 revision 0c41969 without changing teammates' feature/model code. All six weather predictors remain pending at both checkpoints. The user selected \texttt{weather\_missing} as the canonical binary name. P4 already requires it; P3 currently exports \texttt{wx\_weather\_missing} and must rename the code, manifest, tests and regenerated matrices/checksums. P3/P4 acknowledgement is pending.
+P2 reviewed P3 revision 065c2a1 and P4 revision 0c41969 without changing teammates' feature/model code. All six weather predictors remain pending at both checkpoints. P3 subsequently published the canonical \texttt{weather\_missing} indicator and regenerated the feature hashes.
 \begin{center}\small\begin{tabular}{ll}\toprule
 Candidate & Unit / review finding \\\midrule
 \texttt{wx\_temp\_c} & Celsius from Fahrenheit, $(F-32)5/9$ \\
@@ -64,7 +64,7 @@ The static map has 349 distinct origin/station pairs; 347 match one current IEM 
 The backward join enforces observation time no later than T and a six-hour age limit. It does not establish report receipt/publication by T, and keep-last duplicates lack revision-time evidence. Missing precipitation becomes zero; missing gust becomes zero when speed exists. A report can have the missing flag zero while some measurements remain null. A-WEATHER therefore stays pending. Namespaced external source rows are recorded separately from the unchanged source-Parquet schema audit.
 
 \section{Feature engineering}
-Owner: P3. Pending reviewed contribution.
+\IfFileExists{p3_report_contribution.tex}{\input{p3_report_contribution.tex}}{\input{reports/p3_report_contribution.tex}}
 \section{Classical models and PCA comparison}
 \IfFileExists{reports/report.tex}{%
   \newcommand{\pFourFullPath}{reports/p4_phase_b_full}%
@@ -274,12 +274,13 @@ Reliability bins use validation-probability quantiles for evaluation only, colla
 \includegraphics[width=\linewidth]{calibration_lightgbm_60.png}
 \caption{One-hour default LightGBM pilot reliability by fold; 95\% day-block observed-rate intervals. All-model diagrams are exported separately.}
 \end{figure}
-\paragraph{Pending feature-group ablation.} Figure slot: P3 G0--G3 ablation and checkpoint comparison, pending frozen matrices and G3 approval. No weather/inbound EDA is substituted from raw arrivals. The earlier P5 lift figure supplies the pilot operational-lift slot; full-scale selected-model lift remains pending.
+\paragraph{Full-development feature analysis.} The released matrices cover 5,749,041 flights at each horizon. At one hour, the late rate rose from 12.6\% when fewer than 10\% of recent origin departures were late to 50.8\% when at least half were late. Flights with reported visibility of one to under three miles had a 30.8\% late rate versus 21.1\% at five or more miles. For flights with an observable prior leg, the rate was 9.0\% after an early arrival and 17.3\% after an arrival at least an hour late. These are descriptive development associations. Weather receipt timing and live tail assignments remain unverified.
+\paragraph{Selected boosting pilot.} The calibration reader reproduced average precision and ROC-AUC from all 120 selected-model probability exports. The per-fold Brier scores, reliability bins and day-bootstrap intervals are published under \texttt{reports/selected\_boosting\_pilot/}.
 \clearpage
 \section{Limitations}
 Reporting-carrier domestic coverage limits transfer to other operators and international flights. Excluding cancellations and unusable departures conditions the target and undercounts congestion. January--October of one year cannot characterize recurring seasonality or the closed November--December regime. Carrier/airport effects are confounded by route mix and shared shocks.
 
-BTS monthly reporting is retrospective, not a live feed. A-SCHED and A-HISTORY are explicit operational interpretations, not evidence of schedule versioning or latency. D1 excludes unverified tail assignments from primary inputs; the G3 operational-feed and continuity assumptions remain pending approval. The zero development DST ambiguity count does not settle outcome-assisted schedule reconstruction in the fall-back test window. Arrival clocks have 153 scheduled mismatches, 79 actual mismatches and 16,783 actual arrivals not comparable; P2's Phase A file is unmasked and no arrival predictor is used. Weather unit conversions and public-domain terms have been reviewed, but PBI/PPG station identity, development coverage, partial-null/zero-fill semantics and receipt/revision timing remain unresolved. The loader reads a mixed-period weather artifact; P2 did not run it. The canonical missing-column rename and regenerated full matrices remain pending P3.
+BTS monthly reporting is retrospective, not a live feed. A-SCHED and A-HISTORY are explicit operational interpretations, not evidence of schedule versioning or latency. D1 excludes unverified tail assignments from primary inputs; the G3 operational-feed and continuity assumptions remain pending approval. The zero development DST ambiguity count does not settle outcome-assisted schedule reconstruction in the fall-back test window. Arrival clocks have 153 scheduled mismatches, 79 actual mismatches and 16,783 actual arrivals not comparable; P2's Phase A file is unmasked and no arrival predictor is used. Weather unit conversions and public-domain terms have been reviewed, but PBI/PPG station identity, partial-null/zero-fill semantics and receipt/revision timing remain unresolved. The loader reads a mixed-period weather artifact; P2 did not run it. The published matrices use the canonical weather indicator.
 
 Existing feature PSI and calibration use only the paired pilot and rehearsal defaults. Actual P4 and P5 selected validation probability exports and experiment provenance were not present, so full-scale weather and inbound EDA, selected-model reliability and Brier conclusions remain pending. A separate no-refit reader verifies IDs, labels, UTC days, fit identities and exported scores before producing selected-model calibration. Seeds vary the training draw; pooled std largely measures fold drift and is not an independent-seed confidence interval. Quantile ECE and block intervals have sampling and temporal-dependence limits. P3, P4 and P5 must review UTC calendars and numeric fills, and run the month ablation. Final test starts 2025-11-02 UTC; its flight count and results remain pending P1's single final run.
 \end{document}

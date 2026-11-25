@@ -171,6 +171,8 @@ def run_matched(manifest, output, classical, audit):
     fits = build_fits(meta, dict.fromkeys(("sampled", mode)))
     ops = pd.read_csv(classical / "runs.csv").rename(columns={"checkpoint_minutes": "checkpoint"}).to_dict("records")
     candidates, explanations, recipes = [], [], {}
+    selected_runs = []
+    run_id = "p5-" + identity["run_id"]
     for cp in inputs.checkpoints:
         X = checkpoint_features(cp, inputs.schema, meta.index).loc[:, schema.columns]
         selected = {}
@@ -181,7 +183,7 @@ def run_matched(manifest, output, classical, audit):
                 for index, params in enumerate(GRIDS[model]):
                     recipe = {"parameters": params, "native": native, "rounds": "training_selected"}
                     for train, valid, keys in fits["sampled"]:
-                        row, estimator = matched_fit(model, recipe, schema, X, meta, train, valid, keys, cp.minutes, group)
+                        row, estimator, probabilities = matched_fit(model, recipe, schema, X, meta, train, valid, keys, cp.minutes, group)
                         records.append(dict(row, candidate=index, native=native))
                         del estimator
             candidates.extend(records)
@@ -193,8 +195,17 @@ def run_matched(manifest, output, classical, audit):
         recipes[str(cp.minutes)] = selected
         for model, recipe in selected.items():
             for train, valid, keys in fits[mode]:
-                row, estimator = matched_fit(model, recipe, schema, X, meta, train, valid, keys, cp.minutes, group)
+                row, estimator, probabilities = matched_fit(model, recipe, schema, X, meta, train, valid, keys, cp.minutes, group)
                 ops.append(row)
+                selected_runs.append({**row, "checkpoint_minutes": cp.minutes})
+                directory = output / "predictions" / str(cp.minutes) / model
+                directory.mkdir(parents=True, exist_ok=True)
+                validation = meta.iloc[valid]
+                validation.LATE.to_frame().assign(
+                    probability=probabilities, day=validation[TIME].dt.floor("D"),
+                    model=model, checkpoint_minutes=cp.minutes, fold=keys["fold"],
+                    seed=keys["seed"], fit_mode=mode, feature_group=group, run_id=run_id,
+                ).reset_index().to_parquet(directory / f'{keys["fold"]}-{keys["seed"]}.parquet', index=False)
                 if model == best[1] and keys["fold"] == 4 and keys["seed"] == SEEDS[0]:
                     sample = X.iloc[valid].sample(n=min(128, len(valid)), random_state=SEEDS[0])
                     impact = shap_sample(estimator, X.iloc[train], sample, SEEDS[0])
@@ -206,7 +217,12 @@ def run_matched(manifest, output, classical, audit):
     pd.DataFrame(candidates).to_csv(output / "candidates.csv", index=False)
     pd.DataFrame(ops).to_csv(output / "operations.csv", index=False)
     pd.DataFrame(explanations).to_csv(output / "shap.csv", index=False)
-    write_json(output / "experiment.json", actual | {key: identity[key] for key in ("feature_group", "pilot", "fit_mode")})
+    write_json(output / "experiment.json", actual | {"run_id": run_id} |
+               {key: identity[key] for key in ("feature_group", "pilot", "fit_mode")})
+    pd.DataFrame(selected_runs).to_csv(output / "selected_runs.csv", index=False)
+    write_json(output / "p2_handoff.json", dict(feature_manifest=str(manifest), sources=[dict(
+        owner="P5", experiment=str(output / "experiment.json"), runs=str(output / "selected_runs.csv"),
+        predictions=str(output / "predictions"))]))
     write_json(output / "boosting_recipes.json", {"models": recipes})
 
 
@@ -221,7 +237,7 @@ def matched_fit(name, recipe, schema, X, meta, train, valid, keys, minutes, grou
     row = dict(model=name, checkpoint=minutes, feature_group=group, revision=revision(), **keys,
                parameters=json.dumps(recipe, sort_keys=True), rounds=rounds, runtime_seconds=perf_counter() - start,
                **scores(meta.LATE.iloc[valid], p))
-    return row, estimator
+    return row, estimator, p
 
 
 if __name__ == "__main__":

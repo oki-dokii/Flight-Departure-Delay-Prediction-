@@ -18,7 +18,7 @@ The feature pipeline (\texttt{src/features.py} and \texttt{src/weather.py}) enfo
     \item \textbf{Strict Cutoff Rule:} No event timestamped after $\text{cutoff}_T = \text{TIME} - \Delta T$ enters computation.
     \item \textbf{Target Self-Exclusion:} Origin airport 3-hour congestion (\texttt{origin\_departures\_3h}, \texttt{origin\_late\_rate\_3h}) excludes the target flight itself when present in the history pool, even if it pushed back early. Cancellation rates are excluded because BTS records do not timestamp when cancellations were announced.
     \item \textbf{Hourly Surface Weather Join (Decision D2):} Routine METAR and SPECI observations ($3{,}826{,}099$ records covering $347/349$ origin airports, Jan 2025--Jan 2026) were retrieved from the public-domain Iowa Environmental Mesonet (IEM) ASOS archive and joined via strict backward \texttt{merge\_asof} ($\text{obs\_time\_utc} \le \text{cutoff}_T$). Observations older than $6\text{h}$ or from unmapped stations trigger \texttt{weather\_missing} $= 1$ without silent imputation.
-    \item \textbf{Decision D1 Quarantine (Tail-Chain Features):} Because BTS reports retrospective final tail numbers rather than live dispatch assignments, inbound aircraft features are omitted from the primary audited set (\textbf{G2}) and isolated in \textbf{G3} as an ablation under the operational-feed assumption.
+    \item \textbf{Decision D1 Quarantine (Tail-Chain Features):} Because BTS reports retrospective final tail numbers rather than live dispatch assignments, inbound aircraft features are omitted from the proposed primary set (\textbf{G2}) and isolated in \textbf{G3} as an ablation under the operational-feed assumption.
 \end{itemize}
 
 \subsection{Feature-Group Ablation Analysis}
@@ -44,7 +44,7 @@ G3: $+$ Tail Chain (D1 ablation) & 60 min (1h)  & $0.542 \pm 0.060$ & $0.793 \pm
 \end{tabular}
 \end{table}
 
-At $T = 6\text{h}$, origin congestion provides a modest $+0.014$ PR-AUC gain over schedule alone, while weather and inbound rotation add negligible signal ($< 0.001$). At $T = 1\text{h}$, recent origin congestion adds $+0.049$ PR-AUC ($0.366 \to 0.415$) and surface weather adds $+0.002$ PR-AUC ($0.415 \to 0.417$). Under the Decision D1 operational-feed assumption (\textbf{G3}), inbound aircraft continuity yields a $+0.125$ PR-AUC jump ($0.417 \to 0.542$, ROC-AUC $0.793$), confirming that upstream aircraft rotation is the dominant driver of tactical departure delays once the prior leg has landed. Figure~\ref{fig:p3-ablation} visualizes this progression across horizons.
+At $T = 6\text{h}$, origin congestion provides a modest $+0.014$ PR-AUC gain over schedule alone, while weather and inbound rotation add negligible signal ($< 0.001$). At $T = 1\text{h}$, recent origin congestion adds $+0.049$ PR-AUC ($0.366 \to 0.415$) and surface weather adds $+0.002$ PR-AUC ($0.415 \to 0.417$). Under the Decision D1 operational-feed assumption (\textbf{G3}), inbound aircraft continuity yields a $+0.125$ PR-AUC jump ($0.417 \to 0.542$, ROC-AUC $0.793$), showing the largest measured increase among the groups under the retrospective assignment assumption. Figure~\ref{fig:p3-ablation} visualizes this progression across horizons.
 
 \begin{figure}[h]
 \centering

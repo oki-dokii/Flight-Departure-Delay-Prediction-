@@ -1,5 +1,7 @@
 # P2 weather audit and handoff — 2026-11-25
 
+**Release follow-up.** P3 subsequently published both checkpoints for all four groups, with the canonical `weather_missing` indicator. The integration run verified all eight feature checksums. [Development coverage and late-rate bins](full_development_eda/feature_bins.csv) now cover 5,749,041 flights per checkpoint, grouped by scheduled UTC month. In this table, a non-null gust or precipitation value can include a zero assigned during feature building. The archive receipt-time, missing-value and station-mapping decisions still apply. The observations below describe the earlier revision reviewed by P2.
+
 **Decision: all six candidates remain pending at both checkpoints.** Reviewed P3 revision `065c2a1` and P4 revision `0c41969` without merging or changing their feature/model/harness code. Static manifests and metadata snapshots are under `reports/audits/p3_065c2a1/`. `reports/tables/weather_predictor_audit.csv` is the six-row audit; `FEATURE_REGISTRY.csv` includes those candidates and the blocked delivered alias. External lineage is in `WEATHER_SOURCE_AUDIT.csv`; the source Parquet audit remains unchanged.
 
 ## Name selected by the user
