@@ -1,0 +1,9 @@
+column,inventory,group,allowed_6h,allowed_1h,status,required_evidence
+wx_temp_c,derived; external source lineage separate,G2 exploratory,conditional,conditional,pending A-WEATHER,receipt/revision timing; station identity; partial nulls; canonical missing name; frozen development-only matrix
+wx_wind_speed_kt,derived; external source lineage separate,G2 exploratory,conditional,conditional,pending A-WEATHER,receipt/revision timing; station identity; partial nulls; canonical missing name; frozen development-only matrix
+wx_wind_gust_kt,derived; external source lineage separate,G2 exploratory,conditional,conditional,pending A-WEATHER,receipt/revision timing; station identity; partial nulls; canonical missing name; frozen development-only matrix
+wx_visibility_mi,derived; external source lineage separate,G2 exploratory,conditional,conditional,pending A-WEATHER,receipt/revision timing; station identity; partial nulls; canonical missing name; frozen development-only matrix
+wx_precip_1h_mm,derived; external source lineage separate,G2 exploratory,conditional,conditional,pending A-WEATHER,receipt/revision timing; station identity; partial nulls; canonical missing name; frozen development-only matrix
+weather_missing,derived; external source lineage separate,G2 exploratory,conditional,conditional,pending A-WEATHER,receipt/revision timing; station identity; partial nulls; canonical missing name; frozen development-only matrix
+Tail_Number,source Parquet,G3 exploratory only,conditional,conditional,pending D1; excluded primary G0-G2,assignment/schedule/prior-leg feed at T; latency; airport continuity; day boundary; masked arrival release
+tail_number_missing,source Parquet,G3 exploratory only,conditional,conditional,pending D1; excluded primary G0-G2,assignment/schedule/prior-leg feed at T; latency; airport continuity; day boundary; masked arrival release

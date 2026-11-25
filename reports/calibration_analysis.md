@@ -1,5 +1,7 @@
 # Validation probability calibration
 
+Evidence label: **Pilot (rehearsal defaults)**. **Held-out test** is closed; score cells remain blank.
+
 This run reuses the unchanged classical/boosting factories, manifest readers, shared training_sample and get_folds. Settings are exactly results/rehearsal_config.json (default pilot configurations); no model or feature was tuned by P2. The paired 20,000-flight Phase A pilot supplies four validation months, three seeds and both checkpoints. All 240 model/checkpoint/fold/seed evaluations produced 480,000 validation probability rows, saved under ignored data/processed/p2_calibration/. No test input or final scorer was used.
 
 | Model | Brier 6h | Brier skill 6h | ECE 6h | Brier 1h | Brier skill 1h | ECE 1h |
@@ -24,3 +26,9 @@ Among the default pilot models, LightGBM has the lowest mean Brier at each check
 Reliability figures calibration_360.png and calibration_60.png show each model and fold for seed 42; metrics/bins cover all seeds. Shading is a 95% percentile interval from 200 resamples of UTC scheduled-departure days with replacement, preserving all flights in a sampled day. Both observed-rate and mean-prediction interval bounds and the number of supported bootstrap replicates are exported; the plot shades observed-rate bounds. This conditions on the fitted model and fixed evaluation bins, and does not include refitting uncertainty or all cross-day dependence. Intervals are not binomial independence intervals.
 
 Class weighting and scale_pos_weight can distort probabilities away from deployment prevalence; a selected weighted configuration must be checked afresh. Logistic regression, coarse tree leaves, averaged forests and boosted margins have different probability behavior; ranking comparisons cannot establish calibration. The mean calibration gap also changes with month drift. No optional Platt/isotonic recalibration was attempted: fitting one would require a trailing inner-training block and a label-availability gap, never validation/test. Full matrices and teammates’ selected configurations remain pending; rerun with --manifest and --config when delivered.
+
+## Full-development validation: selected-model draft
+
+Selected P4/P5 configurations, both checkpoints: Brier, Brier skill, ECE, bias, support and reliability figure slots remain blank pending selected probability exports and frozen provenance. The table in report.tex keeps these numeric cells empty. src.selected_calibration checks exact validation IDs, labels, UTC days, fit identities and agreement with exported scores without fitting. Summarize metrics over the same folds/seeds; provide fold-level reliability and support, with day-block uncertainty conditional on the fixed predictions/bins. Do not copy rehearsal values into selected slots.
+
+**Held-out test:** no support count, score, reliability figure or recalibration is authorized here.

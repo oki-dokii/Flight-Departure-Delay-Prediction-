@@ -1,5 +1,7 @@
 # Development drift analysis
 
+Evidence label: **Full-development validation (population prevalence/decomposition); Pilot (feature PSI and rehearsal performance)**. **Held-out test** is closed; score cells remain blank.
+
 Population rates and composition use the full paired eligible Phase A development population (5,749,040 targets). Feature PSI and model comparisons use the regenerated paired 20,000-flight pilot, not full-population matrices. The unmasked Phase A file and SHA-256 are recorded in p2_evidence.json. No raw or holdout data were read.
 
 | Fold / validation | Train late rate | Validation late rate | Validation n | Composition change (pp) | Within-cell change (pp) |
