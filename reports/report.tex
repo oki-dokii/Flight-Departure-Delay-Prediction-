@@ -94,18 +94,21 @@ structures. The leading configuration then received 128- and 256-tree
 trials. The G0 search used unweighted fitting.
 \href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/0c419696e29dfe90be903ddb77c2a51028be41e1/src/phase_b_classical.py}{Frozen classical benchmark}.
 
+
+\paragraph{PCA and matched controls.}
+Each matched logistic or forest pair shared fold-local imputation, numeric
+scaling, and one-hot encoding. Centered PCA used the eigendecomposition of
+the training covariance. For each fit, it retained the smallest component
+prefix reaching either 90\% or 95\% cumulative explained variance. Each
+PCA arm and its own no-PCA control shared classifier settings, training and
+validation rows, folds, and seeds. The matched forest control used the same
+numeric scaling as the forest PCA arm.
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/0c419696e29dfe90be903ddb77c2a51028be41e1/src/models_classical.py}{P4 preprocessing and model factories}.
+
 \IfFileExists{reports/report.tex}{%
   \newcommand{\pFourFullPath}{reports/p4_phase_b_full}%
 }{%
   \newcommand{\pFourFullPath}{p4_phase_b_full}%
-}
-\newcommand{\pFourFullProtocol}{%
-The full development release contains 5,749,041 flights. The two checkpoints use the same four July--October validation folds and three paired training draws per fold. Configurations were selected by mean average precision on month-stratified training draws of up to 500,000 flights, then refit on all eligible training flights in each fold. Tables show the mean and population standard deviation over the twelve fold--seed scores. Search and refit scores use the same validation months. PCA was fitted inside each training fold after scaling numeric predictors and one-hot encoding categorical predictors. Both PCA targets used otherwise matched forest and logistic controls.
-}
-\IfFileExists{\pFourFullPath/G0/classical_results.tex}{\pFourFullProtocol}{%
-  \IfFileExists{\pFourFullPath/G1/classical_results.tex}{\pFourFullProtocol}{%
-    \IfFileExists{\pFourFullPath/G2/classical_results.tex}{\pFourFullProtocol}{}%
-  }%
 }
 \pFourFullGroup{\pFourFullPath}{G0}
 \pFourFullGroup{\pFourFullPath}{G1}
@@ -172,7 +175,7 @@ The 20,000-flight paired development pilot compared schedule and calendar predic
 
 We varied Decision Tree depth and minimum leaf size before tuning the cost-complexity penalty. Supplementary pruning values came from the first fold's training draw. Random Forest tuning varied depth, minimum leaf size, feature sampling, and tree count. G0 used identical schedule inputs at both horizons. Its selected tree used depth 12, a minimum leaf size of 200, and zero pruning penalty. Its forest used 128 trees and reached PR-AUC 0.379 and ROC-AUC 0.694 at both checkpoints.
 
-Centered PCA was fitted inside each training pipeline after imputation, scaling the numeric block, and one-hot encoding. We compared 90\% and 95\% explained-variance targets with matching Random Forest and logistic controls. In G0, the selected 90\% PCA policy retained 50 components per full-fold fit. It changed mean PR-AUC by $-0.023$ for the matched forest and $+0.011$ for logistic regression. The representative loadings are expressed in each fitted encoded basis. The G1 matched forest pair uses a common 64-tree cap in both arms to bound the cost of fitting dense projections.
+Centered PCA was fitted inside each training pipeline after imputation, scaling the numeric block, and one-hot encoding. We compared 90\% and 95\% explained-variance targets with matching Random Forest and logistic controls. In G0, the selected 90\% PCA policy retained 50 components in each completed pilot refit. It changed mean PR-AUC by $-0.023$ for the matched forest and $+0.011$ for logistic regression. The representative loadings are expressed in each fitted encoded basis. The G1 matched forest pair uses a common 64-tree cap in both arms to bound the cost of fitting dense projections.
 
 \begin{center}
 \small
