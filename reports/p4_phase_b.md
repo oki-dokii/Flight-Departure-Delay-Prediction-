@@ -2,6 +2,12 @@
 
 **Full-development validation — full-fold refits.** The G0 decision tree and non-PCA logistic control completed refits at both checkpoints. P1 has 48 verified fold score rows with typed model settings. P2 has a calibration manifest for 48 validation Parquets covering 28,293,216 prediction rows across the two models, two horizons, four folds and three seeds. The Parquets live under `data/processed/p4/full_scale/` in the benchmark workspace. [P1 fold scores](p4_phase_b_full/G0/verified_full_fold_runs.csv) · [P1 recipes](p4_phase_b_full/G0/verified_full_fold_recipes.json) · [P2 validation manifest](p4_phase_b_full/G0/p2_handoff.json)
 
+## Public validation handoff
+
+**Full-development validation — full-fold refits.** The ZIP contains the two completed G0 models. The tree export uses `G0_tree/experiment.json`, `G0_tree/runs.csv`, and `G0_tree/prediction_index.csv`. The completed no-PCA logistic control uses `G0_logistic/control_experiment.json`, `G0_logistic/control_runs.csv`, and `G0_logistic/control_prediction_index.csv`. Both include per-flight validation Parquets. Extract into the repository root to restore the paths in `data/processed/p4/full_scale/G0_available_p2_handoff.json`. The archive README labels the supplementary PCA exports as partial and the G0 and G1 candidate scores as tuning evidence. [Public release](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/p4-validation-handoff-2026-11-25) · [ZIP download](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/download/p4-validation-handoff-2026-11-25/p4-full-scale-2026-11-25.zip)
+
+The archive is 372,934,177 bytes. Its SHA-256 is `de543696945615d489c0fef76c5e0438aa34f57a7f716f4de2f0b7c38740d4bc`. The included `SHA256SUMS` verifies the individual files.
+
 ## Full-development validation
 
 The full benchmark uses the `phase-b-data-v1` arrival-audited development Parquet and the six G0–G2 checkpoint files from `phase-b-features-v1`. All six files and the development Parquet match their release checksums. Both G0 checkpoint files have identical predictor values. Comparisons by flight ID confirmed that G1 preserves all G0 values and that G2 preserves all G1 values at both checkpoints. [Development release](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/phase-b-data-v1) · [Feature release](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/phase-b-features-v1)

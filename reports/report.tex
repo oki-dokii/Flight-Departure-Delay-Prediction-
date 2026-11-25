@@ -268,8 +268,8 @@ G0 decision tree & 6h & \(0.6855\pm0.0121\) & \(0.3583\pm0.0683\) &  &  \\
 G0 decision tree & 1h & \(0.6855\pm0.0121\) & \(0.3583\pm0.0683\) &  &  \\
 Random Forest & 6h & pending & pending &  &  \\
 Random Forest & 1h & pending & pending &  &  \\
-G0 logistic (no pca) & 6h & \(0.6860\pm0.0127\) & \(0.3549\pm0.0710\) &  &  \\
-G0 logistic (no pca) & 1h & \(0.6860\pm0.0127\) & \(0.3549\pm0.0710\) &  &  \\
+G0 logistic (no PCA) & 6h & \(0.6860\pm0.0127\) & \(0.3549\pm0.0710\) &  &  \\
+G0 logistic (no PCA) & 1h & \(0.6860\pm0.0127\) & \(0.3549\pm0.0710\) &  &  \\
 PCA + logistic & 6h & pending & pending &  &  \\
 PCA + logistic & 1h & pending & pending &  &  \\
 AdaBoost & 6h & pending & pending &  &  \\
@@ -290,6 +290,14 @@ checkpoint.
 \href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/4780bd7c656e486e4710066c89c7601de3d15b7b/reports/p4_phase_b_full/G0/verified_full_fold_runs.csv}{Pinned G0 fold scores}
 and
 \href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/4780bd7c656e486e4710066c89c7601de3d15b7b/reports/p4_phase_b_full/G0/verified_full_fold_recipes.json}{G0 model recipes}.
+\paragraph{Full-development validation artifact.}
+The public handoff contains the G0 tree and non-PCA logistic experiment
+metadata, fold scores, prediction indexes, and validation Parquets. Its
+README identifies partial PCA and tuning exports.
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/p4-validation-handoff-2026-11-25}{Public P4 handoff release}
+and
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/download/p4-validation-handoff-2026-11-25/p4-full-scale-2026-11-25.zip}{ZIP download}.
+
 \section{Extra analysis}
 \subsection{P2: temporal drift (development only)}
 Full eligible validation late rates are 28.44\%, 22.55\%, 16.56\% and 19.35\% for July--October, versus 20.98\%, 22.12\%, 22.24\% and 21.65\% in their own training windows. A Kitagawa decomposition over carrier by origin-local six-hour scheduled band attributes respectively -0.040, -0.142, -0.227 and -0.030 percentage points to composition change, and +7.507, +0.575, -5.457 and -2.275 points to within-cell rate change. Unsupported cells carry the observed rate across periods, assigning their contribution to composition; all supports/masses are exported. This is descriptive, not causal.
