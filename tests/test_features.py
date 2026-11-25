@@ -7,8 +7,24 @@ import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 
 from src.evaluate import evaluate
-from src.features import AUDITED_PREDICTORS, CHECKPOINTS, build_features
+from src.features import AUDITED_PREDICTORS, CHECKPOINTS, GROUP_PREDICTORS, build_features
+from src.models_classical import FeatureSchema
 from src.splits import OBSERVED, TIME, get_folds
+
+
+def _create_synthetic_weather() -> pd.DataFrame:
+    """Create synthetic hourly ASOS observations for JFK and BOS."""
+    return pd.DataFrame({
+        "station": ["JFK", "JFK", "BOS"],
+        "obs_time_utc": pd.to_datetime(
+            ["2025-07-01 12:51", "2025-07-01 13:51", "2025-07-01 09:51"], utc=True
+        ),
+        "wx_temp_c": np.array([22.0, 28.0, 18.0], dtype="float32"),
+        "wx_wind_speed_kt": np.array([8.0, 18.0, 10.0], dtype="float32"),
+        "wx_wind_gust_kt": np.array([0.0, 25.0, 0.0], dtype="float32"),
+        "wx_visibility_mi": np.array([10.0, 2.0, 10.0], dtype="float32"),
+        "wx_precip_1h_mm": np.array([0.0, 5.0, 0.0], dtype="float32"),
+    })
 
 
 def _create_synthetic_flights() -> pd.DataFrame:
@@ -171,6 +187,59 @@ class FeatureLeakTests(unittest.TestCase):
         self.assertEqual(len(runs), 8)
         self.assertIn("roc_auc", summary.columns.levels[1])
         self.assertIn("pr_auc", summary.columns.levels[1])
+
+    def test_weather_negative_leak_and_exact_boundary(self):
+        """Post-cutoff weather observations must not leak; exact cutoff is included."""
+        df = _create_synthetic_flights()
+        wx = _create_synthetic_weather()
+        # Flight 10 cutoff at T=1h is 13:00 UTC. Only 12:51 UTC (temp=22C) is <= 13:00.
+        # 13:51 UTC (temp=28C) is strictly post-cutoff.
+        X_base = build_features(df, CHECKPOINTS["t1h"], weather_obs=wx, feature_group="G2")
+        self.assertEqual(X_base.loc[10, "weather_missing"], 0)
+        self.assertAlmostEqual(X_base.loc[10, "wx_temp_c"], 22.0, places=2)
+
+        # Mutate post-cutoff 13:51 observation -> must not change flight 10 features
+        wx_mut = wx.copy()
+        wx_mut.loc[1, "wx_temp_c"] = 45.0
+        wx_mut.loc[1, "wx_precip_1h_mm"] = 99.0
+        X_mut = build_features(df, CHECKPOINTS["t1h"], weather_obs=wx_mut, feature_group="G2")
+        pd.testing.assert_series_equal(X_base.loc[10], X_mut.loc[10])
+
+        # Exact cutoff (13:00 UTC) must be included
+        wx_exact = wx.copy()
+        wx_exact.loc[1, "obs_time_utc"] = pd.Timestamp("2025-07-01 13:00", tz="UTC")
+        X_exact = build_features(df, CHECKPOINTS["t1h"], weather_obs=wx_exact, feature_group="G2")
+        self.assertAlmostEqual(X_exact.loc[10, "wx_temp_c"], 28.0, places=2)
+
+    def test_weather_staleness_and_unmapped_station(self):
+        """Observations older than 6h or unmapped airports set weather_missing=1."""
+        df = _create_synthetic_flights()
+        # Flight 10 at JFK (cutoff 13:00 UTC); make JFK obs > 6h stale (06:30 UTC)
+        wx_stale = pd.DataFrame({
+            "station": ["JFK"],
+            "obs_time_utc": pd.to_datetime(["2025-07-01 06:30"], utc=True),
+            "wx_temp_c": np.array([20.0], dtype="float32"),
+            "wx_wind_speed_kt": np.array([5.0], dtype="float32"),
+            "wx_wind_gust_kt": np.array([0.0], dtype="float32"),
+            "wx_visibility_mi": np.array([10.0], dtype="float32"),
+            "wx_precip_1h_mm": np.array([0.0], dtype="float32"),
+        })
+        X = build_features(df, CHECKPOINTS["t1h"], weather_obs=wx_stale, feature_group="G2")
+        self.assertEqual(X.loc[10, "weather_missing"], 1)
+        self.assertTrue(pd.isna(X.loc[10, "wx_temp_c"]))
+        # Flight 11 at BOS has no obs at all -> weather_missing = 1
+        self.assertEqual(X.loc[11, "weather_missing"], 1)
+
+    def test_all_feature_groups_pass_p4_schema_normalization(self):
+        """Every group G0-G3 must pass FeatureSchema.validate_columns and normalize."""
+        df = _create_synthetic_flights()
+        wx = _create_synthetic_weather()
+        for group, predictors in GROUP_PREDICTORS.items():
+            X = build_features(df, CHECKPOINTS["t1h"], weather_obs=wx, feature_group=group)
+            schema = FeatureSchema(tuple((p["name"], p["role"]) for p in predictors))
+            schema.validate_columns(X.columns)
+            norm = schema.normalize(X)
+            self.assertEqual(list(norm.columns), [p["name"] for p in predictors])
 
 
 if __name__ == "__main__":

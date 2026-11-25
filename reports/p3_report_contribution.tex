@@ -1,37 +1,54 @@
-% P3 Feature Engineering & Checkpoint Contributions for Phase A Report
+% P3 Feature Engineering, Weather Integration & Ablation Contributions (Phase B)
 % Sections intended for inclusion in reports/report.tex
 
-\subsection{Prediction Checkpoints and Problem Formulation}
-The departure delay prediction task is framed as a binary classification problem: predicting whether a scheduled commercial domestic flight will depart its origin gate with a delay $\ge 15$ minutes ($\text{LATE} = 1$) or $< 15$ minutes ($\text{LATE} = 0$), where delay is defined by the reconstructed UTC gate departure time relative to the scheduled gate departure time ($\Delta t = \text{OBSERVED} - \text{TIME}$).
+\subsection{Prediction Checkpoints and Full-Scale Feature Architecture}
+The departure delay prediction task is framed as a binary classification problem: predicting whether a scheduled commercial domestic flight will depart its origin gate with a delay $\ge 15$ minutes ($\text{LATE} = 1$) or $< 15$ minutes ($\text{LATE} = 0$), based on reconstructed UTC gate departure timestamps ($\text{OBSERVED} - \text{TIME}$).
 
-To mirror practical operational deployment and avoid lookahead bias, features are generated strictly with respect to pre-departure prediction checkpoints $T$. We define and evaluate two discrete checkpoints:
+Features are computed strictly relative to two pre-departure prediction checkpoints:
 \begin{enumerate}
-    \item \textbf{Strategic Dispatch Horizon ($T = 6\text{ hours}$):} Established 6 hours prior to scheduled gate departure ($\text{cutoff} = \text{CRSDepTime}_\text{UTC} - 6\text{h}$). At this horizon, network operations centers and hub controllers finalize aircraft rotations, crew reserve calls, and ground slot reservations. The feature set captures static schedule attributes, seasonal cyclicality, route geography, and historical rotation patterns, while strictly excluding near-term surface operations.
-    \item \textbf{Tactical Gate Horizon ($T = 1\text{ hour}$):} Established 60 minutes prior to scheduled gate departure ($\text{cutoff} = \text{CRSDepTime}_\text{UTC} - 1\text{h}$). At this horizon, passenger boarding is imminent, ground handlers are servicing the aircraft, and the status of the inbound flight leg is generally observable. This checkpoint incorporates real-time inbound aircraft arrival delays, scheduled turnaround buffers, and rolling origin airport congestion.
+    \item \textbf{Strategic Dispatch Horizon ($T = 360\text{ min}$ / $6\text{h}$):} Models early-day dispatch planning and baseline weather regimes before surface queues build.
+    \item \textbf{Tactical Gate Horizon ($T = 60\text{ min}$ / $1\text{h}$):} Models gate operations, recent surface weather observations, 3-hour origin departure congestion, and inbound aircraft arrival status.
 \end{enumerate}
 
-\subsection{Feature Engineering and Leak-Prevention Architecture}
-The feature engineering pipeline (\texttt{src/features.py}) adheres to a strict zero-leakage protocol governed by the Checkpoint Rule: for any flight $i$, no event occurring after $\text{cutoff}_{T}(i)$ may enter the computation.
+All full-scale Phase B feature matrices cover the complete $5{,}749{,}041$-row arrival-audited development cohort (\texttt{flights\_development\_phase\_b.parquet}), using all development records as historical context while preserving strict positional index invariance ($\text{index}(X) \equiv \text{index}(\text{df})$).
 
-\subsubsection{Feature Taxonomy}
+\subsection{Anti-Leakage Safeguards and Weather Integration}
+The feature pipeline (\texttt{src/features.py} and \texttt{src/weather.py}) enforces four protocol guarantees:
 \begin{itemize}
-    \item \textbf{Schedule and Calendar Geometry:} Scheduled departure hour and day of week are encoded using cyclic trigonometric projections:
-    \[
-    \text{hour\_sin} = \sin\left(\frac{2\pi \cdot \text{hour}}{24}\right), \quad \text{hour\_cos} = \cos\left(\frac{2\pi \cdot \text{hour}}{24}\right)
-    \]
-    \[
-    \text{dow\_sin} = \sin\left(\frac{2\pi \cdot \text{dow}}{7}\right), \quad \text{dow\_cos} = \cos\left(\frac{2\pi \cdot \text{dow}}{7}\right)
-    \]
-    along with calendar month, scheduled block duration (\texttt{CRSElapsedTime}), flight distance, carrier, origin, and destination airport categorical tokens.
-    \item \textbf{Four-State Inbound Aircraft Continuity Model:} The primary failure mode in aviation delay propagation is downstream delay reflection from prior legs operated by the same airframe (\texttt{Tail\_Number}). Rather than employing silent heuristic imputation or single-state indicators, we define four mutually exclusive states:
-    \begin{enumerate}
-        \item \texttt{inbound\_missing\_no\_tail}: Tail identifier is missing from schedule or unassigned.
-        \item \texttt{inbound\_first\_leg\_of\_day}: Tail number is valid, but the target flight is the initial departure leg of that aircraft for the calendar day.
-        \item \texttt{inbound\_not\_landed\_by\_T}: A preceding leg exists, but its actual arrival timestamp exceeds $\text{cutoff}_T$ or is unrecorded due to diversion/rerouting. The inbound delay is safely bounded at zero to prevent leakage.
-        \item \textbf{Normal Landed State:} Preceding leg safely arrived at the gate at or before $\text{cutoff}_T$. Observed arrival delay (\texttt{inbound\_arrival\_delay\_min}) and available turnaround buffer (\texttt{turnaround\_buffer\_min}) are exposed as continuous predictors.
-    \end{enumerate}
-    \item \textbf{Upstream Airport Congestion Dynamics:} Point-in-time departure throughput and upstream delay rates are computed over a backward-looking 3-hour window $[\text{cutoff}_T - 3\text{h}, \text{cutoff}_T]$. Crucially, only departures that physically pushed back at or before $\text{cutoff}_T$ (\texttt{OBSERVED} $\le \text{cutoff}_T$) are aggregated, completely eliminating forward leakage of concurrent departures. Computations are vectorized via sorted binary search ($O(N \log N)$), ensuring sub-second inference.
+    \item \textbf{Strict Cutoff Rule:} No event timestamped after $\text{cutoff}_T = \text{TIME} - \Delta T$ enters computation.
+    \item \textbf{Target Self-Exclusion:} Origin airport 3-hour congestion (\texttt{origin\_departures\_3h}, \texttt{origin\_late\_rate\_3h}) excludes the target flight itself when present in the history pool, even if it pushed back early. Cancellation rates are excluded because BTS records do not timestamp when cancellations were announced.
+    \item \textbf{Hourly Surface Weather Join (Decision D2):} Routine METAR and SPECI observations ($3{,}826{,}099$ records covering $347/349$ origin airports, Jan 2025--Jan 2026) were retrieved from the public-domain Iowa Environmental Mesonet (IEM) ASOS archive and joined via strict backward \texttt{merge\_asof} ($\text{obs\_time\_utc} \le \text{cutoff}_T$). Observations older than $6\text{h}$ or from unmapped stations trigger \texttt{weather\_missing} $= 1$ without silent imputation.
+    \item \textbf{Decision D1 Quarantine (Tail-Chain Features):} Because BTS reports retrospective final tail numbers rather than live dispatch assignments, inbound aircraft features are omitted from the primary audited set (\textbf{G2}) and isolated in \textbf{G3} as an ablation under the operational-feed assumption.
 \end{itemize}
 
-\subsubsection{Evaluation Harness and Inter-Model Alignment}
-To preserve absolute compatibility with the rolling forward-chaining split protocol in \texttt{src/splits.py} and evaluation harness in \texttt{src/evaluate.py}, \texttt{build\_features()} enforces strict positional index invariance ($\text{index}(X) \equiv \text{index}(\text{df})$). Furthermore, an automated metadata pairing schema (\texttt{feature\_manifest.json}) exposes typed predictor roles (\textit{numeric}, \textit{categorical}, \textit{indicator}) directly to classical models (P4) and gradient boosting trees (P5).
+\subsection{Feature-Group Ablation Analysis}
+To quantify how much predictive signal each information source contributes across horizons, we evaluated four nested feature groups (\textbf{G0}: schedule/route; \textbf{G1}: $+$ 3h origin congestion; \textbf{G2}: $+$ origin surface weather; \textbf{G3}: $+$ inbound tail chain) using a fixed LightGBM pipeline at feature-code revision \texttt{c9f5560494b52d370448e57264ec2109e74a6909} across all 4 rolling validation folds and 3 seeds ($42, 73, 101$). Spreads are reported as population standard deviation ($\text{ddof}=0$) matching the project evaluation harness.
+
+\begin{table}[h]
+\centering
+\caption{Phase B feature-group ablation on the 5.75M development cohort (LightGBM, revision \texttt{c9f5560}, mean $\pm$ population std ($\text{ddof}=0$) across 4 folds $\times$ 3 seeds).}
+\label{tab:p3-ablation}
+\begin{tabular}{llcc}
+\hline
+\textbf{Group} & \textbf{Checkpoint} & \textbf{Val PR-AUC} & \textbf{Val ROC-AUC} \\
+\hline
+G0: Schedule \& Route & 360 min (6h) & $0.366 \pm 0.067$ & $0.688 \pm 0.010$ \\
+G0: Schedule \& Route & 60 min (1h)  & $0.366 \pm 0.067$ & $0.688 \pm 0.010$ \\
+G1: $+$ Origin Congestion (3h) & 360 min (6h) & $0.381 \pm 0.069$ & $0.693 \pm 0.010$ \\
+G1: $+$ Origin Congestion (3h) & 60 min (1h)  & $0.415 \pm 0.066$ & $0.705 \pm 0.009$ \\
+G2: $+$ Surface Weather (D2) & 360 min (6h) & $0.381 \pm 0.070$ & $0.693 \pm 0.011$ \\
+G2: $+$ Surface Weather (D2) & 60 min (1h)  & $0.417 \pm 0.067$ & $0.706 \pm 0.010$ \\
+G3: $+$ Tail Chain (D1 ablation) & 360 min (6h) & $0.381 \pm 0.069$ & $0.695 \pm 0.011$ \\
+G3: $+$ Tail Chain (D1 ablation) & 60 min (1h)  & $0.542 \pm 0.060$ & $0.793 \pm 0.006$ \\
+\hline
+\end{tabular}
+\end{table}
+
+At $T = 6\text{h}$, origin congestion provides a modest $+0.014$ PR-AUC gain over schedule alone, while weather and inbound rotation add negligible signal ($< 0.001$). At $T = 1\text{h}$, recent origin congestion adds $+0.049$ PR-AUC ($0.366 \to 0.415$) and surface weather adds $+0.002$ PR-AUC ($0.415 \to 0.417$). Under the Decision D1 operational-feed assumption (\textbf{G3}), inbound aircraft continuity yields a $+0.125$ PR-AUC jump ($0.417 \to 0.542$, ROC-AUC $0.793$), confirming that upstream aircraft rotation is the dominant driver of tactical departure delays once the prior leg has landed. Figure~\ref{fig:p3-ablation} visualizes this progression across horizons.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.88\linewidth]{figures/p3_ablation_chart.png}
+\caption{Validation PR-AUC across feature groups G0--G3 at the 6h and 1h checkpoints.}
+\label{fig:p3-ablation}
+\end{figure}

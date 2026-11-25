@@ -1,0 +1,17 @@
+{
+  "source": "Iowa Environmental Mesonet (IEM) ASOS/METAR Archive",
+  "url_template": "https://mesonet.agron.iastate.edu/cgi-bin/request/asos.py",
+  "licence": "Public Domain / Open Data (Iowa Environmental Mesonet, Iowa State University)",
+  "downloaded_utc": "2026-11-24T18:31:33.259597+00:00",
+  "date_range_utc": [
+    "2025-01-01T00:00:00Z",
+    "2026-01-03T00:00:00Z"
+  ],
+  "stations_requested": 349,
+  "stations_with_data": 347,
+  "origins_total": 349,
+  "origins_covered": 347,
+  "observations_rows": 3826099,
+  "parquet_path": "data/processed/weather_asos_2025.parquet",
+  "sha256": "171c3ee6fe672c1f008bd8c43f163592618ecdd46b44a2d27c4b842a091919d0"
+}
