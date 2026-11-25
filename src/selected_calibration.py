@@ -112,7 +112,7 @@ def run(handoff, output=Path('reports/selected_calibration'), bootstrap=200):
             if not np.isclose(ap,row['pr_auc'],atol=1e-12,rtol=0) or not np.isclose(roc,row['roc_auc'],atol=1e-12,rtol=0):
                 raise ValueError('Selected scores do not reproduce exported probabilities')
             m,b=calibration_metrics(expected.LATE,p,float(metadata.LATE.iloc[train].mean()),
-                days=expected[TIME].dt.strftime('%Y-%m-%d'),bootstrap=bootstrap,seed=seed)
+                days=expected[TIME].dt.floor('D').astype('int64').to_numpy(),bootstrap=bootstrap,seed=seed)
             if 'brier' in row and not np.isclose(m['brier'],row['brier'],atol=1e-12,rtol=0):
                 raise ValueError('Brier differs from teammate export')
             prevalence=float(expected.LATE.mean())
