@@ -65,6 +65,28 @@ To evaluate both P3 checkpoints, replace `--schedule-only` with `--input-manifes
 
 Use the [Phase B dataset release](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/phase-b-data-v1) and [P1 protocol handoff](reports/p1_phase_b.md). The [paired pilot results](results/results_summary.md) exercise the revised training protocol at both checkpoints.
 
+## Phase B classical models and PCA
+
+Use the paired development manifest to tune Decision Tree and Random Forest and compare both classifiers with their PCA controls. The runner selects settings on common sampled training draws, then refits the selected settings on the full training portion of each validation fold.
+
+```bash
+python -m src.phase_b_classical --manifest data/sample/feature_manifest.json \
+  --group G1 --pilot --forest-jobs 4 --pca-forest-trees 64 --output data/processed/p4/pilot_g1
+python -m src.plot_classical data/processed/p4/pilot_g1 --output reports/p4_phase_b_pilot/G1
+```
+
+Use `--group G0 --pilot` with the same released manifest for a schedule-only projection. For full-scale work, download the [full feature release](https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/phase-b-features-v1) and put the G0–G2 manifests and Parquets in `data/processed/phase_b/`. Use the audited development Parquet from `phase-b-data-v1`. Verify both release checksum lists before fitting, and pass the preceding group’s manifest with `--parent-manifest` for G1 and G2. G2 requires P2’s approved feature registry via `--audit`.
+
+```bash
+python -m src.phase_b_classical --manifest data/processed/phase_b/manifest_G0.json \
+  --group G0 --forest-jobs 6 --output data/processed/p4/full_scale/G0
+python -m src.p4_handoff --manifest data/processed/phase_b/manifest_G0.json \
+  --run data/processed/p4/full_scale/G0
+python -m src.plot_classical data/processed/p4/full_scale/G0 --output reports/p4_phase_b_full/G0
+```
+
+Use the corresponding group in each command for G1 and G2. The handoff checker verifies the scored flight IDs, labels, UTC days, probabilities, and metrics, then writes `prediction_index.csv` with one checksum per Parquet and `p2_handoff.json` for P2’s calibration reader. Keep the run and manifest paths inside the repository for that reader. The figure command also writes the full-scale table included by `reports/report.tex`. See the [P4 results and team handoff](reports/p4_phase_b.md) for the recipient files and scoring rehearsal.
+
 ## Phase B boosting and alert budgets
 
 Run the bounded P5 search on a paired development manifest with the boosting dependencies installed:

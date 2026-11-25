@@ -1,0 +1,8 @@
+checkpoint_minutes,fold,seed,node,depth,condition,train_support,train_late_rate,fit_mode
+360,4,42,0,0,All flights,499996,0.216187729501836,sampled
+360,4,42,1,1,All flights AND hour_cos ≤ 0.05016,239086,0.13638188768894874,sampled
+360,4,42,2,2,All flights AND hour_cos ≤ 0.05016 AND hour_cos ≤ -0.6899,139493,0.10467908783953317,sampled
+360,4,42,75,2,All flights AND hour_cos ≤ 0.05016 AND hour_cos > -0.6899,99593,0.18078579819866858,sampled
+360,4,42,206,1,All flights AND hour_cos > 0.05016,260910,0.2893181556858687,sampled
+360,4,42,207,2,All flights AND hour_cos > 0.05016 AND month ≤ 4.5,114612,0.23923323910236274,sampled
+360,4,42,418,2,All flights AND hour_cos > 0.05016 AND month > 4.5,146298,0.32855541429137786,sampled

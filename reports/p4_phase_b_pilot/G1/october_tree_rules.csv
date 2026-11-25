@@ -1,0 +1,15 @@
+checkpoint_minutes,fold,seed,node,depth,condition,train_support,train_late_rate
+360,4,42,0,0,All flights,17937,0.2183754250989574
+360,4,42,1,1,All flights AND hour_cos ≤ 0.1327,8919,0.1382441977800201
+360,4,42,2,2,All flights AND hour_cos ≤ 0.1327 AND hour_cos ≤ -0.5206,5818,0.1098315572361636
+360,4,42,7,2,All flights AND hour_cos ≤ 0.1327 AND hour_cos > -0.5206,3101,0.1915511125443405
+360,4,42,16,1,All flights AND hour_cos > 0.1327,9018,0.2976269682856509
+360,4,42,17,2,All flights AND hour_cos > 0.1327 AND origin_late_rate_3h ≤ 0.1743,6474,0.2520852641334569
+360,4,42,80,2,All flights AND hour_cos > 0.1327 AND origin_late_rate_3h > 0.1743,2544,0.4135220125786163
+60,4,42,0,0,All flights,17937,0.2183754250989574
+60,4,42,1,1,All flights AND origin_late_rate_3h ≤ 0.2235,13303,0.1590618657445689
+60,4,42,2,2,All flights AND origin_late_rate_3h ≤ 0.2235 AND hour_cos ≤ -0.3604,6355,0.1107789142407553
+60,4,42,45,2,All flights AND origin_late_rate_3h ≤ 0.2235 AND hour_cos > -0.3604,6948,0.2032239493379389
+60,4,42,96,1,All flights AND origin_late_rate_3h > 0.2235,4634,0.3886491152352179
+60,4,42,97,2,All flights AND origin_late_rate_3h > 0.2235 AND origin_late_rate_3h ≤ 0.4062,3134,0.3359923420548819
+60,4,42,122,2,All flights AND origin_late_rate_3h > 0.2235 AND origin_late_rate_3h > 0.4062,1500,0.4986666666666666

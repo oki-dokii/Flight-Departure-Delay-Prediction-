@@ -1,0 +1,72 @@
+{
+  "candidate": "forest_None_10_sqrt_None_256",
+  "checkpoint_minutes": 360,
+  "development_inputs": {
+    "development_sha256": "3d406cd1331509abcec7bfa35c5ff142b3fe3075d30c3833709b5fec826622ba",
+    "feature_sha256": {
+      "360": "474ee9e2c090b03859aed8d464c72d0b598e12cd48c9233f6315c6734897efc2",
+      "60": "55a830e8512744b72d729a9a892065b5979e37b91b87be63f97f2eca3dfe23e3"
+    },
+    "manifest_sha256": "9f344e94a4ad23f35f21f3ba1faa79a49ccad33f94d629917737ad7765585fe4"
+  },
+  "feature_group": "G0",
+  "predictors": [
+    [
+      "hour_sin",
+      "numeric"
+    ],
+    [
+      "hour_cos",
+      "numeric"
+    ],
+    [
+      "dow_sin",
+      "numeric"
+    ],
+    [
+      "dow_cos",
+      "numeric"
+    ],
+    [
+      "month",
+      "numeric"
+    ],
+    [
+      "crs_elapsed_min",
+      "numeric"
+    ],
+    [
+      "distance",
+      "numeric"
+    ],
+    [
+      "carrier",
+      "categorical"
+    ],
+    [
+      "origin",
+      "categorical"
+    ],
+    [
+      "dest",
+      "categorical"
+    ]
+  ],
+  "recipe": {
+    "family": "random_forest",
+    "parameters": {
+      "classifier__class_weight": null,
+      "classifier__max_depth": null,
+      "classifier__max_features": "sqrt",
+      "classifier__min_samples_leaf": 10,
+      "classifier__n_estimators": 256,
+      "classifier__n_jobs": 6
+    }
+  },
+  "run_id": "2e7d3fcf04da1cbc54afa462a8297aabecc9abfa25333a21f4904d9fc319463a",
+  "selection_fit_mode": "sampled",
+  "selection_score": {
+    "mean_pr_auc": 0.3796319255209147,
+    "mean_roc_auc": 0.701280865004474
+  }
+}
