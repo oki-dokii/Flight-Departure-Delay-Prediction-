@@ -1,0 +1,14 @@
+{
+  "manifest_sha256": "fcfbe360589bb4dfbe7fb1ee83f8c13c9bcf6fcf5d85c9991b12b6f81b3bae26",
+  "source_release": "phase-a-data-v1",
+  "feature_revision": "phase-a-v1",
+  "cohort_rows": 20000,
+  "cohort_ids_sha256": "4fa9f86572f599e5808e0dc403851c1d8fa4667d91d897c9dbda0e01a13d2667",
+  "code_revision": "8627ed3f95e7b11eaf73c36c71d19938120aa1a8",
+  "selected_runs_sha256": "3c54af5c884097a711716c543c3e611aace76391fd0775ed87edb03c4251739c",
+  "run_id": "p5-g1-pilot-8627ed3f95e7",
+  "fit_mode": "sampled",
+  "feature_group": "G1",
+  "pilot": true,
+  "development_sha256": "8166d5f05de4ace74dd75d69ee2867686f45237105599a927f9a519382a29e57"
+}
