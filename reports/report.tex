@@ -245,33 +245,44 @@ The operational comparison covers all ten model configurations at 5\%, 10\% and 
 \caption{Mean absolute probability contributions on the October pilot sample.}
 \end{figure}
 \section{Results}
-The final selected-configuration table is pending full-scale validation and P1's single final test run. Earlier boosting numbers describe P5's selected pilot experiment; P2 calibration below uses rehearsal defaults and must not be confused with those tuned candidates. Final test flight count: pending.
+The completed G0 rows report schedule-only full-fold refits. G0 has identical
+predictor values across checkpoints, so the same fitted predictions support
+both horizons. Other configurations in this table remain pending.
+
 \begin{center}\small
 \begin{tabular}{llcccc}\toprule
-Model & Checkpoint & Val ROC-AUC & Val PR-AUC & Test ROC-AUC & Test PR-AUC \\
+ & & \multicolumn{2}{c}{Full-development validation} & \multicolumn{2}{c}{Held-out test} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Model & Checkpoint & ROC-AUC & AP & ROC-AUC & AP \\
 \midrule
-Majority & 6h & pending & pending & pending & pending \\
-Majority & 1h & pending & pending & pending & pending \\
-Decision Tree & 6h & pending & pending & pending & pending \\
-Decision Tree & 1h & pending & pending & pending & pending \\
-Random Forest & 6h & pending & pending & pending & pending \\
-Random Forest & 1h & pending & pending & pending & pending \\
-Logistic (no PCA) & 6h & pending & pending & pending & pending \\
-Logistic (no PCA) & 1h & pending & pending & pending & pending \\
-PCA + logistic & 6h & pending & pending & pending & pending \\
-PCA + logistic & 1h & pending & pending & pending & pending \\
-AdaBoost & 6h & pending & pending & pending & pending \\
-AdaBoost & 1h & pending & pending & pending & pending \\
-Gradient Boosting & 6h & pending & pending & pending & pending \\
-Gradient Boosting & 1h & pending & pending & pending & pending \\
-XGBoost & 6h & pending & pending & pending & pending \\
-XGBoost & 1h & pending & pending & pending & pending \\
-LightGBM & 6h & pending & pending & pending & pending \\
-LightGBM & 1h & pending & pending & pending & pending \\
-CatBoost & 6h & pending & pending & pending & pending \\
-CatBoost & 1h & pending & pending & pending & pending \\
+Majority & 6h & pending & pending &  &  \\
+Majority & 1h & pending & pending &  &  \\
+G0 decision tree & 6h & \(0.6855\pm0.0121\) & \(0.3583\pm0.0683\) &  &  \\
+G0 decision tree & 1h & \(0.6855\pm0.0121\) & \(0.3583\pm0.0683\) &  &  \\
+Random Forest & 6h & pending & pending &  &  \\
+Random Forest & 1h & pending & pending &  &  \\
+G0 logistic (no pca) & 6h & \(0.6860\pm0.0127\) & \(0.3549\pm0.0710\) &  &  \\
+G0 logistic (no pca) & 1h & \(0.6860\pm0.0127\) & \(0.3549\pm0.0710\) &  &  \\
+PCA + logistic & 6h & pending & pending &  &  \\
+PCA + logistic & 1h & pending & pending &  &  \\
+AdaBoost & 6h & pending & pending &  &  \\
+AdaBoost & 1h & pending & pending &  &  \\
+Gradient Boosting & 6h & pending & pending &  &  \\
+Gradient Boosting & 1h & pending & pending &  &  \\
+XGBoost & 6h & pending & pending &  &  \\
+XGBoost & 1h & pending & pending &  &  \\
+LightGBM & 6h & pending & pending &  &  \\
+LightGBM & 1h & pending & pending &  &  \\
+CatBoost & 6h & pending & pending &  &  \\
+CatBoost & 1h & pending & pending &  &  \\
 \bottomrule\end{tabular}\end{center}
-Validation cells will contain mean $\pm$ population std over folds and seeds. Test cells will contain the single final score. The paired PCA/no-PCA comparison and majority reference remain explicit.
+Full-development validation values are the unweighted mean and population
+standard deviation across fold--seed scores. Mean Brier scores were 0.1578
+for the G0 decision tree and 0.1620 for G0 logistic regression at each
+checkpoint.
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/4780bd7c656e486e4710066c89c7601de3d15b7b/reports/p4_phase_b_full/G0/verified_full_fold_runs.csv}{Pinned G0 fold scores}
+and
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/4780bd7c656e486e4710066c89c7601de3d15b7b/reports/p4_phase_b_full/G0/verified_full_fold_recipes.json}{G0 model recipes}.
 \section{Extra analysis}
 \subsection{P2: temporal drift (development only)}
 Full eligible validation late rates are 28.44\%, 22.55\%, 16.56\% and 19.35\% for July--October, versus 20.98\%, 22.12\%, 22.24\% and 21.65\% in their own training windows. A Kitagawa decomposition over carrier by origin-local six-hour scheduled band attributes respectively -0.040, -0.142, -0.227 and -0.030 percentage points to composition change, and +7.507, +0.575, -5.457 and -2.275 points to within-cell rate change. Unsupported cells carry the observed rate across periods, assigning their contribution to composition; all supports/masses are exported. This is descriptive, not causal.
