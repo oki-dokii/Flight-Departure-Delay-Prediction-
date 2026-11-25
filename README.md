@@ -127,3 +127,9 @@ python -m src.selected_calibration --handoff PATH_TO_FILLED_HANDOFF.json
 ```
 
 This reads the selected probabilities without refitting, checks exact validation identities and reproduced scores, and writes calibration metrics/figures separately under `reports/selected_calibration/`. Full G2/G3 EDA/drift and selected-model conclusions remain pending actual audited matrices and prediction exports; the earlier default-config pilot remains labelled as such. Do not run the mixed-period weather loader for P2 analysis.
+
+## Flight Explorer interface
+
+Open [ui/index.html](ui/index.html) in a browser for the offline Flight Explorer. The Prediction page replays paired six-hour and one-hour LightGBM pilot predictions for 8,000 validation flights (four folds, seed 42). Choose a UTC date and flight, select **Predict Delay**, then **Reveal outcome** to compare the saved forecast with the recorded departure. Routes links each city pair to a flight. Results shows the separate full-development feature ablation, and About explains the data and links the report.
+
+The browser dataset joins the seed-42 predictions in `reports/p5_month_pilot/predictions/` to the Phase A development Parquet by flight ID and embeds the comparison metrics from `reports/tables/p3_ablation_results.csv`. No backend, credentials, or live training process is needed.
