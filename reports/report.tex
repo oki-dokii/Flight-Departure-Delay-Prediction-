@@ -170,6 +170,13 @@ numeric scaling as the forest PCA arm.
     \end{figure}%
   }{}%
 }
+\subsection{Full-development validation --- G1 screening only}
+At the one-hour checkpoint, the unpruned G1 decision tree with maximum
+depth 12 and a minimum leaf size of 50 led the completed initial structures
+with mean AP 0.3981. The candidate used sampled training draws.
+Final G1 selection and full-fold refit evidence remain pending.
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/4780bd7c656e486e4710066c89c7601de3d15b7b/reports/p4_phase_b_full/G1/decision_tree_screen_60m.csv}{Pinned G1 screening scores}.
+
 \subsection{Development pilot}
 The 20,000-flight paired development pilot compared schedule and calendar predictors (G0) with the addition of backward-looking origin congestion (G1). Each search used the four July--October folds and three common month-stratified training draws. We ranked configurations by mean average precision (PR-AUC), refit selected settings on all eligible training flights in each pilot fold, and scored the full validation portion of that fold. July and September pilot prevalence was 28.60\% and 16.05\%, respectively. Fold--seed spread includes this time variation.
 
