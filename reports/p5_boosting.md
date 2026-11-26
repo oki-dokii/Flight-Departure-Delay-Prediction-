@@ -2,7 +2,7 @@
 
 The schedule smoke run uses P4's deterministic 2,000-flight sample per UTC month from the Phase A development release. Every classifier uses the same fold-local median imputation and capped one-hot encoding as P4. LightGBM and CatBoost also use one-hot features in this comparison. CatBoost therefore does not compute categorical target statistics. Holdout records are excluded. The runner uses the P1 evaluator with four rolling folds and seeds 42, 73 and 101.
 
-## Phase B tuning plan
+## Original Phase B search proposal
 
 | Family | Candidate values |
 | --- | --- |
@@ -16,7 +16,7 @@ Run a bounded search on common time-stratified development IDs at both checkpoin
 
 For extra analysis, compute precision among the highest-risk 10% on each validation fold, with flight ID breaking ties. Compare it with the fold's prevalence to quantify how many late flights an operations team can identify with a fixed alert budget. For the selected booster, summarize SHAP values on a sample of validation flights, using training rows as background and grouping encoded columns by original feature.
 
-## Schedule-only smoke results
+## Pilot — schedule-only smoke results
 
 The table uses mean ± population standard deviation across 12 fold–seed evaluations per model. Evaluation time includes the baseline. Peak memory covers the full process, including projected input reads and sampling. The approximate full-data evaluation time assumes the same encoded width and linear scaling by P4's 287× row-work ratio. Measure another pilot with P3's features before committing to a full search, especially for sequential AdaBoost and sklearn Gradient Boosting. Use a common smaller training subsample across candidates when the pilot exceeds the compute budget.
 
@@ -30,9 +30,19 @@ The table uses mean ± population standard deviation across 12 fold–seed evalu
 
 The majority baseline scored ROC-AUC 0.500 ± 0.000 and PR-AUC 0.218 ± 0.051. The [per-run scores](tables/p5_schedule_runs.csv) include every model, seed and fold. Both checkpoint paths were also exercised with a synthetic paired manifest. Real checkpoint comparisons require the approved P3 artifacts.
 
-## Phase B paired development pilot
+## Pilot — paired G1 boosting results
 
 The bounded search uses the 20,000 flights and twelve audited predictors from the paired Phase A manifest, including the congestion measures available at each checkpoint. At each horizon we compare two predefined parameter settings per family. LightGBM and CatBoost run both settings with one-hot and native categorical input. The native LightGBM path learns category levels on training rows and treats unknown levels as missing. Native CatBoost receives category strings and uses ordered boosting. This compares the native CatBoost setup as a whole, including its boosting mode.
+
+The paired pilot evaluated the following grid. Each column gives a complete candidate. All five families build an additive ensemble of trees. AdaBoost increases the weight of misclassified flights. Gradient Boosting fits successive trees to loss gradients. XGBoost, LightGBM and CatBoost implement gradient boosting with different tree builders and categorical options.
+
+| Family | Parameters in order | Candidate A | Candidate B | Input tested |
+|---|---|---|---|---|
+| AdaBoost | Base tree depth, learning rate | 1, 1.0 | 2, 0.1 | One-hot |
+| Gradient Boosting | Depth, learning rate | 2, 0.1 | 3, 0.03 | One-hot |
+| XGBoost | Depth, learning rate | 3, 0.1 | 6, 0.03 | One-hot |
+| LightGBM | Leaves, minimum child samples | 15, 20 | 31, 100 | One-hot and native |
+| CatBoost | Depth, learning rate | 4, 0.1 | 6, 0.03 | One-hot and native |
 
 For each outer fold and seed, the same P1 training draw is used across candidates. The last fourteen calendar dates in that draw supply inner validation. The inner fit excludes the preceding day and requires every training label to be observable before the gap. Refitting at 10, 30 and 60 rounds allows each library to use the same stopping rule: stop when inner average precision first fails to improve, then refit the best round count on the whole outer training draw. Use the outer validation month only for scoring. Rank candidates by mean outer average precision across four folds and three seeds. Selecting and reporting on those same folds can favor the best candidate. The final test will provide an independent estimate.
 
@@ -42,7 +52,7 @@ Permutation SHAP is calculated on up to 128 October validation flights for the w
 
 The [candidate scores](p5_phase_b_pilot/candidates.csv), [native encoding comparison](p5_phase_b_pilot/encoding.csv), [operations summary](p5_phase_b_pilot/summary.csv), and [selected boosting rows](p5_phase_b_pilot/selected_boosting_runs.csv) are reproducible from the README commands. Repeat the search on P3's frozen full development matrices for the final model selection.
 
-One-hot LightGBM ranked first at both horizons. Its mean average precision increased from 0.387 at six hours to 0.420 at one hour. At one hour, 50.3% of flights in its highest-risk decile departed late, for a mean fold-level lift of 2.34. The [pilot master results](../results/p5_phase_b_pilot/master_results.csv) combine the selected boosters with the existing matched P4 pilot. The [table by checkpoint](../results/p5_phase_b_pilot/results_summary.md) includes fold–seed spread.
+**Pilot (20,000 paired flights).** One-hot LightGBM ranked first at both horizons. Its mean average precision increased from 0.387 at six hours to 0.420 at one hour. At one hour, 50.3% of flights in its highest-risk decile departed late, for a mean fold-level lift of 2.34. The [pilot master results](../results/p5_phase_b_pilot/master_results.csv) combine the selected boosters with the existing matched P4 pilot. The [table by checkpoint](../results/p5_phase_b_pilot/results_summary.md) includes fold–seed spread.
 
 ### Month ablation and calibration handoff
 
@@ -62,3 +72,5 @@ python -m src.p5_calibration_handoff --manifest data/sample/feature_manifest.jso
 ```
 
 The full G0 and G1 checkpoint matrices are available in the Phase B feature release. The joint full-scale comparison still needs the corresponding P4 experiment identity and selected runs on the same revision and cohort. G2 additionally needs clearance of the weather availability audit.
+
+Use the [selected-model reporting template](templates/p5_selected_models.md) after the full-development selections are available.
