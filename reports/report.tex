@@ -11,12 +11,12 @@
     \begin{figure}[htbp]\centering
     \includegraphics[width=\linewidth]{#1/#2/decision_tree.pdf}
     \includegraphics[width=.85\linewidth]{#1/#2/random_forest.pdf}
-    \caption{#2 tree pruning and forest tuning on the common development training draws.}
+    \caption{Full-development validation, #2 tuning. Tree pruning and forest tuning on common training draws.}
     \end{figure}
     \begin{figure}[htbp]\centering
     \includegraphics[width=.85\linewidth]{#1/#2/pca.pdf}
     \includegraphics[width=.85\linewidth]{#1/#2/permutation_importance.pdf}
-    \caption{#2 training PCA spectra, paired validation scores, and selected tree permutation importance.}
+    \caption{Full-development validation, #2. Training PCA spectra, paired validation scores, and selected tree permutation importance.}
     \end{figure}%
   }{}%
 }
@@ -66,35 +66,66 @@ The backward join enforces observation time no later than T and a six-hour age l
 \section{Feature engineering}
 \IfFileExists{p3_report_contribution.tex}{\input{p3_report_contribution.tex}}{\input{reports/p3_report_contribution.tex}}
 \section{Classical models and PCA comparison}
+\subsection{Full-development validation protocol}
+The benchmark used four chronological July--October validation folds and
+seeds 42, 73, and 101. Candidates shared month-stratified training draws
+targeting approximately 500,000 flights per fold and seed. Each candidate
+was scored on the eligible validation rows for its fold. Mean average
+precision (AP) ranked candidates, followed by mean ROC-AUC and then candidate
+order for ties. Completed full-fold refits used all eligible training rows
+for that fold. Screening and full-fold refits used the same validation
+windows.
+
+\paragraph{Decision tree.}
+The unpruned grid crossed maximum depths of 3, 6, 12, and unbounded with
+minimum leaf sizes of 10, 50, and 200. For each of the two leading structures,
+the search retained the unpruned score at $\alpha=0$ and evaluated
+$10^{-6}$, $10^{-5}$, $10^{-4}$, and $10^{-3}$, plus the 25th, 50th, and
+75th percentiles of the positive pruning alphas below the final path endpoint.
+The supplemental values came from that structure's first-fold training draw
+at seed 42. Cost-complexity pruning penalizes leaf count. Increasing
+$\alpha$ favors smaller subtrees.
+
+\paragraph{Random forest.}
+The initial 64-tree grid crossed depths of 12, 24, and unbounded with minimum
+leaf sizes of 10 and 50, using square-root feature sampling. The next stage
+compared square-root and 30\% feature sampling for the two leading
+structures. The leading configuration then received 128- and 256-tree
+trials. The G0 search used unweighted fitting.
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/0c419696e29dfe90be903ddb77c2a51028be41e1/src/phase_b_classical.py}{Frozen classical benchmark}.
+
+
+\paragraph{PCA and matched controls.}
+Each matched logistic or forest pair shared fold-local imputation, numeric
+scaling, and one-hot encoding. Centered PCA used the eigendecomposition of
+the training covariance. For each fit, it retained the smallest component
+prefix reaching either 90\% or 95\% cumulative explained variance. Each
+PCA arm and its own no-PCA control shared classifier settings, training and
+validation rows, folds, and seeds. The matched forest control used the same
+numeric scaling as the forest PCA arm.
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/0c419696e29dfe90be903ddb77c2a51028be41e1/src/models_classical.py}{P4 preprocessing and model factories}.
+
 \IfFileExists{reports/report.tex}{%
   \newcommand{\pFourFullPath}{reports/p4_phase_b_full}%
 }{%
   \newcommand{\pFourFullPath}{p4_phase_b_full}%
-}
-\newcommand{\pFourFullProtocol}{%
-The full development release contains 5,749,041 flights. The two checkpoints use the same four July--October validation folds and three paired training draws per fold. Configurations were selected by mean average precision on month-stratified training draws of up to 500,000 flights, then refit on all eligible training flights in each fold. Tables show the mean and population standard deviation over the twelve fold--seed scores. Search and refit scores use the same validation months. PCA was fitted inside each training fold after scaling numeric predictors and one-hot encoding categorical predictors. Both PCA targets used otherwise matched forest and logistic controls.
-}
-\IfFileExists{\pFourFullPath/G0/classical_results.tex}{\pFourFullProtocol}{%
-  \IfFileExists{\pFourFullPath/G1/classical_results.tex}{\pFourFullProtocol}{%
-    \IfFileExists{\pFourFullPath/G2/classical_results.tex}{\pFourFullProtocol}{}%
-  }%
 }
 \pFourFullGroup{\pFourFullPath}{G0}
 \pFourFullGroup{\pFourFullPath}{G1}
 \pFourFullGroup{\pFourFullPath}{G2}
 \IfFileExists{\pFourFullPath/G0/classical_results.tex}{}{%
   \IfFileExists{\pFourFullPath/G0/decision_tree_search_360m.pdf}{%
-    \subsection{G0 decision tree tuning at 6 hours}
-    The search used four full validation months, with three stratified training draws of approximately 500,000 flights for each validation fold. The selected configuration used unbounded depth, 200 minimum samples per leaf, and \(\alpha \approx 6.66\times 10^{-6}\). At the selected depth and leaf size, pruning increased mean validation PR-AUC from 0.3530 to 0.3540 and reduced average tree size from 1,896 to 457 leaves on the tuning draws.
+    \subsection{Full-development validation --- G0 tree tuning}
+    At six hours, the selected tuning configuration used unbounded depth, 200 minimum samples per leaf, and \(\alpha \approx 6.66\times 10^{-6}\). At the selected depth and leaf size, pruning increased mean validation PR-AUC from 0.3530 to 0.3540 and reduced average tree size from 1,896 to 457 leaves on the tuning draws.
     \begin{figure}[htbp]\centering
     \includegraphics[width=\linewidth]{\pFourFullPath/G0/decision_tree_search_360m.pdf}
-    \caption{G0 tree depth, pruning performance, and fitted leaf count at six hours.}
+    \caption{Full-development validation, G0 tuning at six hours. Tree depth, pruning performance, and fitted leaf count.}
     \end{figure}%
     \IfFileExists{\pFourFullPath/G0/october_tree_tuning_importance.pdf}{%
       The October tuning fit at seed 42 was scored for permutation importance on 3,999 stratified validation flights. Over five repetitions, shuffling the cosine of scheduled UTC hour and shuffling carrier reduced average precision by 0.0777 and 0.0512 on average. The root split on UTC hour cosine at 0.05016 yielded training late rates of 13.6\% and 28.9\%.
       \begin{figure}[htbp]\centering
       \includegraphics[width=.8\linewidth]{\pFourFullPath/G0/october_tree_tuning_importance.pdf}
-      \caption{G0 October tree importance on the tuning fit at seed 42.}
+      \caption{Full-development validation, G0 tuning. October tree importance at seed 42.}
       \end{figure}%
     }{}%
   }{}%
@@ -102,49 +133,56 @@ The full development release contains 5,749,041 flights. The two checkpoints use
     \input{\pFourFullPath/G0/decision_tree_full_fold_results.tex}
     \begin{figure}[htbp]\centering
     \includegraphics[width=.8\linewidth]{\pFourFullPath/G0/decision_tree_full_fold_importance.pdf}
-    \caption{G0 tree permutation importance from the selected full-fold refits.}
+    \caption{Full-development validation, G0 full-fold refits. Tree permutation importance.}
     \end{figure}%
   }{}%
   \IfFileExists{\pFourFullPath/G0/random_forest_search_360m.pdf}{%
-    \subsection{G0 forest and logistic tuning at 6 hours}
-    The selected forest used 256 trees, unbounded depth, a minimum leaf size of 10, and square-root feature sampling. Mean validation PR-AUC was 0.3796 and ROC-AUC was 0.7013. The matched forest search selected the 90\% variance policy, with PR-AUC 0.3657 and paired changes of \(-0.0138\) PR-AUC and \(-0.0104\) ROC-AUC. The matched logistic search selected 95\% variance and scored PR-AUC 0.3499, compared with 0.3458 at 90\% and 0.3540 for the control. The paired 95\% changes were \(-0.0041\) PR-AUC and \(-0.0029\) ROC-AUC.
+    \subsection{Full-development validation --- G0 forest and logistic tuning}
+    At six hours, the leading forest tuning candidate used 256 trees, unbounded depth, a minimum leaf size of 10, and square-root feature sampling. Mean validation PR-AUC was 0.3796 and ROC-AUC was 0.7013. The matched forest search selected the 90\% variance policy, with PR-AUC 0.3657 and paired changes of \(-0.0138\) PR-AUC and \(-0.0104\) ROC-AUC. The matched logistic search selected 95\% variance and scored PR-AUC 0.3499, compared with 0.3458 at 90\% and 0.3540 for the control. The paired 95\% changes were \(-0.0041\) PR-AUC and \(-0.0029\) ROC-AUC.
     \IfFileExists{\pFourFullPath/G0/logistic_control_full_fold_summary.csv}{%
       Full-fold refits of the non-PCA logistic control reached mean PR-AUC 0.3549, ROC-AUC 0.6860, and Brier 0.1620 at both checkpoints. The full-fold PCA scores are pending.
     }{}%
     \begin{figure}[htbp]\centering
     \includegraphics[width=.8\linewidth]{\pFourFullPath/G0/random_forest_search_360m.pdf}
-    \caption{G0 random forest finalist scores and mean fit and scoring time on the tuning draws.}
+    \caption{Full-development validation, G0 tuning at six hours. Forest finalist scores and mean fit and scoring time.}
     \end{figure}%
   }{}%
 }
 \IfFileExists{\pFourFullPath/G1/classical_results.tex}{}{%
   \IfFileExists{\pFourFullPath/G1/decision_tree_search_360m.pdf}{%
-    \subsection{G1 decision tree tuning at 6 hours}
-    The selected tree used unbounded depth, a minimum leaf size of 200, and \(\alpha \approx 7.15\times 10^{-6}\). Pruning increased mean validation PR-AUC from 0.3649 to 0.3667 and reduced mean tree size from 1,901 to 470 leaves on the training draws.
+    \subsection{Full-development validation --- G1 six-hour tree tuning}
+    The leading six-hour tuning trial used unbounded depth, a minimum leaf size of 200, and \(\alpha \approx 7.15\times 10^{-6}\). Pruning increased mean validation PR-AUC from 0.3649 to 0.3667 and reduced mean tree size from 1,901 to 470 leaves on the training draws.
     \begin{figure}[htbp]\centering
     \includegraphics[width=\linewidth]{\pFourFullPath/G1/decision_tree_search_360m.pdf}
-    \caption{G1 six-hour tree depth, pruning performance, and the first-fold training pruning path.}
+    \caption{Full-development validation, G1 tuning at six hours. Tree depth, pruning performance, and the first-fold training pruning path.}
     \end{figure}%
   }{}%
   \IfFileExists{\pFourFullPath/G1/pca_logistic_search_scores.csv}{%
-    \subsection{G1 matched logistic tuning}
+    \subsection{Full-development validation --- G1 matched logistic tuning}
     The 95\% PCA policy ranked first among the logistic PCA targets at both horizons. It changed mean validation PR-AUC by \(-0.0034\) at six hours and \(-0.0023\) at one hour, with corresponding ROC-AUC changes of \(-0.0033\) and \(-0.0020\) against the matched control. These results use the stratified training draws across all four folds and three seeds.
   }{}%
   \IfFileExists{\pFourFullPath/pca_tuning_variance.pdf}{%
-    \subsection{PCA variance on the tuning draws}
+    \subsection{Full-development validation --- PCA on the tuning draws}
     At seed 42, both the July and October training draws reached the 90\% and 95\% variance targets at 50 and 91 components for G0 and 41 and 81 components for G1. These component counts were the same at both checkpoints within each group. The mean density of the sparse encoded training input was 3.61\% for G0 and 4.30\% for G1.
     \begin{figure}[htbp]\centering
     \includegraphics[width=\linewidth]{\pFourFullPath/pca_tuning_variance.pdf}
-    \caption{Cumulative PCA variance on the common July and October training draws.}
+    \caption{Full-development validation, tuning draws. Cumulative PCA variance on the common July and October training draws.}
     \end{figure}%
   }{}%
 }
-\subsection{Development pilot}
+\subsection{Full-development validation --- G1 screening only}
+At the one-hour checkpoint, the unpruned G1 decision tree with maximum
+depth 12 and a minimum leaf size of 50 led the completed initial structures
+with mean AP 0.3981. The candidate used sampled training draws.
+Final G1 selection and full-fold refit evidence remain pending.
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/4780bd7c656e486e4710066c89c7601de3d15b7b/reports/p4_phase_b_full/G1/decision_tree_screen_60m.csv}{Pinned G1 screening scores}.
+
+\subsection{Pilot --- classical comparison}
 The 20,000-flight paired development pilot compared schedule and calendar predictors (G0) with the addition of backward-looking origin congestion (G1). Each search used the four July--October folds and three common month-stratified training draws. We ranked configurations by mean average precision (PR-AUC), refit selected settings on all eligible training flights in each pilot fold, and scored the full validation portion of that fold. July and September pilot prevalence was 28.60\% and 16.05\%, respectively. Fold--seed spread includes this time variation.
 
 We varied Decision Tree depth and minimum leaf size before tuning the cost-complexity penalty. Supplementary pruning values came from the first fold's training draw. Random Forest tuning varied depth, minimum leaf size, feature sampling, and tree count. G0 used identical schedule inputs at both horizons. Its selected tree used depth 12, a minimum leaf size of 200, and zero pruning penalty. Its forest used 128 trees and reached PR-AUC 0.379 and ROC-AUC 0.694 at both checkpoints.
 
-Centered PCA was fitted inside each training pipeline after imputation, scaling the numeric block, and one-hot encoding. We compared 90\% and 95\% explained-variance targets with matching Random Forest and logistic controls. In G0, the selected 90\% PCA policy retained 50 components per full-fold fit. It changed mean PR-AUC by $-0.023$ for the matched forest and $+0.011$ for logistic regression. The representative loadings are expressed in each fitted encoded basis. The G1 matched forest pair uses a common 64-tree cap in both arms to bound the cost of fitting dense projections.
+Centered PCA was fitted inside each training pipeline after imputation, scaling the numeric block, and one-hot encoding. We compared 90\% and 95\% explained-variance targets with matching Random Forest and logistic controls. In G0, the selected 90\% PCA policy retained 50 components in each completed pilot refit. It changed mean PR-AUC by $-0.023$ for the matched forest and $+0.011$ for logistic regression. The representative loadings are expressed in each fitted encoded basis. The G1 matched forest pair uses a common 64-tree cap in both arms to bound the cost of fitting dense projections.
 
 \begin{center}
 \small
@@ -165,19 +203,19 @@ Permutation importance for the selected G1 tree ranked scheduled UTC hour cosine
 
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{decision_tree.pdf}
-\caption{G1 pilot Decision Tree depth and pruning comparisons.}
+\caption{Pilot, G1 decision-tree depth and pruning comparisons.}
 \end{figure}
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{random_forest.pdf}
-\caption{G1 pilot Random Forest finalist scores and runtime as tree count varies.}
+\caption{Pilot, G1 random forest finalist scores and runtime as tree count varies.}
 \end{figure}
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{pca.pdf}
-\caption{G1 pilot training-only PCA spectra and paired changes in validation average precision.}
+\caption{Pilot, G1 training-only PCA spectra and paired changes in validation AP.}
 \end{figure}
 \begin{figure}[htbp]\centering
 \includegraphics[width=\linewidth]{permutation_importance.pdf}
-\caption{Selected G1 tree importance from shuffling original validation predictors.}
+\caption{Pilot, G1 tree permutation importance on the original validation predictors.}
 \end{figure}
 \section{Boosting models}
 The development pilot used 20,000 flights at checkpoints six hours and one hour before departure. We compared five boosting families on the same four chronological folds and three training seeds. Each fit chose its iteration count on the trailing fourteen calendar dates inside the training draw, with a one-day gap, before refitting on the outer training draw. We selected the highest mean average precision at each horizon. These estimates describe the development pilot and inform subsequent full-scale tuning.
@@ -214,33 +252,52 @@ The operational comparison covers all ten model configurations at 5\%, 10\% and 
 \caption{Mean absolute probability contributions on the October pilot sample.}
 \end{figure}
 \section{Results}
-The final selected-configuration table is pending full-scale validation and P1's single final test run. Earlier boosting numbers describe P5's selected pilot experiment; P2 calibration below uses rehearsal defaults and must not be confused with those tuned candidates. Final test flight count: pending.
+The completed G0 rows report schedule-only full-fold refits. G0 has identical
+predictor values across checkpoints, so the same fitted predictions support
+both horizons. Other configurations in this table remain pending.
+
 \begin{center}\small
 \begin{tabular}{llcccc}\toprule
-Model & Checkpoint & Val ROC-AUC & Val PR-AUC & Test ROC-AUC & Test PR-AUC \\
+ & & \multicolumn{2}{c}{Full-development validation} & \multicolumn{2}{c}{Held-out test} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+Model & Checkpoint & ROC-AUC & AP & ROC-AUC & AP \\
 \midrule
-Majority & 6h & pending & pending & pending & pending \\
-Majority & 1h & pending & pending & pending & pending \\
-Decision Tree & 6h & pending & pending & pending & pending \\
-Decision Tree & 1h & pending & pending & pending & pending \\
-Random Forest & 6h & pending & pending & pending & pending \\
-Random Forest & 1h & pending & pending & pending & pending \\
-Logistic (no PCA) & 6h & pending & pending & pending & pending \\
-Logistic (no PCA) & 1h & pending & pending & pending & pending \\
-PCA + logistic & 6h & pending & pending & pending & pending \\
-PCA + logistic & 1h & pending & pending & pending & pending \\
-AdaBoost & 6h & pending & pending & pending & pending \\
-AdaBoost & 1h & pending & pending & pending & pending \\
-Gradient Boosting & 6h & pending & pending & pending & pending \\
-Gradient Boosting & 1h & pending & pending & pending & pending \\
-XGBoost & 6h & pending & pending & pending & pending \\
-XGBoost & 1h & pending & pending & pending & pending \\
-LightGBM & 6h & pending & pending & pending & pending \\
-LightGBM & 1h & pending & pending & pending & pending \\
-CatBoost & 6h & pending & pending & pending & pending \\
-CatBoost & 1h & pending & pending & pending & pending \\
+Majority & 6h & pending & pending &  &  \\
+Majority & 1h & pending & pending &  &  \\
+G0 decision tree & 6h & \(0.6855\pm0.0121\) & \(0.3583\pm0.0683\) &  &  \\
+G0 decision tree & 1h & \(0.6855\pm0.0121\) & \(0.3583\pm0.0683\) &  &  \\
+Random Forest & 6h & pending & pending &  &  \\
+Random Forest & 1h & pending & pending &  &  \\
+G0 logistic (no PCA) & 6h & \(0.6860\pm0.0127\) & \(0.3549\pm0.0710\) &  &  \\
+G0 logistic (no PCA) & 1h & \(0.6860\pm0.0127\) & \(0.3549\pm0.0710\) &  &  \\
+PCA + logistic & 6h & pending & pending &  &  \\
+PCA + logistic & 1h & pending & pending &  &  \\
+AdaBoost & 6h & pending & pending &  &  \\
+AdaBoost & 1h & pending & pending &  &  \\
+Gradient Boosting & 6h & pending & pending &  &  \\
+Gradient Boosting & 1h & pending & pending &  &  \\
+XGBoost & 6h & pending & pending &  &  \\
+XGBoost & 1h & pending & pending &  &  \\
+LightGBM & 6h & pending & pending &  &  \\
+LightGBM & 1h & pending & pending &  &  \\
+CatBoost & 6h & pending & pending &  &  \\
+CatBoost & 1h & pending & pending &  &  \\
 \bottomrule\end{tabular}\end{center}
-Validation cells will contain mean $\pm$ population std over folds and seeds. Test cells will contain the single final score. The paired PCA/no-PCA comparison and majority reference remain explicit.
+Full-development validation values are the unweighted mean and population
+standard deviation across fold--seed scores. Mean Brier scores were 0.1578
+for the G0 decision tree and 0.1620 for G0 logistic regression at each
+checkpoint.
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/4780bd7c656e486e4710066c89c7601de3d15b7b/reports/p4_phase_b_full/G0/verified_full_fold_runs.csv}{Pinned G0 fold scores}
+and
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/4780bd7c656e486e4710066c89c7601de3d15b7b/reports/p4_phase_b_full/G0/verified_full_fold_recipes.json}{G0 model recipes}.
+\paragraph{Full-development validation artifact.}
+The public handoff contains the G0 tree and non-PCA logistic experiment
+metadata, fold scores, prediction indexes, and validation Parquets. Its
+README identifies partial PCA and tuning exports.
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/tag/p4-validation-handoff-2026-11-25}{Public P4 handoff release}
+and
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/download/p4-validation-handoff-2026-11-25/p4-full-scale-2026-11-25.zip}{ZIP download}.
+
 \section{Extra analysis}
 \subsection{P2: temporal drift (development only)}
 Full eligible validation late rates are 28.44\%, 22.55\%, 16.56\% and 19.35\% for July--October, versus 20.98\%, 22.12\%, 22.24\% and 21.65\% in their own training windows. A Kitagawa decomposition over carrier by origin-local six-hour scheduled band attributes respectively -0.040, -0.142, -0.227 and -0.030 percentage points to composition change, and +7.507, +0.575, -5.457 and -2.275 points to within-cell rate change. Unsupported cells carry the observed rate across periods, assigning their contribution to composition; all supports/masses are exported. This is descriptive, not causal.
