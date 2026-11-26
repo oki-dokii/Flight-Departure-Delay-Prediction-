@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "registered_claims": 35,
+  "checked_values": 95,
+  "numeric_failures": 0,
+  "held_out_cells_blank": true,
+  "selected_calibration_cells_blank": true,
+  "evidence_labels_present": true,
+  "scope": "Registered numeric claims in the main EDA table, population rates/decomposition, pilot feature PSI maximum, drift table and seed spread, default calibration narrative, and selected P5 pilot table/AP/alert narrative. Protocol constants, release identity JSON, static station metadata, encoding/SHAP narrative and figure pixels require separate review. Missing/changed claims fail; this is not exhaustive natural-language claim discovery.",
+  "pdf_sha256": "e3f6680d8e45722023d3b788e546ed0b15c64fc60fd3161170b93334e5512f93",
+  "manifest_sha256": "9d4b807935d55c063bb039f54a81c80adf2f0387981284475a33702ecad5d919",
+  "csv_sha256": {
+    "reports/p5_phase_b_pilot/summary.csv": "88387eca7ccba4dc69b601d6343b0ca489e9a95bf53704c898ce068b8ca20670",
+    "reports/tables/LATE.csv": "2c56267b50b84b686a5b5b6c024790c639e4069c78b832273418ac29e069eae8",
+    "reports/tables/Origin.csv": "ed17cedfefe330907e1fa70668bb7b14dfbffb7b28c2d5dc1618e791b73a326c",
+    "reports/tables/Reporting_Airline.csv": "d62d9d6f082de145e194e8fb3383cf2c290080b45e30841ed71b6b298c763e05",
+    "reports/tables/arrival_checks.csv": "f295f5448cb79447bcf5dbe4aa11c375db0befd431d5c9b001d9d1f156636cc1",
+    "reports/tables/calibration_summary.csv": "3673890204401c09daeec8702add04b1d9c079c5286cbb01e740625fd6e23740",
+    "reports/tables/drift_composition.csv": "99bc1a1b47cb5718d16019699e2e71fc24524ebfb1f23980c622226d7d3ceea7",
+    "reports/tables/drift_features.csv": "4280c3e3e5e07d6cb70ddcd2945c4d49aa962b5c2b5d635d77a952cd44646d1a",
+    "reports/tables/drift_performance_folds.csv": "081d61326c53506397e96055954df28db875ce3cc9baca000cae39126cd8b7c2",
+    "reports/tables/drift_population_folds.csv": "5a5692a801b159db60b4b1bc24fcf52b1406cb46110b11e1697cd28d436d76fc",
+    "reports/tables/drift_seed_spread.csv": "7dd4a8a6733cc7a6f05fa57d20d4176cdc7a5140047cd516b4f1090bf8d89fbb",
+    "reports/tables/hour.csv": "4380a6038a99ee7f11aaeacf5f9dbeb2daba5e2ed27b471269808e3ef6cfe17b",
+    "reports/tables/route.csv": "b1126786b94ca0523198a6b35dd060ca41add8c603d1d632d416d7c139c9e1aa",
+    "reports/tables/tail_number_missing.csv": "418e35bc4378643ce6cd4df5716074c72b203e4b2b64e18d726f23bea7d61cef"
+  }
+}

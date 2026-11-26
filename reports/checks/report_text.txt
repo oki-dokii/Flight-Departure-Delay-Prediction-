@@ -1,0 +1,810 @@
+Flight Departure Delay Prediction
+Phase B team report; P2 audit and analysis contribution
+November 26, 2026
+Evidence labels and freeze. Pilot marks sampled development experiments. F ull-development vali-
+dation marks the complete development cohort and its eligible forward-validation folds; descriptive statistics
+are not model scores. Held-out test is closed, with all score cells blank. Dates, checkpoint definitions, units,
+thresholds and audit metadata are protocol details rather than performance estimates. This update uses
+committed tables and figures only; it performs no training and does not open holdout files.
+1 Problem and checkpoints
+The target is LATE = 1 when gate departure occurs at least 15 minutes after its scheduled gate departure.
+Takeoff delay is a different outcome. We predict at 360 minutes (six hours) and 60 minutes (one hour) before
+scheduled UTC gate departure. Every input must be available at or before that flight’s checkpoint; ambiguous
+availability is blocked. Both horizons use the same eligible flights still awaiting departure at the one-hour
+checkpoint. The repository is https://github.com/oki-dokii/Flight-Departure-Delay-Prediction- .
+2 Dataset and EDA
+F ull-development validation (descriptive). The source is the BTS Reporting Carrier On-Time Perfor-
+mance table: monthly electronically reported domestic nonstop flight operations of reporting carriers. The
+recorded BTS source is public US government data; the airport coordinate metadata from the pinned OurAir-
+ports snapshot is public domain under the terms referenced in DATA_SOURCES.md. Source archive receipts
+in data/download_manifest.json record URLs, hashes and download dates (the reference collection was
+November 21, 2026). Release download dates are distinct from collection dates. P3 has supplied weather
+code, manifests and provenance metadata; P2 has reviewed units and public-domain terms. Checkpoint
+availability, missingness semantics, two station identities and full matrix delivery remain pending.
+The analyzed Phase A development file contains 5,749,041 flights with late fraction 21.3831%. Its size
+is 265,113,328 bytes and its verified SHA-256 is recorded in reports/tables/p2_evidence.json. This is
+the original unmasked Phase A file, not P1’s separately published arrival-masked Phase B asset. We use no
+arrival predictor in the P2 pilot analyses. The common eligible population contains 5,749,040 targets; one
+departure exactly one hour early is excluded by the frozen split function. Its event can remain in history for
+other targets.
+EDA uses development rows only: origin-local scheduled hour/day, month, carrier, origin, route, holidays,
+delays and missingness. These describe associations, with group counts exported alongside rates. The late
+fraction decreases from July through September and rebounds in October; it is not monotone. Carrier and
+airport differences may reflect route mix and shared shocks. No full-development descriptive mapping is
+authorized as a learned predictor. Source null counts for scheduled elapsed minutes and distance are both
+zero in this release; silent coercion/filling in the builder remains a review concern for new inputs.
+Descriptive grouping Displayed flights Min. late (%) Max. late (%)
+Scheduled local hour 5,749,041 7.28 33.53
+Carrier 5,749,041 14.01 27.02
+Top-volume origins 2,983,250 15.37 28.59
+Top-volume routes 155,569 7.56 30.81
+Full-development validation (descriptive): source tables are:
+hour.csv, Reporting_Airline.csv, Origin.csv and route.csv. Origin/route displays are volume-selected
+subsets; their extrema do not describe all airports/routes. The tail-missingness table contains only the non-
+missing category, covering 5,749,041 flights. This describes retrospective completeness, not aircraft assign-
+ment availability at either checkpoint.
+3 Cleaning and UTC handling
+F ull-development validation (audit). P1 owns cleaning and UTC facts. The documented pipeline
+removes exact duplicates, cancellations or unknown cancellation status, unmatched origin zones and unusable
+departure fields; it retains diverted flights with usable departures and preserves missing tails explicitly.
+It interprets BTS local FlightDate and HHMM using the origin zone, treating 2400 as next midnight.
+TimezoneFinder 6.5.9 and tzdata 2025.2 are pinned. DepDelay supplies elapsed time to reconstruct actual
+departure and the published actual local clock is checked separately. Equality of reconstructed UTC delay
+with DepDelay is partly by construction, not independent validation.
+A-SCHED assumes schedule timestamps are correct and known at T. A computation over development
+local scheduled clocks finds zero ambiguous fall-back rows; the conservative union of US-origin timezone
+ambiguity sets is empty. Thus the outcome-assisted branch cannot choose between distinct schedule instants
+for these development rows. The assumption does not validate retrospective schedule versioning or the closed
+test window: local 01:00–01:59 on November 2 can have two readings in DST-observing origins, and P1 must
+resolve the outcome-assisted choice before final scoring.
+The committed arrival checks record 153 scheduled-arrival clock mismatches, 79 actual-arrival mismatches
+and 16,783 actual arrivals unavailable for comparison. P1’s Phase B copy masks mismatched timestamps;
+that masking is not present in P2’s analyzed Phase A file. No raw ZIPs or test-period flight records were
+opened.
+4 Split design and evaluation
+Four expanding training windows validate on July, August, September and October. Both scheduled and
+observed training departures must precede the cutoff one day before validation begins. All selection uses
+get_folds() positional indices with .iloc. Preprocessing is fitted within the training draw. Development
+uses scheduled UTC times in [2025-01-01, 2025-10-31); the following 48 hours are excluded. The closed test
+begins 2025-11-02 00:00 UTC . Its count and metrics are pending P1’s single final run after freeze.
+Seeds 42, 73 and 101 vary common month-stratified training draws (about 90% of available training
+flights, capped at about 500,000). Validation retains all eligible rows in the declared cohort. PR-AUC
+means average precision and is the selection metric; ROC-AUC is reported alongside it. The harness reports
+population standard deviation (ddof=0) across four folds times three seeds. That pooled spread mostly
+reflects fold drift, so P2 also exports within-fold between-seed spread. Pilot and full-population results are
+kept explicitly separate.
+5 Column audit
+F ull-development validation (schema audit; weather station counts are static metadata). The
+source CSV contains exactly one row per source Parquet field and is validated for exact schema equality.
+The separate derived feature registry records group, source lineage, transformation, checkpoint availabil-
+ity, available-at rule, named assumption, approval and leak risk. Unknown fields, duplicate/missing rows
+and unapproved conditional inputs fail closed. Existing raw-frame approval remains conservative. The P2
+manifest gate checks both checkpoints before analysis; it does not modify the shared harness.
+Target-flight operational outcomes (including DepDelay, actual departures/arrivals and post-flight delay
+causes) are forbidden predictors. Conditional source schedule timestamps can support only the reviewed
+transformations under A-SCHED. A-HISTORY explicitly assumes other flights’ gate departures and labels
+are available from an operational feed by event time, with events no later than T and the target excluded.
+Counts describe retained usable departure history, not all scheduled airport demand.
+D1 restricts tail-derived features to exploratory G3. They are registered as pending G3 ablation inputs,
+requiring written P1/P3 approval that schedules, assignment and prior-leg arrival are available from an
+operational feed at T, plus continuity checks. P3 released the full matrices and documented the retrospective
+tail-assignment assumption.
+5.1 Weather audit update, November 25, 2026
+P2 reviewed P3 revision 065c2a1 and P4 revision 0c41969 without changing teammates’ feature/model code.
+All six weather predictors remain pending at both checkpoints. P3 subsequently published the canonical
+weather_missing indicator and regenerated the feature hashes.
+Candidate Unit / review finding
+wx_temp_c Celsius from Fahrenheit, (F − 32)5/9
+wx_wind_speed_kt Knots
+wx_wind_gust_kt Knots; missing-to-zero rule needs evidence
+wx_visibility_mi Miles
+wx_precip_1h_mm Inches ×25.4; missing does not prove dry
+weather_missing Absent/unmapped/stale report, not variable completeness
+The static map has 349 distinct origin/station pairs; 347 match one current IEM catalog station within a
+declared 5 km review threshold. PBI and PPG are unresolved. These are location checks, not development
+weather coverage or proof of 2025 sensor history. Units and missing-value semantics were checked against the
+IEM download documentation; public-domain terms are linked in the audit report. P3 records a November
+24, 2026 download; P2 did not read the mixed-period observation artifact.
+The backward join enforces observation time no later than T and a six-hour age limit. It does not establish
+report receipt/publication by T, and keep-last duplicates lack revision-time evidence. Missing precipitation
+becomes zero; missing gust becomes zero when speed exists. A report can have the missing flag zero while
+some measurements remain null. A-WEATHER therefore stays pending. Namespaced external source rows
+are recorded separately from the unchanged source-Parquet schema audit.
+6 Feature engineering
+6.1 Prediction Checkpoints and Full-Scale Feature Architecture
+The departure delay prediction task is framed as a binary classification problem: predicting whether a
+scheduled commercial domestic flight will depart its origin gate with a delay ≥ 15 minutes (LATE = 1 ) or
+< 15 minutes (LATE = 0), based on reconstructed UTC gate departure timestamps (OBSER VED − TIME).
+Features are computed strictly relative to two pre-departure prediction checkpoints:
+1. Strategic Dispatch Horizon ( T = 360 min / 6h): Models early-day dispatch planning and baseline
+weather regimes before surface queues build.
+2. T actical Gate Horizon ( T = 60 min / 1h): Models gate operations, recent surface weather obser-
+vations, 3-hour origin departure congestion, and inbound aircraft arrival status.
+The feature matrices retain the original development row order. The cutoff check covered all 5,749,041
+flights at each horizon. It found one flight whose own departure had to be excluded from its one-hour
+congestion history. That flight also fails the common target eligibility rule because it had already departed.
+6.2 Anti-Leakage Safeguards and Weather Integration
+The feature pipeline ( src/features.py and src/weather.py) enforces four protocol guarantees:
+• Strict Cutoff Rule: No event timestamped after cutoff T = TIME − ∆T enters computation.
+• T arget Self-Exclusion: Origin airport 3-hour congestion ( origin_departures_3h,
+origin_late_rate_3h) excludes the target flight itself when present in the history pool, even if it
+pushed back early. Cancellation rates are excluded because BTS records do not timestamp when
+cancellations were announced.
+• Hourly Surface W eather Join (Decision D2): Routine METAR and SPECI observations
+(3,826,099 records covering 347/349 origin airports, Jan 2025–Jan 2026) were retrieved from the
+public-domain Iowa Environmental Mesonet (IEM) ASOS archive and joined via strict backward
+merge_asof (obs_time_utc ≤ cutoffT ). Observations older than 6h or from unmapped stations
+trigger weather_missing = 1 without silent imputation.
+• Decision D1 Quarantine (T ail-Chain F eatures): Because BTS reports retrospective final tail
+numbers rather than live dispatch assignments, inbound aircraft features are excluded from the
+primary set ( G1) and isolated in G3 as an ablation under the operational-feed assumption.
+6.3 Feature-Group Ablation Analysis
+F ull-development validation. G0 is the schedule baseline and G1 is the primary benchmark. G2 and
+G3 are exploratory. Weather observations have measurement timestamps, but the archive does not establish
+when operators received the reports. The tail-chain comparison additionally assumes that operators knew
+the aircraft assignment at the checkpoint. To quantify how much predictive signal each information source
+contributes across horizons, we evaluated four nested feature groups ( G0: schedule/route; G1: + 3h origin
+congestion; G2: + origin surface weather; G3: + inbound tail chain) using a fixed LightGBM pipeline
+at feature-code revision c9f5560 across all 4 rolling validation folds and 3 seeds ( 42, 73, 101). Spreads are
+reported as population standard deviation (ddof = 0) matching the project evaluation harness.
+Table 1: Full-development validation of feature groups (LightGBM, revision c9f5560, mean ± population
+std (ddof = 0) across 4 folds × 3 seeds).
+Group Checkpoint V al PR-AUC V al ROC-AUC
+G0: Schedule & Route 360 min (6h) 0.366 ± 0.067 0 .688 ± 0.010
+G0: Schedule & Route 60 min (1h) 0.366 ± 0.067 0 .688 ± 0.010
+G1: + Origin Congestion (3h) 360 min (6h) 0.381 ± 0.069 0 .693 ± 0.010
+G1: + Origin Congestion (3h) 60 min (1h) 0.415 ± 0.066 0 .705 ± 0.009
+G2: + Surface Weather (D2) 360 min (6h) 0.381 ± 0.070 0 .693 ± 0.011
+G2: + Surface Weather (D2) 60 min (1h) 0.417 ± 0.067 0 .706 ± 0.010
+G3: + Tail Chain (D1 ablation) 360 min (6h) 0.381 ± 0.069 0 .695 ± 0.011
+G3: + Tail Chain (D1 ablation) 60 min (1h) 0.542 ± 0.060 0 .793 ± 0.006
+At T = 6h, origin congestion provides a modest +0.014 PR-AUC gain over schedule alone, while weather
+and inbound rotation add negligible signal ( < 0.001). At T = 1 h, recent origin congestion adds +0.049
+PR-AUC ( 0.366 → 0.415) and surface weather adds +0.002 PR-AUC ( 0.415 → 0.417). Under the Decision
+D1 operational-feed assumption ( G3), inbound aircraft continuity yields a +0.125 PR-AUC jump ( 0.417 →
+0.542, ROC-AUC 0.793), showing the largest measured increase among the groups under the retrospective
+assignment assumption. These differences compare a fixed booster on matched folds and seeds. The larger
+one-hour gain is consistent with recent departures giving a more current picture of congestion. The G3 gain
+depends on knowing the final tail assignment at prediction time. Figure 1 visualizes this progression across
+horizons.
+7 Classical models and PCA comparison
+7.1 Full-development validation protocol
+The benchmark used four chronological July–October validation folds and seeds 42, 73, and 101. Candidates
+shared month-stratified training draws targeting approximately 500,000 flights per fold and seed. Each
+Figure 1: Full-development validation average precision across feature groups G0–G3 at the 6h and 1h
+checkpoints.
+candidate was scored on the eligible validation rows for its fold. Mean average precision (AP) ranked
+candidates, followed by mean ROC-AUC and then candidate order for ties. Completed full-fold refits used
+all eligible training rows for that fold. Screening and full-fold refits used the same validation windows.
+Decision tree. The unpruned grid crossed maximum depths of 3, 6, 12, and unbounded with minimum
+leaf sizes of 10, 50, and 200. For each of the two leading structures, the search retained the unpruned score
+at α = 0 and evaluated 10−6, 10−5, 10−4, and 10−3, plus the 25th, 50th, and 75th percentiles of the positive
+pruning alphas below the final path endpoint. The supplemental values came from that structure’s first-fold
+training draw at seed 42. Cost-complexity pruning penalizes leaf count. Increasing α favors smaller subtrees.
+Random forest. The initial 64-tree grid crossed depths of 12, 24, and unbounded with minimum leaf sizes
+of 10 and 50, using square-root feature sampling. The next stage compared square-root and 30% feature
+sampling for the two leading structures. The leading configuration then received 128- and 256-tree trials.
+The G0 search used unweighted fitting. Frozen classical benchmark .
+PCA and matched controls. Each matched logistic or forest pair shared fold-local imputation, numeric
+scaling, and one-hot encoding. Centered PCA used the eigendecomposition of the training covariance. For
+each fit, it retained the smallest component prefix reaching either 90% or 95% cumulative explained variance.
+Each PCA arm and its own no-PCA control shared classifier settings, training and validation rows, folds, and
+seeds. The matched forest control used the same numeric scaling as the forest PCA arm. P4 preprocessing
+and model factories .
+7.2 Full-development validation — G0 tree tuning
+At six hours, the selected tuning configuration used unbounded depth, 200 minimum samples per leaf, and
+α ≈ 6.66 × 10−6. At the selected depth and leaf size, pruning increased mean validation PR-AUC from
+0.3530 to 0.3540 and reduced average tree size from 1,896 to 457 leaves on the tuning draws. The October
+tuning fit at seed 42 was scored for permutation importance on 3,999 stratified validation flights. Over five
+repetitions, shuffling the cosine of scheduled UTC hour and shuffling carrier reduced average precision by
+3 6 12 Unbounded
+Maximum depth
+0.225
+0.250
+0.275
+0.300
+0.325
+0.350
+0.375
+0.400
+0.425Validation PR-AUC
+Unpruned, minimum leaf size 200.0
+0 10 7
+ 10 6
+ 10 5
+ 10 4
+ 10 3
+Pruning
+0.225
+0.250
+0.275
+0.300
+0.325
+0.350
+0.375
+0.400
+0.425Validation PR-AUC
+Pruning performance
+12 depth
+Unbounded depth
+0 10 7
+ 10 6
+ 10 5
+ 10 4
+ 10 3
+Pruning
+0
+250
+500
+750
+1000
+1250
+1500
+1750Mean fitted leaves
+Tree size
+12 depth
+Unbounded depth
+G0 decision tree tuning at 6h
+Figure 2: Full-development validation, G0 tuning at six hours. Tree depth, pruning performance, and fitted
+leaf count.
+0.0777 and 0.0512 on average. The root split on UTC hour cosine at 0.05016 yielded training late rates of
+13.6% and 28.9%.
+0.00 0.02 0.04 0.06 0.08
+Validation PR-AUC drop
+month
+dow_cos
+crs_elapsed_min
+distance
+dow_sin
+hour_sin
+dest
+origin
+carrier
+hour_cos
+G0 October tree permutation importance
+Figure 3: Full-development validation, G0 tuning. October tree importance at seed 42.
+7.3 Full-development validation — G0 tree refits
+The four-fold means pool the twelve July–October validation fits. Each paired checkpoint uses the same fit
+because the G0 inputs are identical.
+Validation month Training flights Validation flights AP ROC-AUC Brier
+July 3,369,902 616,011 0.4545 0.7012 0.1835
+August 3,986,996 596,812 0.3838 0.6931 0.1637
+September 4,586,912 559,894 0.2713 0.6711 0.1370
+October 5,145,342 585,051 0.3237 0.6767 0.1469
+Mean AP was 0.3583, mean ROC-AUC was 0.6855, and mean Brier score was 0.1578.
+0.00 0.02 0.04 0.06 0.08 0.10 0.12 0.14
+Validation PR-AUC drop
+dow_sin
+dow_cos
+month
+distance
+crs_elapsed_min
+hour_sin
+dest
+origin
+carrier
+hour_cos
+Selected G0 tree on full-fold refits
+Figure 4: Full-development validation, G0 full-fold refits. Tree permutation importance.
+7.4 Full-development validation — G0 forest and logistic tuning
+At six hours, the leading forest tuning candidate used 256 trees, unbounded depth, a minimum leaf size of
+10, and square-root feature sampling. Mean validation PR-AUC was 0.3796 and ROC-AUC was 0.7013. The
+matched forest search selected the 90% variance policy, with PR-AUC 0.3657 and paired changes of −0.0138
+PR-AUC and −0.0104 ROC-AUC. The matched logistic search selected 95% variance and scored PR-AUC
+0.3499, compared with 0.3458 at 90% and 0.3540 for the control. The paired 95% changes were −0.0041
+PR-AUC and −0.0029 ROC-AUC. Full-fold refits of the non-PCA logistic control reached mean PR-AUC
+0.3549, ROC-AUC 0.6860, and Brier 0.1620 at both checkpoints. The full-fold PCA scores are pending.
+64 128 256
+Number of trees
+0.32
+0.34
+0.36
+0.38
+0.40
+0.42
+0.44Validation PR-AUC
+40
+60
+80
+100
+120
+140
+160
+Mean seconds per fit and score
+G0 random forest finalist at 6h
+Figure 5: Full-development validation, G0 tuning at six hours. Forest finalist scores and mean fit and scoring
+time.
+7.5 Full-development validation — G1 six-hour tree tuning
+The leading six-hour tuning trial used unbounded depth, a minimum leaf size of 200, and α ≈ 7.15 × 10−6.
+Pruning increased mean validation PR-AUC from 0.3649 to 0.3667 and reduced mean tree size from 1,901
+to 470 leaves on the training draws.
+3 6 12 Unbounded
+Maximum depth
+0.250
+0.275
+0.300
+0.325
+0.350
+0.375
+0.400
+0.425Validation PR-AUC
+Unpruned, minimum leaf size 200
+0 10 7
+ 10 6
+ 10 5
+ 10 4
+ 10 3
+Pruning
+0.250
+0.275
+0.300
+0.325
+0.350
+0.375
+0.400
+0.425Validation PR-AUC
+Pruning performance
+tree_12_200
+tree_None_200
+0 10 7
+ 10 6
+ 10 5
+ 10 4
+ 10 3
+ 10 2
+Effective
+0.300
+0.305
+0.310
+0.315
+0.320
+0.325
+0.330Leaf impurity
+First-fold training path
+tree_12_200
+tree_None_200
+G1 decision tree tuning at 6h
+Figure 6: Full-development validation, G1 tuning at six hours. Tree depth, pruning performance, and the
+first-fold training pruning path.
+7.6 Full-development validation — G1 matched logistic tuning
+The 95% PCA policy ranked first among the logistic PCA targets at both horizons. It changed mean
+validation PR-AUC by −0.0034 at six hours and −0.0023 at one hour, with corresponding ROC-AUC
+changes of −0.0033 and −0.0020 against the matched control. These results use the stratified training draws
+across all four folds and three seeds.
+7.7 Full-development validation — PCA on the tuning draws
+At seed 42, both the July and October training draws reached the 90% and 95% variance targets at 50 and
+91 components for G0 and 41 and 81 components for G1. These component counts were the same at both
+checkpoints within each group. The mean density of the sparse encoded training input was 3.61% for G0
+and 4.30% for G1.
+7.8 Full-development validation — G1 screening only
+At the one-hour checkpoint, the unpruned G1 decision tree with maximum depth 12 and a minimum leaf
+size of 50 led the completed initial structures with mean AP 0.3981. The candidate used sampled training
+draws. Final G1 selection and full-fold refit evidence remain pending. Pinned G1 screening scores .
+7.9 Pilot — classical comparison
+The 20,000-flight paired development pilot compared schedule and calendar predictors (G0) with the addi-
+tion of backward-looking origin congestion (G1). Each search used the four July–October folds and three
+common month-stratified training draws. We ranked configurations by mean average precision (PR-AUC),
+refit selected settings on all eligible training flights in each pilot fold, and scored the full validation portion
+of that fold. July and September pilot prevalence was 28.60% and 16.05%, respectively. Fold–seed spread
+includes this time variation.
+We varied Decision Tree depth and minimum leaf size before tuning the cost-complexity penalty. Sup-
+plementary pruning values came from the first fold’s training draw. Random Forest tuning varied depth,
+minimum leaf size, feature sampling, and tree count. G0 used identical schedule inputs at both horizons. Its
+0 50 100 150 200 250
+Number of components
+0.2
+0.4
+0.6
+0.8
+1.0Cumulative training variance
+G0 at both checkpoints
+July
+October
+0 50 100 150 200 250
+Number of components
+G1 at 6h
+July
+October
+0 50 100 150 200 250
+Number of components
+G1 at 1h
+July
+October
+PCA spectrum on the July and October tuning draws at seed 42
+Figure 7: Full-development validation, tuning draws. Cumulative PCA variance on the common July and
+October training draws.
+selected tree used depth 12, a minimum leaf size of 200, and zero pruning penalty. Its forest used 128 trees
+and reached PR-AUC 0.379 and ROC-AUC 0.694 at both checkpoints.
+Centered PCA was fitted inside each training pipeline after imputation, scaling the numeric block, and
+one-hot encoding. We compared 90% and 95% explained-variance targets with matching Random Forest
+and logistic controls. In G0, the selected 90% PCA policy retained 50 components in each completed pilot
+refit. It changed mean PR-AUC by −0.023 for the matched forest and +0.011 for logistic regression. The
+representative loadings are expressed in each fitted encoded basis. The G1 matched forest pair uses a common
+64-tree cap in both arms to bound the cost of fitting dense projections.
+6 hours 1 hour
+G1 model ROC-AUC PR-AUC ROC-AUC PR-AUC
+Majority 0.500 ± 0.000 0 .218 ± 0.051 0 .500 ± 0.000 0 .218 ± 0.051
+Decision Tree 0.671 ± 0.008 0 .352 ± 0.054 0 .685 ± 0.007 0 .382 ± 0.057
+Random Forest 0.699 ± 0.009 0 .394 ± 0.062 0 .706 ± 0.007 0 .424 ± 0.064
+Matched RF control 0.698 ± 0.010 0 .392 ± 0.062 0 .703 ± 0.008 0 .420 ± 0.066
+Matched RF with PCA 0.689 ± 0.006 0 .368 ± 0.070 0 .700 ± 0.007 0 .407 ± 0.057
+At 6h, the selected pruning penalty was about 0.000148. It removed about 116 leaves on average relative
+to the unpruned tree at the same depth and minimum leaf size and improved sampled-search PR-AUC from
+0.339 to 0.342. The G1 forest selected 256 trees at both checkpoints with mean fit and scoring times of 3.39
+and 2.73 seconds. The matched 90% PCA fits retained 41 components and changed PR-AUC by −0.024 and
+−0.013 for the forest and by +0.016 and +0.011 for logistic regression at 6h and 1h. The October G1 fit
+had 279 encoded columns at 4.3% density. Distance and scheduled duration had the largest first-component
+loadings.
+Permutation importance for the selected G1 tree ranked scheduled UTC hour cosine first at 6h and the
+recent origin late-departure rate first at 1h. The representative October 1h tree used a root threshold of
+0.2235 on recent origin late rate. Its two training child nodes had late rates of 15.9% and 38.9%.
+8 Boosting models
+Pilot (P5 selected configurations). The development pilot used 20,000 flights at checkpoints six hours
+and one hour before departure. We compared five boosting families on the same four chronological folds
+and three training seeds. Each fit chose its iteration count on the trailing fourteen calendar dates inside the
+training draw, with a one-day gap, before refitting on the outer training draw. We selected the highest mean
+average precision at each horizon. These estimates describe the development pilot and inform subsequent
+full-scale tuning.
+3 6 12 Unbounded
+Maximum depth
+0.250
+0.275
+0.300
+0.325
+0.350
+0.375
+0.400Validation PR-AUC
+6h  Depth at  = 0
+0 10 7
+ 10 6
+ 10 5
+ 10 4
+ 10 3
+Pruning
+0.250
+0.275
+0.300
+0.325
+0.350
+0.375
+0.400Validation PR-AUC
+Pruning performance
+tree_12_50
+tree_6_50
+0 10 7
+ 10 6
+ 10 5
+ 10 4
+ 10 3
+ 10 2
+Effective
+0.29
+0.30
+0.31
+0.32
+0.33Leaf impurity
+First-fold training path
+tree_12_50
+tree_6_50
+3 6 12 Unbounded
+Maximum depth
+0.28
+0.30
+0.32
+0.34
+0.36
+0.38
+0.40
+0.42
+0.44Validation PR-AUC
+1h  Depth at  = 0
+0 10 7
+ 10 6
+ 10 5
+ 10 4
+ 10 3
+Pruning
+0.28
+0.30
+0.32
+0.34
+0.36
+0.38
+0.40
+0.42
+0.44Validation PR-AUC
+Pruning performance
+tree_12_200
+tree_None_200
+0 10 7
+ 10 6
+ 10 5
+ 10 4
+ 10 3
+ 10 2
+Effective
+0.300
+0.305
+0.310
+0.315
+0.320
+0.325
+0.330
+0.335Leaf impurity
+First-fold training path
+tree_12_200
+tree_None_200
+Decision Tree on G1 pilot
+Figure 8: Pilot, G1 decision-tree depth and pruning comparisons.
+64 128 256
+Number of trees
+0.32
+0.34
+0.36
+0.38
+0.40
+0.42
+0.44
+0.46Validation PR-AUC
+6h
+64 128 256
+Number of trees
+0.36
+0.38
+0.40
+0.42
+0.44
+0.46
+0.48Validation PR-AUC
+1h
+0.75
+1.00
+1.25
+1.50
+1.75
+2.00
+2.25
+2.50
+Mean seconds per fit and score
+0.75
+1.00
+1.25
+1.50
+1.75
+2.00
+2.25
+2.50
+Mean seconds per fit and score
+Random Forest finalist on G1 pilot
+Figure 9: Pilot, G1 random forest finalist scores and runtime as tree count varies.
+0 50 100 150 200 250
+Components
+0.2
+0.4
+0.6
+0.8
+1.0Cumulative variance
+6h  Full training variance
+1 2 3 4
+July October fold
+0.06
+0.05
+0.04
+0.03
+0.02
+0.01
+0.00
+0.01
+0.02
+PCA minus control PR-AUC
+pca_logistic
+pca_rf
+0 50 100 150 200 250
+Components
+0.2
+0.4
+0.6
+0.8
+1.0Cumulative variance
+1h  Full training variance
+1 2 3 4
+July October fold
+0.04
+0.03
+0.02
+0.01
+0.00
+0.01
+0.02
+PCA minus control PR-AUC
+pca_logistic
+pca_rf
+Matched PCA comparison on G1 pilot
+Figure 10: Pilot, G1 training-only PCA spectra and paired changes in validation AP.
+0.000 0.025 0.050 0.075 0.100 0.125
+Validation PR-AUC drop
+dow_cos
+origin
+dest
+month
+crs_elapsed_min
+distance
+hour_sin
+dow_sin
+origin_departures_3h
+carrier
+origin_late_rate_3h
+hour_cos
+6h
+0.00 0.02 0.04 0.06 0.08 0.10
+Validation PR-AUC drop
+crs_elapsed_min
+hour_sin
+dow_sin
+month
+origin
+dest
+dow_cos
+distance
+origin_departures_3h
+carrier
+hour_cos
+origin_late_rate_3h
+1h
+Selected tree permutation importance on G1 pilot
+Figure 11: Pilot, G1 tree permutation importance on the original validation predictors.
+6 hours 1 hour
+Model ROC-AUC PR-AUC ROC-AUC PR-AUC
+AdaBoost 0.682 0.354 0.697 0.398
+Gradient Boosting 0.689 0.367 0.700 0.405
+XGBoost 0.697 0.383 0.700 0.415
+LightGBM 0.698 0.387 0.704 0.420
+CatBoost 0.693 0.376 0.703 0.409
+At 6 hours, LightGBM achieved mean average precision 0.387 (fold–seed standard deviation 0.067). At
+a 10% alert budget, precision was 46.0% and lift was 2.15 times fold prevalence. The largest mean absolute
+permutation SHAP contributions in the October sample came from the cosine of scheduled UTC departure
+hour and the origin airport’s late-departure rate over the previous three hours.
+At 1 hour, LightGBM achieved mean average precision 0.420 (fold–seed standard deviation 0.061). At a
+10% alert budget, precision was 50.3% and lift was 2.34 times fold prevalence. The largest mean absolute
+permutation SHAP contributions in the October sample came from the origin airport’s late-departure rate
+over the previous three hours and the cosine of scheduled UTC departure hour.
+Native categorical handling changed CatBoost mean average precision by +0.002 at six hours and -0.002
+at one hour compared with one-hot input. For LightGBM the corresponding differences were -0.013 and
+-0.017. Each comparison uses the best tested settings for each encoding.
+The operational comparison covers all ten model configurations at 5%, 10% and 20% alert budgets. An
+illustrative cost assigns one unit to each alert and five units to each missed delay. The SHAP analysis
+averages 32 random feature orderings over 128 October validation flights per horizon, using training flights
+as backgrounds. Correlated features limit causal interpretation.
+Figure 12: Pilot: validation lift by alert budget at each checkpoint.
+Figure 13: Pilot: illustrative cost per flight as alert capacity changes.
+Figure 14: Pilot: mean absolute probability contributions on the October pilot sample.
+9 Results
+The completed G0 rows report schedule-only full-fold refits. G0 has identical predictor values across check-
+points, so the same fitted predictions support both horizons. Other configurations in this table remain
+pending.
+Full-development validation Held-out test
+Model Checkpoint ROC-AUC AP ROC-AUC AP
+Majority 6h pending pending
+Majority 1h pending pending
+G0 decision tree 6h 0.6855 ± 0.0121 0 .3583 ± 0.0683
+G0 decision tree 1h 0.6855 ± 0.0121 0 .3583 ± 0.0683
+Random Forest 6h pending pending
+Random Forest 1h pending pending
+G0 logistic (no PCA) 6h 0.6860 ± 0.0127 0 .3549 ± 0.0710
+G0 logistic (no PCA) 1h 0.6860 ± 0.0127 0 .3549 ± 0.0710
+PCA + logistic 6h pending pending
+PCA + logistic 1h pending pending
+AdaBoost 6h pending pending
+AdaBoost 1h pending pending
+Gradient Boosting 6h pending pending
+Gradient Boosting 1h pending pending
+XGBoost 6h pending pending
+XGBoost 1h pending pending
+LightGBM 6h pending pending
+LightGBM 1h pending pending
+CatBoost 6h pending pending
+CatBoost 1h pending pending
+Full-development validation values are the unweighted mean and population standard deviation across fold–
+seed scores. Mean Brier scores were 0.1578 for the G0 decision tree and 0.1620 for G0 logistic regression at
+each checkpoint. Pinned G0 fold scores and G0 model recipes .
+F ull-development validation artifact. The public handoff contains the G0 tree and non-PCA logistic
+experiment metadata, fold scores, prediction indexes, and validation Parquets. Its README identifies
+partial PCA and tuning exports. Public P4 handoff release and ZIP download .
+10 Extra analysis
+10.1 P2: temporal drift (development only)
+F ull-development validation (population prevalence and decomposition). Full eligible validation
+late rates are 28.44%, 22.55%, 16.56% and 19.35% for July–October, versus 20.98%, 22.12%, 22.24% and
+21.65% in their own training windows. A Kitagawa decomposition over carrier by origin-local six-hour
+scheduled band attributes respectively -0.040, -0.142, -0.227 and -0.030 percentage points to composition
+change, and +7.507, +0.575, -5.457 and -2.275 points to within-cell rate change. Unsupported cells carry the
+observed rate across periods, assigning their contribution to composition; all supports/masses are exported.
+This is descriptive, not causal.
+Pilot (feature drift and rehearsal model comparisons). Feature drift uses only the paired pi-
+lot. PSI uses training-fold numeric deciles or training categorical shares (a 1% rare threshold), an explicit
+rare/unseen bucket and separate missing bins. Thresholds 0.1/0.25 are conventions. Numeric KS is an effect
+size only, without p-values. Time-deterministic calendar fields are flagged and excluded from the ranking.
+The largest non-calendar PSI is origin late rate over three hours in July: 0.1387 at one hour and 0.1156 at
+six hours. Full-population feature PSI is pending P3 matrices.
+Normalized AP is (AP − π)/(1 − π), with validation prevalence π; AP/prevalence lift and paired model
+differences at identical fold/seed are also exported. For the rehearsal LightGBM pilot, seed-averaged values
+are:
+Fold AP 6h Norm. AP 6h AP 1h Norm. AP 1h
+1 0.4857 0.2798 0.5099 0.3136
+2 0.4038 0.2078 0.4437 0.2607
+3 0.3072 0.1748 0.3664 0.2452
+4 0.3552 0.2141 0.3615 0.2218
+Fold means explain 99.07% and 99.76% of its pooled AP variance at six hours and one hour. The correspond-
+ing within-fold seed RMS standard deviations are 0.0064 and 0.0030. These seeds represent training-draw
+variation. Winter conditions and holidays may shift the unseen regime; no winter statistics were inspected.
+Figure 15: Full-development validation: paired eligible development prevalence: each validation month
+against its own training window.
+Figure 16: Pilot: paired non-calendar feature PSI, averaged across folds; training-only bins.
+10.2 P2: calibration (paired development pilot)
+Pilot (rehearsal defaults; selected-model placeholders below). Unchanged model factories and the
+rehearsal configuration produced probabilities for every validation flight across all four folds, three seeds and
+two checkpoints: 240 model runs and 480,000 probability rows. Brier skill compares with the training-draw
+base-rate predictor on the same validation fold; mean reference Brier is 0.1711. The most-frequent majority
+classifier gives zero late probability, a separate hard baseline.
+LightGBM’s default pilot has mean Brier 0.1556 at six hours and 0.1520 at one hour, with mean per-run
+Brier skill 0.0862 and 0.1085. Its ECE is 0.0407 and 0.0367. Mean prediction minus observed rate is +0.0204
+and +0.0140. AdaBoost’s mean Brier skill is negative at both horizons despite useful AP: ranking quality
+does not establish calibrated risk. These defaults are not the selected P5 configurations.
+Reliability bins use validation-probability quantiles for evaluation only, collapsing ties; per-bin n and
+prediction ranges are exported. Intervals resample whole scheduled-UTC days (200 replicates, 95% percentile
+bounds), retaining within-day dependence and conditioning on the fitted model and bins. They do not include
+refitting uncertainty or remove all cross-day dependence. Figures show seed 42; CSVs cover all seeds. Class
+weighting/scale_pos_weight and model-specific probability behavior can distort calibration. No calibrator
+was fitted on validation/test; optional inner-training recalibration is deferred.
+Figure 17: Pilot: one-hour default LightGBM pilot reliability by fold; 95% day-block observed-rate intervals.
+All-model diagrams are exported separately.
+F ull-development feature analysis. The released matrices cover 5,749,041 flights at each horizon. At
+one hour, the late rate rose from 12.6% when fewer than 10% of recent origin departures were late to 50.8%
+when at least half were late. Flights with reported visibility of one to under three miles had a 30.8% late
+rate versus 21.1% at five or more miles. For flights with an observable prior leg, the rate was 9.0% after an
+early arrival and 17.3% after an arrival at least an hour late. These are descriptive development associations.
+Weather receipt timing and live tail assignments remain unverified.
+F ull-development calibration and drift. For the two completed G0 models, the calibration reader
+reproduced average precision, ROC-AUC and Brier score on all 48 exported fold, seed and checkpoint com-
+binations. The tree had mean Brier score 0.1578 and expected calibration error 0.0407. Logistic regression
+had mean Brier score 0.1620 and expected calibration error 0.0702. The 28,293,216 prediction rows include
+repeated predictions of the same validation flights across models, seeds and horizons. In G1, the strongest
+average distribution shift outside calendar variables was the origin’s recent late rate. Its one-hour population
+stability index was 0.106 in July, 0.002 in August, 0.097 in September and 0.014 in October, relative to the
+corresponding eligible training window.
+Selected boosting pilot. The calibration reader reproduced average precision and ROC-AUC from all
+120 selected-model probability exports. The per-fold Brier scores, reliability bins and day-bootstrap intervals
+are published under reports/selected_boosting_pilot/.
+F ull-development validation: selected G1 calibration draft. For each selected P4/P5 model and
+checkpoint, report the frozen configuration/feature-group identity, validation support, mean Brier, training-
+prevalence-reference Brier skill, ECE and signed calibration bias. All selected-model numeric cells below
+are intentionally empty. Selection recipes and AP/ROC-AUC summaries cannot replace per-flight selected
+validation probabilities. Reuse the exact fold/seed/flight identities; verify exported scores before drawing
+reliability diagrams. No model or calibrator is fitted by this handoff.
+Selected owner Checkpoint Brier Skill ECE Bias
+P4 6h
+P4 1h
+P5 6h
+P5 1h
+Pending artifacts: selected probabilities, frozen configs/manifests and provenance.
+Check with src.selected_calibration.
+Reliability figure slots are pending for both checkpoints. Held-out test: no calibration fit, diagram, support
+count or score is reported.
+11 Limitations
+F ull-development validation (population audit); Pilot (PSI and calibration); Held-out test
+(closed). Reporting-carrier domestic coverage limits transfer to other operators and international flights.
+Excluding cancellations and unusable departures conditions the target and undercounts congestion. January–
+October of one year cannot characterize recurring seasonality or the closed November–December regime.
+Carrier/airport effects are confounded by route mix and shared shocks.
+BTS monthly reporting is retrospective, not a live feed. A-SCHED and A-HISTORY are explicit opera-
+tional interpretations, not evidence of schedule versioning or latency. D1 excludes unverified tail assignments
+from primary inputs; the G3 operational-feed and continuity assumptions remain pending approval. The zero
+development DST ambiguity count does not settle outcome-assisted schedule reconstruction in the fall-back
+test window. Arrival clocks have 153 scheduled mismatches, 79 actual mismatches and 16,783 actual arrivals
+not comparable; P2’s Phase A file is unmasked and no arrival predictor is used. Weather unit conversions
+and public-domain terms have been reviewed, but PBI/PPG station identity, partial-null/zero-fill semantics
+and receipt/revision timing remain unresolved. The loader reads a mixed-period weather artifact; P2 did
+not run it. The published matrices use the canonical weather indicator.
+Full G0 and G1 feature drift, G0 tree and logistic calibration, and descriptive weather and inbound
+analyses use development flights. The selected boosting calibration and the month ablation use the paired
+pilot. Fold variation and repeated validation flights limit the interpretation of pooled seed spreads. Final
+test starts 2025-11-02 UTC; its flight count and results remain pending P1’s single final run.

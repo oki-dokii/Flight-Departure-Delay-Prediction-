@@ -1,0 +1,1247 @@
+{
+  "scope": "Registered numeric claims in the main EDA table, population rates/decomposition, pilot feature PSI maximum, drift table and seed spread, default calibration narrative, and selected P5 pilot table/AP/alert narrative. Protocol constants, release identity JSON, static station metadata, encoding/SHAP narrative and figure pixels require separate review. Missing/changed claims fail; this is not exhaustive natural-language claim discovery.",
+  "claims": [
+    {
+      "id": "development_rows",
+      "label": "Full-development validation",
+      "pattern": "contains (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) flights with late fraction (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?)%",
+      "values": [
+        {
+          "csv": "reports/tables/LATE.csv",
+          "column": "n",
+          "where": {},
+          "op": "sum",
+          "format": ",.0f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/tail_number_missing.csv",
+          "column": "late_rate",
+          "where": {},
+          "op": "single",
+          "format": ".4f",
+          "scale": 100
+        }
+      ]
+    },
+    {
+      "id": "eda_hour",
+      "label": "Full-development validation",
+      "pattern": "Scheduled local hour (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/hour.csv",
+          "column": "n",
+          "where": {},
+          "op": "sum",
+          "format": ",.0f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/hour.csv",
+          "column": "late_rate",
+          "where": {},
+          "op": "min",
+          "format": ".2f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/hour.csv",
+          "column": "late_rate",
+          "where": {},
+          "op": "max",
+          "format": ".2f",
+          "scale": 100
+        }
+      ]
+    },
+    {
+      "id": "eda_Reporting_Airline",
+      "label": "Full-development validation",
+      "pattern": "Carrier (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/Reporting_Airline.csv",
+          "column": "n",
+          "where": {},
+          "op": "sum",
+          "format": ",.0f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/Reporting_Airline.csv",
+          "column": "late_rate",
+          "where": {},
+          "op": "min",
+          "format": ".2f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/Reporting_Airline.csv",
+          "column": "late_rate",
+          "where": {},
+          "op": "max",
+          "format": ".2f",
+          "scale": 100
+        }
+      ]
+    },
+    {
+      "id": "eda_Origin",
+      "label": "Full-development validation",
+      "pattern": "Top-volume origins (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/Origin.csv",
+          "column": "n",
+          "where": {},
+          "op": "sum",
+          "format": ",.0f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/Origin.csv",
+          "column": "late_rate",
+          "where": {},
+          "op": "min",
+          "format": ".2f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/Origin.csv",
+          "column": "late_rate",
+          "where": {},
+          "op": "max",
+          "format": ".2f",
+          "scale": 100
+        }
+      ]
+    },
+    {
+      "id": "eda_route",
+      "label": "Full-development validation",
+      "pattern": "Top-volume routes (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/route.csv",
+          "column": "n",
+          "where": {},
+          "op": "sum",
+          "format": ",.0f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/route.csv",
+          "column": "late_rate",
+          "where": {},
+          "op": "min",
+          "format": ".2f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/route.csv",
+          "column": "late_rate",
+          "where": {},
+          "op": "max",
+          "format": ".2f",
+          "scale": 100
+        }
+      ]
+    },
+    {
+      "id": "tail_completeness",
+      "label": "Full-development validation",
+      "pattern": "nonmissing category, covering (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) flights",
+      "values": [
+        {
+          "csv": "reports/tables/tail_number_missing.csv",
+          "column": "n",
+          "where": {},
+          "op": "single",
+          "format": ",.0f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "scheduled_arrival",
+      "label": "Full-development validation",
+      "pattern": "record (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) scheduled-arrival",
+      "values": [
+        {
+          "csv": "reports/tables/arrival_checks.csv",
+          "column": "rows",
+          "where": {
+            "timestamp": "scheduled_arrival_utc",
+            "status": "mismatch"
+          },
+          "op": "single",
+          "format": ",.0f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "actual_arrival",
+      "label": "Full-development validation",
+      "pattern": "(?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) actual-arrival mismatches",
+      "values": [
+        {
+          "csv": "reports/tables/arrival_checks.csv",
+          "column": "rows",
+          "where": {
+            "timestamp": "actual_arrival_utc",
+            "status": "mismatch"
+          },
+          "op": "single",
+          "format": ",.0f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "missing_arrival",
+      "label": "Full-development validation",
+      "pattern": "(?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) actual arrivals unavailable",
+      "values": [
+        {
+          "csv": "reports/tables/arrival_checks.csv",
+          "column": "rows",
+          "where": {
+            "timestamp": "actual_arrival_utc",
+            "status": "missing"
+          },
+          "op": "single",
+          "format": ",.0f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "population_validation_late",
+      "label": "Full-development validation",
+      "pattern": "validation late rates are (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?)%, (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?)%, (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?)% and (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?)%",
+      "values": [
+        {
+          "csv": "reports/tables/drift_population_folds.csv",
+          "column": "validation_late",
+          "where": {
+            "fold": 1
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_population_folds.csv",
+          "column": "validation_late",
+          "where": {
+            "fold": 2
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_population_folds.csv",
+          "column": "validation_late",
+          "where": {
+            "fold": 3
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_population_folds.csv",
+          "column": "validation_late",
+          "where": {
+            "fold": 4
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 100
+        }
+      ]
+    },
+    {
+      "id": "population_train_late",
+      "label": "Full-development validation",
+      "pattern": "versus (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?)%, (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?)%, (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?)% and (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?)% in their own training windows",
+      "values": [
+        {
+          "csv": "reports/tables/drift_population_folds.csv",
+          "column": "train_late",
+          "where": {
+            "fold": 1
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_population_folds.csv",
+          "column": "train_late",
+          "where": {
+            "fold": 2
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_population_folds.csv",
+          "column": "train_late",
+          "where": {
+            "fold": 3
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_population_folds.csv",
+          "column": "train_late",
+          "where": {
+            "fold": 4
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 100
+        }
+      ]
+    },
+    {
+      "id": "decomposition_composition",
+      "label": "Full-development validation",
+      "pattern": "respectively (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?), (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?), (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?) and (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?) percentage points to composition",
+      "values": [
+        {
+          "csv": "reports/tables/drift_composition.csv",
+          "column": "composition",
+          "where": {
+            "fold": 1
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_composition.csv",
+          "column": "composition",
+          "where": {
+            "fold": 2
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_composition.csv",
+          "column": "composition",
+          "where": {
+            "fold": 3
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_composition.csv",
+          "column": "composition",
+          "where": {
+            "fold": 4
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 100
+        }
+      ]
+    },
+    {
+      "id": "decomposition_within",
+      "label": "Full-development validation",
+      "pattern": "and (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?), (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?), (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?) and (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?) points to within-cell",
+      "values": [
+        {
+          "csv": "reports/tables/drift_composition.csv",
+          "column": "within",
+          "where": {
+            "fold": 1
+          },
+          "op": "single",
+          "format": "+.3f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_composition.csv",
+          "column": "within",
+          "where": {
+            "fold": 2
+          },
+          "op": "single",
+          "format": "+.3f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_composition.csv",
+          "column": "within",
+          "where": {
+            "fold": 3
+          },
+          "op": "single",
+          "format": "+.3f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_composition.csv",
+          "column": "within",
+          "where": {
+            "fold": 4
+          },
+          "op": "single",
+          "format": "+.3f",
+          "scale": 100
+        }
+      ]
+    },
+    {
+      "id": "lightgbm_fold_1",
+      "label": "Pilot",
+      "pattern": "(?<![\\d.])1 (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360,
+            "fold": 1
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "normalized_ap",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360,
+            "fold": 1
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60,
+            "fold": 1
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "normalized_ap",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60,
+            "fold": 1
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        }
+      ],
+      "start": "Fold AP 6h Norm. AP 6h AP 1h Norm. AP 1h",
+      "end": "Fold means explain"
+    },
+    {
+      "id": "lightgbm_fold_2",
+      "label": "Pilot",
+      "pattern": "(?<![\\d.])2 (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360,
+            "fold": 2
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "normalized_ap",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360,
+            "fold": 2
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60,
+            "fold": 2
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "normalized_ap",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60,
+            "fold": 2
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        }
+      ],
+      "start": "Fold AP 6h Norm. AP 6h AP 1h Norm. AP 1h",
+      "end": "Fold means explain"
+    },
+    {
+      "id": "lightgbm_fold_3",
+      "label": "Pilot",
+      "pattern": "(?<![\\d.])3 (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360,
+            "fold": 3
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "normalized_ap",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360,
+            "fold": 3
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60,
+            "fold": 3
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "normalized_ap",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60,
+            "fold": 3
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        }
+      ],
+      "start": "Fold AP 6h Norm. AP 6h AP 1h Norm. AP 1h",
+      "end": "Fold means explain"
+    },
+    {
+      "id": "lightgbm_fold_4",
+      "label": "Pilot",
+      "pattern": "(?<![\\d.])4 (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360,
+            "fold": 4
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "normalized_ap",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360,
+            "fold": 4
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60,
+            "fold": 4
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_performance_folds.csv",
+          "column": "normalized_ap",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60,
+            "fold": 4
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        }
+      ],
+      "start": "Fold AP 6h Norm. AP 6h AP 1h Norm. AP 1h",
+      "end": "Fold means explain"
+    },
+    {
+      "id": "seed_fold_variance_share",
+      "label": "Pilot",
+      "pattern": "Fold means explain (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?)% and (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?)%",
+      "values": [
+        {
+          "csv": "reports/tables/drift_seed_spread.csv",
+          "column": "fold_variance_share",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/tables/drift_seed_spread.csv",
+          "column": "fold_variance_share",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 100
+        }
+      ]
+    },
+    {
+      "id": "seed_within_fold_seed_rms_std",
+      "label": "Pilot",
+      "pattern": "RMS standard deviations are (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) and (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/drift_seed_spread.csv",
+          "column": "within_fold_seed_rms_std",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/drift_seed_spread.csv",
+          "column": "within_fold_seed_rms_std",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60
+          },
+          "op": "single",
+          "format": ".4f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "default_lightgbm_brier",
+      "label": "Pilot",
+      "pattern": "mean Brier (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) at six hours and (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) at one hour",
+      "values": [
+        {
+          "csv": "reports/tables/calibration_summary.csv",
+          "column": "brier",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360
+          },
+          "op": "mean",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/calibration_summary.csv",
+          "column": "brier",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60
+          },
+          "op": "mean",
+          "format": ".4f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "default_lightgbm_brier_skill",
+      "label": "Pilot",
+      "pattern": "Brier skill (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) and (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/calibration_summary.csv",
+          "column": "brier_skill",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360
+          },
+          "op": "mean",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/calibration_summary.csv",
+          "column": "brier_skill",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60
+          },
+          "op": "mean",
+          "format": ".4f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "default_lightgbm_ece",
+      "label": "Pilot",
+      "pattern": "Its ECE is (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) and (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/calibration_summary.csv",
+          "column": "ece",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360
+          },
+          "op": "mean",
+          "format": ".4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/calibration_summary.csv",
+          "column": "ece",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60
+          },
+          "op": "mean",
+          "format": ".4f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "default_lightgbm_calibration_bias",
+      "label": "Pilot",
+      "pattern": "observed rate is (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) and (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/calibration_summary.csv",
+          "column": "calibration_bias",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 360
+          },
+          "op": "mean",
+          "format": "+.4f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/calibration_summary.csv",
+          "column": "calibration_bias",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint_minutes": 60
+          },
+          "op": "mean",
+          "format": "+.4f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "reference_brier",
+      "label": "Pilot",
+      "pattern": "mean reference Brier is (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/tables/calibration_summary.csv",
+          "column": "base_rate_brier",
+          "where": {},
+          "op": "mean",
+          "format": ".4f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "calibration_support",
+      "label": "Pilot",
+      "pattern": "(?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) model runs and (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) probability rows",
+      "values": [
+        {
+          "csv": "reports/tables/calibration_summary.csv",
+          "column": "validation_rows",
+          "where": {},
+          "op": "count",
+          "format": ".0f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/tables/calibration_summary.csv",
+          "column": "validation_rows",
+          "where": {},
+          "op": "sum",
+          "format": ",.0f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "p5_adaboost",
+      "label": "Pilot",
+      "pattern": "AdaBoost (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "roc_auc",
+          "where": {
+            "model": "adaboost",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "adaboost",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "roc_auc",
+          "where": {
+            "model": "adaboost",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "adaboost",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "p5_gradient_boosting",
+      "label": "Pilot",
+      "pattern": "Gradient Boosting (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "roc_auc",
+          "where": {
+            "model": "gradient_boosting",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "gradient_boosting",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "roc_auc",
+          "where": {
+            "model": "gradient_boosting",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "gradient_boosting",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "p5_xgboost",
+      "label": "Pilot",
+      "pattern": "XGBoost (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "roc_auc",
+          "where": {
+            "model": "xgboost",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "xgboost",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "roc_auc",
+          "where": {
+            "model": "xgboost",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "xgboost",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "p5_lightgbm",
+      "label": "Pilot",
+      "pattern": "LightGBM (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "roc_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "roc_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "p5_catboost",
+      "label": "Pilot",
+      "pattern": "CatBoost (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v3>[+-]?[\\d,]+(?:\\.\\d+)?) (?P<v4>[+-]?[\\d,]+(?:\\.\\d+)?)",
+      "values": [
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "roc_auc",
+          "where": {
+            "model": "catboost",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "catboost",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "roc_auc",
+          "where": {
+            "model": "catboost",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "catboost",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "p5_ap_6",
+      "label": "Pilot",
+      "pattern": "At 6 hours?, LightGBM achieved mean average precision (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) \\(fold-seed standard deviation (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?)\\)",
+      "values": [
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc_std",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "p5_alert_6",
+      "label": "Pilot",
+      "pattern": "At 6 hours?, LightGBM achieved.*?precision was (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?)% and lift was (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) times",
+      "values": [
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "precision_at_10",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".1f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "lift_at_10",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 360
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "p5_ap_1",
+      "label": "Pilot",
+      "pattern": "At 1 hours?, LightGBM achieved mean average precision (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?) \\(fold-seed standard deviation (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?)\\)",
+      "values": [
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "pr_auc_std",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".3f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "p5_alert_1",
+      "label": "Pilot",
+      "pattern": "At 1 hours?, LightGBM achieved.*?precision was (?P<v1>[+-]?[\\d,]+(?:\\.\\d+)?)% and lift was (?P<v2>[+-]?[\\d,]+(?:\\.\\d+)?) times",
+      "values": [
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "precision_at_10",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".1f",
+          "scale": 100
+        },
+        {
+          "csv": "reports/p5_phase_b_pilot/summary.csv",
+          "column": "lift_at_10",
+          "where": {
+            "model": "lightgbm",
+            "checkpoint": 60
+          },
+          "op": "single",
+          "format": ".2f",
+          "scale": 1
+        }
+      ]
+    },
+    {
+      "id": "origin_history_psi",
+      "label": "Pilot",
+      "pattern": "origin late rate over three hours in July: (?P<v1>[\\d.]+) at one hour and (?P<v2>[\\d.]+) at six hours",
+      "values": [
+        {
+          "csv": "reports/tables/drift_features.csv",
+          "column": "psi",
+          "where": {
+            "feature": "origin_late_rate_3h",
+            "fold": "1",
+            "checkpoint_minutes": "60"
+          },
+          "format": ".4f"
+        },
+        {
+          "csv": "reports/tables/drift_features.csv",
+          "column": "psi",
+          "where": {
+            "feature": "origin_late_rate_3h",
+            "fold": "1",
+            "checkpoint_minutes": "360"
+          },
+          "format": ".4f"
+        }
+      ]
+    }
+  ]
+}

@@ -10,11 +10,11 @@ Features are computed strictly relative to two pre-departure prediction checkpoi
     \item \textbf{Tactical Gate Horizon ($T = 60\text{ min}$ / $1\text{h}$):} Models gate operations, recent surface weather observations, 3-hour origin departure congestion, and inbound aircraft arrival status.
 \end{enumerate}
 
-All feature matrices preserve the order of the arrival-audited development data. The saved full-development cutoff check covered all 5,749,041 flights at both checkpoints. It found one flight whose own departure had to be excluded from its one-hour congestion history. That flight also fails the common target eligibility rule because it had already departed.
+The feature matrices retain the original development row order. The cutoff check covered all 5,749,041 flights at each horizon. It found one flight whose own departure had to be excluded from its one-hour congestion history. That flight also fails the common target eligibility rule because it had already departed.
 
 \subsection{Anti-Leakage Safeguards and Weather Integration}
 The feature pipeline (\texttt{src/features.py} and \texttt{src/weather.py}) enforces four protocol guarantees:
-\begin{itemize}
+\begin{itemize}\raggedright
     \item \textbf{Strict Cutoff Rule:} No event timestamped after $\text{cutoff}_T = \text{TIME} - \Delta T$ enters computation.
     \item \textbf{Target Self-Exclusion:} Origin airport 3-hour congestion (\texttt{origin\_departures\_3h}, \texttt{origin\_late\_rate\_3h}) excludes the target flight itself when present in the history pool, even if it pushed back early. Cancellation rates are excluded because BTS records do not timestamp when cancellations were announced.
     \item \textbf{Hourly Surface Weather Join (Decision D2):} Routine METAR and SPECI observations ($3{,}826{,}099$ records covering $347/349$ origin airports, Jan 2025--Jan 2026) were retrieved from the public-domain Iowa Environmental Mesonet (IEM) ASOS archive and joined via strict backward \texttt{merge\_asof} ($\text{obs\_time\_utc} \le \text{cutoff}_T$). Observations older than $6\text{h}$ or from unmapped stations trigger \texttt{weather\_missing} $= 1$ without silent imputation.

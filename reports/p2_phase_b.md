@@ -77,3 +77,15 @@ Full G0–G3 matrices and selected P4/P5 validation probability exports were abs
 Changes for this update are local on P2-features. Main and teammates' code were left unchanged. No automatic push is implied by this follow-up.
 
 Verification for the weather update: all **51 tests pass** in the Python 3.12 environment, including station/missingness guards, external source audit collisions, blocked weather aliases, and a complete synthetic selected-probability handoff without model refitting. The source audit still matches all 116 source fields; the registry has 25 rows (the original 18, six weather candidates and the blocked legacy alias). The updated PDF compiles to 9 pages, has no overfull/underfull/LaTeX warnings and was visually inspected. Main and P3/P4/P5 feature/model/protocol files are unchanged; no real November/December flight or observation rows were read.
+
+## Independent report update - 2026-11-26
+
+Completed on P2-features using committed report tables and figures only. No training, fetch/pull, checkout, feature generation, mixed-period weather loading or Nov/Dec holdout access was performed. The pinned G1 checkout was not changed. Test score cells and selected-model calibration numeric cells remain blank.
+
+- Revised report EDA, column audit, drift, calibration draft and limitations with explicit **Pilot**, **Full-development validation**, and **Held-out test** evidence labels. Full-development descriptive counts/rates are distinguished from model validation.
+- Added volume-selected EDA support/rate ranges and clarified that retrospective tail completeness does not establish assignment at a checkpoint.
+- Consolidated exploratory G2 weather and G3 tail column decisions in reports/tables/p2_exploratory_column_audit.csv. Reconciled stale weather handoff prose without approving pending features or changing teammates' code.
+- Added src/report_artifact_check.py, a declarative claim manifest, PDF text/diff/hash outputs and a no-training synthetic test suite. See reports/report_artifact_check.md for exact scope and commands. Protocol metadata, figure pixels and unregistered narrative still require manual review.
+- Selected-model calibration remains a structured placeholder pending P4/P5 probabilities and provenance. Full weather/inbound EDA remains pending development-only matrices and review gates.
+
+Verification: report compiles without LaTeX layout warnings; rendered pages reviewed. The claim check compares committed CSV values at displayed precision and enforces blank held-out/selected-calibration cells. Focused checker tests pass with no model imports or training. The evidence hashes in reports/checks/report_check.json identify the exact PDF and tables checked; earlier generation receipts describe their original run and are not refreshed by this prose-only update.

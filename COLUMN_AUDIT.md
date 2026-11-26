@@ -22,7 +22,7 @@ FEATURE_SPEC.md says published aircraft assignment is available six hours before
 
 A-HISTORY explicitly assumes other flights' gate departures and late labels reach an operational feed by their event time. The reviewed aggregate uses events <= T, excludes the target and counts only retained usable departures; it is not total scheduled airport demand. Raw target-flight outcomes remain forbidden. The assumption is an idealized deployment interpretation, not a claim about BTS publication latency.
 
-No weather manifest or G2/G3 matrix was delivered. Weather feature names, station mapping, observation/report times, lag, units, licence and download date remain pending P3. Unknown weather fields will be blocked until registered and approved.
+P3 manifests/source metadata were reviewed at revision 065c2a1; full G2/G3 matrices remain unavailable in this checkout. Weather names, units, licence and static station metadata are inventoried in WEATHER_SOURCE_AUDIT.csv and reports/tables/weather_predictor_audit.csv. Observation receipt/revision timing, partial-null semantics, unresolved station identities and development coverage remain pending. Registered weather candidates stay conditional; the legacy wx_weather_missing alias is blocked. Unknown weather fields fail closed.
 
 All P2 statistics use `data/processed/flights_development.parquet`, SHA-256 `8166d5f05de4ace74dd75d69ee2867686f45237105599a927f9a519382a29e57`, the **unmasked Phase A** release. Arrival-mask claims do not apply to this file. Derived feature drift/calibration use the regenerated 20,000-flight paired pilot; population prevalence/decomposition use the full eligible development population. No raw files or holdout records were opened.
 
@@ -30,3 +30,11 @@ All P2 statistics use `data/processed/flights_development.parquet`, SHA-256 `816
 ## Weather review update — 2026-11-25
 
 The delivered P3 G2/G3 manifests are inventoried from revision 065c2a1. Six weather candidates remain pending in FEATURE_REGISTRY.csv. WEATHER_SOURCE_AUDIT.csv holds namespaced external sources; it does not add rows to COLUMN_AUDIT.csv. The gate accepts explicit external source audits while preserving exact raw schema coverage, rejects duplicate/colliding source names and requires an approved scoped A-WEATHER assumption. Canonical weather_missing was chosen by the user; the delivered wx_weather_missing alias is blocked pending P3 regeneration. No availability or G3 approval is implied. Detailed evidence, unit conversions, unresolved PBI/PPG mappings and missing/receipt-time findings are in reports/weather_audit.md.
+
+## Independent report update - 2026-11-26
+
+**Full-development validation (descriptive audit):** the existing tail_number_missing.csv has one nonmissing category representing 5,749,041 development rows. Completeness in retrospective BTS records does not verify assignment at T. Tail_Number and tail_number_missing remain conditional at both checkpoints, excluded from primary G0-G2 and pending D1 approval for exploratory G3. Diversion tail fields and raw target actual arrival fields remain forbidden.
+
+**Full-development validation (pending exploratory G2/G3):** reports/tables/p2_exploratory_column_audit.csv consolidates the weather/tail decisions without extending the exact source-Parquet inventory or approving the feature registry. All weather candidates are pending A-WEATHER at both checkpoints. The static station catalog review is metadata, not development weather coverage. Full weather/inbound EDA and drift need frozen development-only matrices; no mixed-period loader may be used for this report task.
+
+**Pilot:** existing PSI/calibration figures describe sampled rehearsal data only. **Held-out test:** closed; count and metric cells remain blank.
