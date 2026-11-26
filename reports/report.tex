@@ -262,7 +262,7 @@ Native categorical handling changed CatBoost mean average precision by +0.002 at
 The operational comparison covers all ten model configurations at 5\%, 10\% and 20\% alert budgets. An illustrative cost assigns one unit to each alert and five units to each missed delay. The SHAP analysis averages 32 random feature orderings over 128 October validation flights per horizon, using training flights as backgrounds. Correlated features limit causal interpretation.
 \begin{figure}[htbp]\centering
 \includegraphics[width=.95\linewidth]{lift.png}
-\caption{Pilot: validation lift by alert budget at each checkpoint.}
+\caption{Pilot: validation lift by alert budget at each checkpoint.}\label{fig:rubric-lift}
 \end{figure}
 \begin{figure}[htbp]\centering
 \includegraphics[width=.95\linewidth]{cost.png}
@@ -321,11 +321,19 @@ and
 \href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/releases/download/p4-validation-handoff-2026-11-25/p4-full-scale-2026-11-25.zip}{ZIP download}.
 
 \section{Extra analysis}
+\begin{center}\small
+\begin{tabular}{@{}p{0.22\linewidth}p{0.70\linewidth}@{}}\toprule
+Rubric activity & Comparison and finding \\ \midrule
+A. Feature analysis and ablation & \textbf{Full-development validation.} With LightGBM fixed, adding airport congestion improved average precision more at one hour than at six hours (Table~\ref{tab:p3-ablation}). \textbf{Pilot.} Removing calendar month lowered average precision for four of the five boosting families at both horizons. \\[4pt]
+B. Data and prediction visualization & \textbf{Pilot.} Figure~\ref{fig:rubric-lift} compares the five boosting families and classical benchmarks at common alert budgets. Among the top tenth of flights flagged by one-hour LightGBM, about half actually departed late. \\[4pt]
+D. Robustness and sensitivity & \textbf{Full-development validation.} The late rate fell between July and September (Figure~\ref{fig:rubric-drift}). \textbf{Pilot.} The drift study compared model scores by fold and training seed. For default LightGBM, variation across months accounted for most of the spread at both horizons. \\
+\bottomrule\end{tabular}
+\end{center}
 \subsection{P2: temporal drift (development only)}
 \textbf{Full-development validation (population prevalence and decomposition).}
 Full eligible validation late rates are 28.44\%, 22.55\%, 16.56\% and 19.35\% for July--October, versus 20.98\%, 22.12\%, 22.24\% and 21.65\% in their own training windows. A Kitagawa decomposition over carrier by origin-local six-hour scheduled band attributes respectively -0.040, -0.142, -0.227 and -0.030 percentage points to composition change, and +7.507, +0.575, -5.457 and -2.275 points to within-cell rate change. Unsupported cells carry the observed rate across periods, assigning their contribution to composition; all supports/masses are exported. This is descriptive, not causal.
 
-\textbf{Pilot (feature drift and rehearsal model comparisons).} Feature drift uses only the paired pilot. PSI uses training-fold numeric deciles or training categorical shares (a 1\% rare threshold), an explicit rare/unseen bucket and separate missing bins. Thresholds 0.1/0.25 are conventions. Numeric KS is an effect size only, without p-values. Time-deterministic calendar fields are flagged and excluded from the ranking. The largest non-calendar PSI is origin late rate over three hours in July: 0.1387 at one hour and 0.1156 at six hours. Full-population feature PSI is pending P3 matrices.
+\textbf{Pilot (feature drift and rehearsal model comparisons).} Feature drift uses only the paired pilot. PSI uses training-fold numeric deciles or training categorical shares (a 1\% rare threshold), an explicit rare/unseen bucket and separate missing bins. Thresholds 0.1/0.25 are conventions. Numeric KS is an effect size only, without p-values. Time-deterministic calendar fields are flagged and excluded from the ranking. The largest non-calendar PSI is origin late rate over three hours in July: 0.1387 at one hour and 0.1156 at six hours. Full-development G0 and G1 feature drift is reported below.
 
 Normalized AP is $(\mathrm{AP}-\pi)/(1-\pi)$, with validation prevalence $\pi$; AP/prevalence lift and paired model differences at identical fold/seed are also exported. For the rehearsal LightGBM pilot, seed-averaged values are:
 \begin{center}\begin{tabular}{lrrrr}\toprule
@@ -338,7 +346,7 @@ Fold & AP 6h & Norm. AP 6h & AP 1h & Norm. AP 1h \\\midrule
 Fold means explain 99.07\% and 99.76\% of its pooled AP variance at six hours and one hour. The corresponding within-fold seed RMS standard deviations are 0.0064 and 0.0030. These seeds represent training-draw variation. Winter conditions and holidays may shift the unseen regime; no winter statistics were inspected.
 \begin{figure}[H]\centering
 \includegraphics[width=.75\linewidth]{drift_prevalence.png}
-\caption{Full-development validation: paired eligible development prevalence: each validation month against its own training window.}
+\caption{Full-development validation: paired eligible development prevalence: each validation month against its own training window.}\label{fig:rubric-drift}
 \end{figure}
 \begin{figure}[H]\centering
 \includegraphics[width=.75\linewidth]{drift_psi.png}

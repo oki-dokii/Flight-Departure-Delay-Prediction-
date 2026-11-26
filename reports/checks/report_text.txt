@@ -711,6 +711,24 @@ F ull-development validation artifact. The public handoff contains the G0 tree a
 experiment metadata, fold scores, prediction indexes, and validation Parquets. Its README identifies
 partial PCA and tuning exports. Public P4 handoff release and ZIP download .
 10 Extra analysis
+Rubric activity Comparison and finding
+A. Feature analysis and
+ablation
+F ull-development validation. With LightGBM fixed, adding airport conges-
+tion improved average precision more at one hour than at six hours (Table 1).
+Pilot. Removing calendar month lowered average precision for four of the five
+boosting families at both horizons.
+B. Data and prediction
+visualization
+Pilot. Figure 12 compares the five boosting families and classical benchmarks
+at common alert budgets. Among the top tenth of flights flagged by one-hour
+LightGBM, about half actually departed late.
+D. Robustness and sensi-
+tivity
+F ull-development validation. The late rate fell between July and September
+(Figure 15). Pilot. The drift study compared model scores by fold and training
+seed. For default LightGBM, variation across months accounted for most of the
+spread at both horizons.
 10.1 P2: temporal drift (development only)
 F ull-development validation (population prevalence and decomposition). Full eligible validation
 late rates are 28.44%, 22.55%, 16.56% and 19.35% for July–October, versus 20.98%, 22.12%, 22.24% and
@@ -724,7 +742,7 @@ lot. PSI uses training-fold numeric deciles or training categorical shares (a 1%
 rare/unseen bucket and separate missing bins. Thresholds 0.1/0.25 are conventions. Numeric KS is an effect
 size only, without p-values. Time-deterministic calendar fields are flagged and excluded from the ranking.
 The largest non-calendar PSI is origin late rate over three hours in July: 0.1387 at one hour and 0.1156 at
-six hours. Full-population feature PSI is pending P3 matrices.
+six hours. Full-development G0 and G1 feature drift is reported below.
 Normalized AP is (AP − π)/(1 − π), with validation prevalence π; AP/prevalence lift and paired model
 differences at identical fold/seed are also exported. For the rehearsal LightGBM pilot, seed-averaged values
 are:
