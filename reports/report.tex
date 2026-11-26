@@ -47,7 +47,7 @@ The source CSV contains exactly one row per source Parquet field and is validate
 
 Target-flight operational outcomes (including DepDelay, actual departures/arrivals and post-flight delay causes) are forbidden predictors. Conditional source schedule timestamps can support only the reviewed transformations under A-SCHED. A-HISTORY explicitly assumes other flights' gate departures and labels are available from an operational feed by event time, with events no later than T and the target excluded. Counts describe retained usable departure history, not all scheduled airport demand.
 
-\textbf{D1} excludes all tail-derived features from primary G0--G2. They are registered as pending G3 ablation inputs, requiring written P1/P3 approval that schedules, assignment and prior-leg arrival are available from an operational feed at T, plus continuity checks. P3 released the full matrices and documented the retrospective tail-assignment assumption.
+\textbf{D1} restricts tail-derived features to exploratory G3. They are registered as pending G3 ablation inputs, requiring written P1/P3 approval that schedules, assignment and prior-leg arrival are available from an operational feed at T, plus continuity checks. P3 released the full matrices and documented the retrospective tail-assignment assumption.
 \subsection{Weather audit update, November 25, 2026}
 P2 reviewed P3 revision 065c2a1 and P4 revision 0c41969 without changing teammates' feature/model code. All six weather predictors remain pending at both checkpoints. P3 subsequently published the canonical \texttt{weather\_missing} indicator and regenerated the feature hashes.
 \begin{center}\small\begin{tabular}{ll}\toprule

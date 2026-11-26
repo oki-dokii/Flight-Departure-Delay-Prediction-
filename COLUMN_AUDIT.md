@@ -14,7 +14,7 @@ The source UTC schedule columns remain conditional to preserve the raw-frame saf
 
 ## D1: tail ablation only
 
-Tail assignment and its missingness remain conditional. Tail predictors are excluded from primary G0–G2 and registered as **pending G3**. The G3 operational assumption would require schedules, aircraft assignment and prior-leg arrivals available from a feed at T, with continuity and availability evidence approved by P1/P3. D1 is a scope decision, not proof of that assumption. No tail ablation was approved or run by P2.
+Tail assignment and its missingness remain conditional. Tail predictors are excluded from G0, primary G1 and exploratory G2 and registered as **pending G3**. The G3 operational assumption would require schedules, aircraft assignment and prior-leg arrivals available from a feed at T, with continuity and availability evidence approved by P1/P3. D1 is a scope decision, not proof of that assumption. No tail ablation was approved or run by P2.
 
 FEATURE_SPEC.md says published aircraft assignment is available six hours before departure, but its quarantine section and the source audit recognize that retrospective BTS does not verify assignment then. P3 must reconcile that claim. The current inbound implementation also needs airport-continuity/day-boundary review before approval.
 
