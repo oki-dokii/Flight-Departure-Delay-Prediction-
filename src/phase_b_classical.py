@@ -38,6 +38,11 @@ def file_digest(path):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def peak_rss_bytes():
+    peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    return peak if platform.system() == "Darwin" else peak * 1024
+
+
 def id_digest(index):
     # Canonical flight IDs are sorted by the paired loader, independent of Parquet order.
     hashes = pd.util.hash_pandas_object(index, index=False).to_numpy(dtype="<u8")
@@ -131,11 +136,18 @@ class CheckpointRun:
         records = []
         for train, valid, keys in self.fits[mode]:
             model = classical_from_recipe(self.schema, keys["seed"], recipe)
+            first_full_forest = artifacts and name == "random_forest" and mode == "full_fold" and not records
+            if first_full_forest:
+                peak_before = peak_rss_bytes()
             start = perf_counter()
             with warnings.catch_warnings():
                 warnings.simplefilter("error", ConvergenceWarning)
                 model.fit(self.X.iloc[train], self.y.iloc[train])
             fit_seconds = perf_counter() - start
+            if first_full_forest:
+                print(f'{name} {self.minutes}m fold={keys["fold"]} seed={keys["seed"]} '
+                      f'fit_seconds={fit_seconds:.3f} process_peak_rss_bytes={peak_rss_bytes()} '
+                      f'process_peak_before_fit_bytes={peak_before}', flush=True)
             X_valid, y_valid = self.X.iloc[valid], self.y.iloc[valid]
             start = perf_counter()
             scores = positive_scores(model, X_valid)
@@ -165,9 +177,12 @@ class CheckpointRun:
                 predictions = y_valid.to_frame().assign(
                     probability=scores, day=self.days.iloc[valid], model=name, feature_group=row["feature_group"],
                     run_id=self.identity["run_id"], **{k: row[k] for k in FIT_KEYS})
-                predictions.reset_index().to_parquet(directory / f'{keys["fold"]}-{keys["seed"]}.parquet', index=False)
+                prediction_path = directory / f'{keys["fold"]}-{keys["seed"]}.parquet'
+                predictions.reset_index().to_parquet(prediction_path, index=False)
                 if name == "decision_tree":
                     self.interpret(model, X_valid, y_valid, keys)
+                print(f'{name} {self.minutes}m fold={keys["fold"]} seed={keys["seed"]} '
+                      f'elapsed_seconds={row["runtime_seconds"]:.3f} output={prediction_path.resolve()}', flush=True)
             records.append(row)
             del model, classifier
         return records
@@ -348,7 +363,7 @@ def paired_deltas(rows, pairs):
 
 
 def run(manifest, group, output, mode, pilot=False, audit=None, forest_jobs=1, class_weights=False,
-        parent_manifest=None, pca_forest_trees=None):
+        parent_manifest=None, pca_forest_trees=None, one_hour_only=False):
     start = perf_counter()
     inputs, schema, meta = load_experiment(manifest, group, pilot, audit)
     parent = None
@@ -376,6 +391,8 @@ def run(manifest, group, output, mode, pilot=False, audit=None, forest_jobs=1, c
                     python=platform.python_version(), pilot=pilot, fit_mode=mode, forest_jobs=forest_jobs,
                     pca_forest_trees=pca_forest_trees,
                     class_weights=class_weights, cohort_rows=len(meta), cohort_ids_sha256=id_digest(meta.index))
+    if one_hour_only:
+        identity["checkpoint_minutes"] = [60]
     identity["run_id"] = hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()
     config = output / "experiment.json"
     if config.exists() and json.loads(config.read_text()) != identity:
@@ -383,7 +400,13 @@ def run(manifest, group, output, mode, pilot=False, audit=None, forest_jobs=1, c
     write_json(config, identity)
     fits = build_fits(meta, dict.fromkeys(("sampled", mode)))
     scores, candidates, diagnostics, recipes = [], [], {}, {}
-    for cp in inputs.checkpoints:
+    checkpoints = inputs.checkpoints
+    if one_hour_only:
+        # Check the six-hour parent predictors before fitting the one-hour study.
+        checkpoints = sorted(checkpoints, key=lambda cp: cp.minutes, reverse=True)
+    for cp in checkpoints:
+        if one_hour_only and cp.minutes != 60 and parent is None:
+            continue
         X = checkpoint_features(cp, inputs.schema, meta.index).loc[:, schema.columns]
         if parent:
             previous = next(item for item in parent.checkpoints if item.minutes == cp.minutes)
@@ -391,6 +414,9 @@ def run(manifest, group, output, mode, pilot=False, audit=None, forest_jobs=1, c
             if not X.loc[:, parent_schema.columns].equals(expected):
                 raise ValueError(f"{cp.minutes}m predictors changed from the parent feature group")
             del expected
+        if one_hour_only and cp.minutes != 60:
+            del X
+            continue
         study = CheckpointRun(X, meta, schema, cp.minutes, output, identity, fits)
         rows, selected = fit_checkpoint(study, forest_jobs, class_weights, mode, pca_forest_trees)
         recipes[str(cp.minutes)] = selected
@@ -421,9 +447,8 @@ def run(manifest, group, output, mode, pilot=False, audit=None, forest_jobs=1, c
                                                   "predictors": identity["predictors"],
                                                   "classical_pair": pair, "classical_recipes": {
         minutes: {name: values[name] for name in roster} for minutes, values in recipes.items()}})
-    peak = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
     write_json(output / "runtime.json", dict(wall_seconds=perf_counter() - start,
-                                              peak_rss_bytes=peak if platform.system() == "Darwin" else peak * 1024))
+                                             peak_rss_bytes=peak_rss_bytes()))
 
 
 if __name__ == "__main__":
@@ -438,6 +463,7 @@ if __name__ == "__main__":
     parser.add_argument("--forest-jobs", type=int, default=1)
     parser.add_argument("--pca-forest-trees", type=int, help="Apply a common tree-count cap to both matched RF arms")
     parser.add_argument("--class-weights", action="store_true")
+    parser.add_argument("--one-hour-only", action="store_true", help="Fit only the 60-minute checkpoint")
     args = parser.parse_args()
     if args.forest_jobs < 1 or (args.pca_forest_trees is not None and args.pca_forest_trees < 1):
         parser.error("Forest jobs and any matched-tree cap must be positive")

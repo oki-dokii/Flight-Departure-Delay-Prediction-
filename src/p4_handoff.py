@@ -44,7 +44,10 @@ def verify(manifest, folder):
     cohort_days = metadata[TIME].dt.floor("D")
 
     study = pd.read_csv(folder / "selected_study.csv").set_index(KEYS, verify_integrity=True).sort_index()
-    expected = set(product(MODELS, CHECKPOINTS, range(1, 5), SEEDS, (mode,)))
+    checkpoints = tuple(identity.get("checkpoint_minutes", CHECKPOINTS))
+    if checkpoints not in (CHECKPOINTS, (60,)):
+        raise ValueError("Unexpected selected-study checkpoints")
+    expected = set(product(MODELS, checkpoints, range(1, 5), SEEDS, (mode,)))
     if set(study.index) != expected:
         raise ValueError("Incomplete or unexpected selected-study score keys")
     if not study.groupby(level=["model", "checkpoint_minutes"]).parameters.nunique().eq(1).all():
