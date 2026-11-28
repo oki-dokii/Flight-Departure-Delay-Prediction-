@@ -1,0 +1,28 @@
+[
+  {
+    "minutes": 360,
+    "full_rows": 5749041,
+    "full_mean": 37.985827201441076,
+    "matched_rows": 200000,
+    "sample_mean": 38.053945,
+    "lightgbm_ap_between_fold_share": 1.0,
+    "congestion_features_checked": [
+      "origin_departures_3h",
+      "origin_late_rate_3h"
+    ],
+    "mismatched_sample_rows": 0
+  },
+  {
+    "minutes": 60,
+    "full_rows": 5749041,
+    "full_mean": 53.55842931021017,
+    "matched_rows": 200000,
+    "sample_mean": 53.63713,
+    "lightgbm_ap_between_fold_share": 1.0,
+    "congestion_features_checked": [
+      "origin_departures_3h",
+      "origin_late_rate_3h"
+    ],
+    "mismatched_sample_rows": 0
+  }
+]

@@ -15,3 +15,5 @@ bash data/backup_200k/run.sh boosting
 ```
 
 The builder verifies release checksums before sampling. The verifier checks packaged file hashes and cohort alignment. The model runners record the selected recipes, environment, training identities and validation IDs. All published mean scores and population standard deviations use four monthly folds and three seeds. No held-out results have been generated.
+
+The [congestion audit](congestion_audit.json) compares all sampled IDs with the full source matrices. Both congestion columns matched at both checkpoints. Training and feature code at the two benchmark revisions is identical; Git shows only the added report checker under src between 4780bd7 and c548988. The experiments use distinct cohorts and select settings independently. Fold/seed spread conditions on one cohort draw.

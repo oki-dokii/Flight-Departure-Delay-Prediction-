@@ -8,7 +8,11 @@ A separate clone returned exit code 0 and **no output** for `git diff --stat 478
 
 **P1 accepted the existing October boundary on November 26.** The release and `src/splits.py` implement [2025-01-01, 2025-10-31) UTC. The latest scheduled timestamp in the development release is October 30 at 23:59 UTC. Final training additionally requires an observed departure before October 31 at 00:00 UTC and after the one-hour checkpoint. This preserves the documented 48-hour gap before November 2. Including the entire UTC day of October 31 requires a different development release, a revised gap, rebuilt features and repeated scoring/rehearsal. Extending a date in the final scorer alone cannot recover those rows. The boundary decision is recorded in the test run log. Team approval of the final model freeze is still pending.
 
-## Development gates
+## Subset refit decision
+
+If the sampling design is accepted, refit on eligible members of the fixed 200,000-flight development cohort and score the entire eligible November–December holdout once at both checkpoints. Keep the original cutoff on observed training labels and use full available history for congestion. If a continuous cohort is required, revise and validate the protocol before test access. The full-scale gates and command below apply to the full-development queue. Keep its `pilot=false` requirement intact. For the subset path, bind the rehearsal config to the 200k experiment’s manifest, development and checkpoint hashes, use the subset’s verified 240 rows and selected recipes, rehearse October and capacity against the subset manifest, and keep the same single-run and prediction-rebuild checks. The test manifest must cover the full eligible test population.
+
+## Full-development queue gates
 
 - [ ] Verify both G1 feature hashes and the audited development hash against their releases. Record the feature manifest, configuration, environment, code and run identities. Confirm the full-data cutoff replay at both checkpoints.
 - [ ] Require successful classical and boosting runs, selected recipes, per-flight prediction exports and the G1 master table. Verify that each fold's training labels were observable by the training cutoff and that each pair of checkpoints uses the shared eligible IDs. `src.p4_handoff` reconstructs the canonical fits and checks training and validation ID digests, counts, labels and score rows. `src.selected_calibration` checks the selected probability exports. `src.aggregate_results` matches P5's per-fit provenance to P4's and checks the 240 expected validation keys.

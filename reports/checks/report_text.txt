@@ -685,7 +685,23 @@ October with seed 42. The July through October folds used only earlier flights f
 use the same targets and retain congestion histories from the full source. Each cell gives the mean and
 population standard deviation across four folds and three training seeds. The table covers 240 validation
 outputs. LightGBM led at both checkpoints. All nine non-baseline configurations improved in mean average
-precision at one hour. The holdout remains closed pending the cohort decision and freeze.
+precision at one hour. Month-proportional sampling made repeated fits feasible while retaining the monthly
+traﬀic mix. We sampled prediction targets once and kept their feature values from the published full-
+development feature release. For each of the 200,000 IDs at each horizon, both the three-hour departure
+count and the late fraction matched the source matrix exactly. Mean departure counts in the full and
+sampled matrices were 37.986 and 38.054 at six hours, and 53.558 and 53.637 at one hour.
+The validation months contain 21,430, 20,762, 19,478 and 20,353 targets, respectively. During tuning,
+seeds vary training draws and may vary the estimator. Selected full-fold refits use the same eligible training
+targets for each seed within a fold. The reported spread measures variation conditional on one cohort draw.
+For selected LightGBM, the three seeds gave identical AP to reported precision within each month. Its
+AP spread therefore reflects differences between months. Sensitivity to drawing a different cohort remains
+unmeasured.
+The subset ran at c548988 and the full-scale queue at 4780bd7. The model, split and feature code and
+G1 predictor manifests match between those revisions. The training populations differ, and each experiment
+selects its own fitted settings. Subject to acceptance of the sampling design, the final policy is to refit on the
+eligible members of the fixed 200,000-flight cohort, construct congestion from full available history at each
+checkpoint, and score the entire eligible November–December holdout once after freeze. Test access remains
+pending.
 6 hours 1 hour
 Model ROC-AUC AP ROC-AUC AP
 AdaBoost 0.667 ± 0.014 0.339 ± 0.067 0.684 ± 0.013 0.377 ± 0.068

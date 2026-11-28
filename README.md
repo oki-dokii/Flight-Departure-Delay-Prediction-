@@ -6,7 +6,7 @@ Predict whether a scheduled flight will leave its gate at least 15 minutes late 
 
 [Project report (PDF)](output/pdf/report.pdf) · [Flight Explorer launch instructions](#flight-explorer-interface) · [200,000-flight validation results](results/g1_200k/results_summary.md)
 
-The completed G1 subset benchmark samples eligible flights proportionally across January–October 2025. July–October are the four forward-validation months. All ten model configurations use the same cohort at six hours and one hour. The linked table reports means and population standard deviations across folds and seeds. Flight Explorer's Prediction page replays the earlier 20,000-flight pilot. Its Results page includes the 200,000-flight benchmark. Final cohort selection and held-out evaluation await the sampling clarification and freeze.
+The completed G1 subset benchmark samples eligible flights proportionally across January–October 2025. July–October are the four forward-validation months. All ten model configurations use the same cohort at six hours and one hour. The linked table reports means and population standard deviations across folds and seeds. Flight Explorer's Prediction page replays the earlier 20,000-flight pilot. Its Results page includes the 200,000-flight benchmark. If the sampling design is accepted, refit on eligible members of the fixed 200,000-flight development cohort and score the entire eligible November–December holdout once at both checkpoints. Keep the original cutoff on observed training labels and use full available history for congestion. If a continuous cohort is required, revise and validate the protocol before test access.
 
 ## Phase A data and evaluation
 

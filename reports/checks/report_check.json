@@ -7,7 +7,7 @@
   "selected_calibration_cells_blank": true,
   "evidence_labels_present": true,
   "scope": "Registered numeric claims in the main EDA table, population rates/decomposition, pilot feature PSI maximum, drift table and seed spread, default calibration narrative, and selected P5 pilot table/AP/alert narrative. Protocol constants, release identity JSON, static station metadata, encoding/SHAP narrative and figure pixels require separate review. Missing/changed claims fail; this is not exhaustive natural-language claim discovery.",
-  "pdf_sha256": "d014f21f2973c250ea9230e8af94d41a8c4addb1e5bcd89c4447b2131d75c808",
+  "pdf_sha256": "66846b77b25ab394e4691506f48243cbc4e76e8ea8af9c68921bd7083b1df39e",
   "manifest_sha256": "9d4b807935d55c063bb039f54a81c80adf2f0387981284475a33702ecad5d919",
   "csv_sha256": {
     "reports/p5_phase_b_pilot/summary.csv": "88387eca7ccba4dc69b601d6343b0ca489e9a95bf53704c898ce068b8ca20670",

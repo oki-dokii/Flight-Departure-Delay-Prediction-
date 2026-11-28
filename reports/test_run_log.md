@@ -18,6 +18,10 @@ The existing split excludes scheduled and observed departures at or after Octobe
 
 The predeclared DST rule excludes ambiguous or nonexistent origin-local scheduled times. A synthetic fall-back fixture exercises the rule. The 200,000-flight validation handoff has been published separately; sampling approval and final freeze are pending.
 
+### Proposed execution pending sampling approval
+
+If the sampling design is accepted, refit on eligible members of the fixed 200,000-flight development cohort and score the entire eligible November–December holdout once at both checkpoints. Keep the original cutoff on observed training labels and use full available history for congestion. If a continuous cohort is required, revise and validate the protocol before test access. Use the sampled development metadata and the G1 manifest identified in `results/g1_200k/classical_experiment.json`. Record the actual eligible refit count, the rehearsal and the freeze revision before proceeding.
+
 After execution, record exit status, finish time, eligible N, 20 prediction hashes, rebuilt-score comparison and final table location.
 
 For every interruption, append the timestamp, failing stage, exit status, snapshot path and checksum-manifest digest, artifact inventory, whether any test outputs were viewed, missing or disputed model/checkpoint keys, adjudication and authorizer, unchanged execution identity, recovered files and hashes, and the publication disclosure. Preserve earlier entries.
