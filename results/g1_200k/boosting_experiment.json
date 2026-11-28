@@ -1,0 +1,17 @@
+{
+  "audit_sha256": null,
+  "cohort_ids_sha256": "96309ea6001584a3462520ee155d7f7b070f1cf8844bfb3a5eaf8a9509b63a85",
+  "development_release": "phase-b-data-v1",
+  "development_sha256": "b98a0a3492a7037c23959ba55f60b3b06f230a0c6b1eada2749ba5782b2f39b0",
+  "feature_group": "G1",
+  "feature_revision": "phase-b-v1",
+  "feature_sha256": {
+    "360": "e59bd1b569442e63b82cc9131edcebe98762ef72e9f0b23c4743642f8486f0b0",
+    "60": "dfe77ce85045f597bf6b63202954a947130a26027d9f395c4919ccdb3c1feec4"
+  },
+  "fit_mode": "full_fold",
+  "manifest_sha256": "c62aca9a2592617c12eb1d009dae22bf6d798544503db458e8d1fedc932966fd",
+  "pilot": true,
+  "revision": "c54898849d3e5fc089be843a16095ba7c9f9b8e4",
+  "run_id": "p5-0d1b98f452bb5ca4e9727751a68dcad1f939fe6b296893bcb58b7f9423c544e7"
+}

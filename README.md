@@ -2,6 +2,12 @@
 
 Predict whether a scheduled flight will leave its gate at least 15 minutes late using information available at a pre-departure checkpoint.
 
+## Submission materials
+
+[Project report (PDF)](output/pdf/report.pdf) · [Flight Explorer launch instructions](#flight-explorer-interface) · [200,000-flight validation results](results/g1_200k/results_summary.md)
+
+The completed G1 subset benchmark samples eligible flights proportionally across January–October 2025. July–October are the four forward-validation months. All ten model configurations use the same cohort at six hours and one hour. The linked table reports means and population standard deviations across folds and seeds. Flight Explorer's Prediction page replays the earlier 20,000-flight pilot. Its Results page includes the 200,000-flight benchmark. Final cohort selection and held-out evaluation await the sampling clarification and freeze.
+
 ## Phase A data and evaluation
 
 Use Python 3.12 from the repository root. After installing dependencies in a virtual environment, this command downloads the public source files and builds the development parquet and cleaning counts.

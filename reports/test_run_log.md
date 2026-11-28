@@ -16,6 +16,8 @@ The running classical experiment records G1, full-fold mode, Python 3.12.13 and 
 
 The existing split excludes scheduled and observed departures at or after October 31, 2025 at 00:00 UTC from final training. The test starts November 2 at 00:00 UTC after a 48-hour gap. On November 26, P1 accepted the existing split for this submission. October 30 is the last included UTC day. Test eligibility uses scheduled time before January 2, 2026 at 00:00 UTC and actual departure strictly after the one-hour checkpoint. Final recipes, capacity, authorization and test access remain pending.
 
+The predeclared DST rule excludes ambiguous or nonexistent origin-local scheduled times. A synthetic fall-back fixture exercises the rule. The 200,000-flight validation handoff has been published separately; sampling approval and final freeze are pending.
+
 After execution, record exit status, finish time, eligible N, 20 prediction hashes, rebuilt-score comparison and final table location.
 
 For every interruption, append the timestamp, failing stage, exit status, snapshot path and checksum-manifest digest, artifact inventory, whether any test outputs were viewed, missing or disputed model/checkpoint keys, adjudication and authorizer, unchanged execution identity, recovered files and hashes, and the publication disclosure. Preserve earlier entries.

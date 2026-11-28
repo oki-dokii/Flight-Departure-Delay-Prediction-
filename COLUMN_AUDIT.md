@@ -10,7 +10,7 @@ Schedule timestamps are assumed correct and known at T. `src.p2_evidence` comput
 
 The source UTC schedule columns remain conditional to preserve the raw-frame safeguard. A-SCHED authorizes the reviewed calendar/cutoff transformations for this development cohort only. `scheduled_arrival_utc` remains conditional pending arrival-clock and feed approval. BTS schedules are retrospective; this assumption does not establish a live versioned schedule feed.
 
-`prepare.departure_times` uses DepDelay and actual local time to select between UTC candidates. With identical candidates, those outcomes validate the clock but do not choose the schedule instant. The local fall-back hour 01:00–01:59 on 2025-11-02 can have two readings in DST-observing origins and lies in the closed test window. P1 must settle this reconstruction before the single final run, independently of P2's zero development count. No test rows were inspected.
+The cleaner excludes ambiguous scheduled wall clocks, including the repeated hour on November 2 in DST-observing zones. A unique scheduled instant is required before the recorded delay and actual clock can validate the outcome.
 
 ## D1: tail ablation only
 

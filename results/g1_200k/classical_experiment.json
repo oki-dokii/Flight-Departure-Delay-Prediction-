@@ -1,0 +1,88 @@
+{
+  "audit_sha256": null,
+  "class_weights": true,
+  "cohort_ids_sha256": "96309ea6001584a3462520ee155d7f7b070f1cf8844bfb3a5eaf8a9509b63a85",
+  "cohort_rows": 200000,
+  "development_release": "phase-b-data-v1",
+  "development_sha256": "b98a0a3492a7037c23959ba55f60b3b06f230a0c6b1eada2749ba5782b2f39b0",
+  "feature_group": "G1",
+  "feature_revision": "phase-b-v1",
+  "feature_sha256": {
+    "360": "e59bd1b569442e63b82cc9131edcebe98762ef72e9f0b23c4743642f8486f0b0",
+    "60": "dfe77ce85045f597bf6b63202954a947130a26027d9f395c4919ccdb3c1feec4"
+  },
+  "fit_mode": "full_fold",
+  "forest_jobs": 2,
+  "manifest_sha256": "c62aca9a2592617c12eb1d009dae22bf6d798544503db458e8d1fedc932966fd",
+  "parent_manifest_sha256": "e23954c654b3da37b9e95b5db337b2a5fed7db5083550972052c3f9505338e39",
+  "pca_forest_trees": null,
+  "pilot": true,
+  "predictors": [
+    [
+      "hour_sin",
+      "numeric"
+    ],
+    [
+      "hour_cos",
+      "numeric"
+    ],
+    [
+      "dow_sin",
+      "numeric"
+    ],
+    [
+      "dow_cos",
+      "numeric"
+    ],
+    [
+      "month",
+      "numeric"
+    ],
+    [
+      "crs_elapsed_min",
+      "numeric"
+    ],
+    [
+      "distance",
+      "numeric"
+    ],
+    [
+      "carrier",
+      "categorical"
+    ],
+    [
+      "origin",
+      "categorical"
+    ],
+    [
+      "dest",
+      "categorical"
+    ],
+    [
+      "origin_departures_3h",
+      "numeric"
+    ],
+    [
+      "origin_late_rate_3h",
+      "numeric"
+    ]
+  ],
+  "python": "3.12.5",
+  "revision": "c54898849d3e5fc089be843a16095ba7c9f9b8e4",
+  "run_id": "0d1b98f452bb5ca4e9727751a68dcad1f939fe6b296893bcb58b7f9423c544e7",
+  "source_sha256": {
+    "alert_metrics.py": "2926b1767240dafc0ae50b7486b1afa20896f07486fce8a0b25651c1e46fd550",
+    "evaluate.py": "68dbbb32836367739bf3edd8e068b21ef15441918521ff258210ab2fda4262a6",
+    "models_classical.py": "ab32f5270e7fac5786dca86b7ee0ac9c1e5534745cb89896a6a447fbf07c4874",
+    "phase_b_classical.py": "79aacb424aa17197818f7c7270cb7051f80b5aed6c00b8010a5a24cc47978b0f",
+    "run_classical.py": "f6722b8e42f6f140c5e18ad53f17c924756678af0b5d19f62063601cb5383617",
+    "splits.py": "741b7df2322550bbe39d6d74e1adce4d5b6c0cb851c186ec45c6652975996f1c"
+  },
+  "versions": {
+    "numpy": "2.2.6",
+    "pandas": "2.2.3",
+    "pyarrow": "20.0.0",
+    "scikit-learn": "1.6.1",
+    "scipy": "1.18.1"
+  }
+}

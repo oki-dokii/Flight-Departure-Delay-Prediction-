@@ -29,7 +29,7 @@
 The target is \(\mathrm{LATE}=1\) when gate departure occurs at least 15 minutes after its scheduled gate departure. Takeoff delay is a different outcome. We predict at 360 minutes (six hours) and 60 minutes (one hour) before scheduled UTC gate departure. Every input must be available at or before that flight's checkpoint; ambiguous availability is blocked. Both horizons use the same eligible flights still awaiting departure at the one-hour checkpoint. The repository is \url{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-}.
 \section{Dataset and EDA}
 \textbf{Full-development validation (descriptive).}
-The source is the BTS Reporting Carrier On-Time Performance table: monthly electronically reported domestic nonstop flight operations of reporting carriers. The recorded BTS source is public US government data; the airport coordinate metadata from the pinned OurAirports snapshot is public domain under the terms referenced in \texttt{DATA\_SOURCES.md}. Source archive receipts in \texttt{data/download\_manifest.json} record URLs, hashes and download dates (the reference collection was November 21, 2026). Release download dates are distinct from collection dates. P3 has supplied weather code, manifests and provenance metadata; P2 has reviewed units and public-domain terms. Checkpoint availability, missingness semantics, two station identities and full matrix delivery remain pending.
+The source is the BTS Reporting Carrier On-Time Performance table: monthly electronically reported domestic nonstop flight operations of reporting carriers. The recorded BTS source is public US government data; the airport coordinate metadata from the pinned OurAirports snapshot is public domain under the terms referenced in \texttt{DATA\_SOURCES.md}. Source archive receipts in \texttt{data/download\_manifest.json} record URLs, hashes and download dates (the reference collection was November 21, 2026). Release download dates are distinct from collection dates. P3 has supplied weather code, manifests and provenance metadata; P2 has reviewed units and public-domain terms. Checkpoint availability, missingness semantics, two station identities remain pending.
 
 The analyzed Phase A development file contains 5,749,041 flights with late fraction 21.3831\%. Its size is 265,113,328 bytes and its verified SHA-256 is recorded in \texttt{reports/tables/p2\_evidence.json}. This is the original unmasked Phase A file, not P1's separately published arrival-masked Phase B asset. We use no arrival predictor in the P2 pilot analyses. The common eligible population contains 5,749,040 targets; one departure exactly one hour early is excluded by the frozen split function. Its event can remain in history for other targets.
 
@@ -54,7 +54,7 @@ This describes retrospective completeness, not aircraft assignment availability 
 \textbf{Full-development validation (audit).}
 P1 owns cleaning and UTC facts. The documented pipeline removes exact duplicates, cancellations or unknown cancellation status, unmatched origin zones and unusable departure fields; it retains diverted flights with usable departures and preserves missing tails explicitly. It interprets BTS local FlightDate and HHMM using the origin zone, treating 2400 as next midnight. TimezoneFinder 6.5.9 and tzdata 2025.2 are pinned. DepDelay supplies elapsed time to reconstruct actual departure and the published actual local clock is checked separately. Equality of reconstructed UTC delay with DepDelay is partly by construction, not independent validation.
 
-\textbf{A-SCHED} assumes schedule timestamps are correct and known at T. A computation over development local scheduled clocks finds zero ambiguous fall-back rows; the conservative union of US-origin timezone ambiguity sets is empty. Thus the outcome-assisted branch cannot choose between distinct schedule instants for these development rows. The assumption does not validate retrospective schedule versioning or the closed test window: local 01:00--01:59 on November 2 can have two readings in DST-observing origins, and P1 must resolve the outcome-assisted choice before final scoring.
+\textbf{A-SCHED} assumes schedule timestamps are correct and known at T. A computation over development local scheduled clocks finds zero ambiguous fall-back rows; the conservative union of US-origin timezone ambiguity sets is empty. Thus the outcome-assisted branch cannot choose between distinct schedule instants for these development rows. The assumption does not validate retrospective schedule versioning or the closed test window: local 01:00--01:59 on November 2 can have two readings in DST-observing origins, and the cleaner excludes ambiguous scheduled wall clocks before validating the actual clock.
 
 The committed arrival checks record 153 scheduled-arrival clock mismatches, 79 actual-arrival mismatches and 16,783 actual arrivals unavailable for comparison. P1's Phase B copy masks mismatched timestamps; that masking is not present in P2's analyzed Phase A file. No raw ZIPs or test-period flight records were opened.
 \section{Split design and evaluation}
@@ -274,6 +274,25 @@ The operational comparison covers all ten model configurations at 5\%, 10\% and 
 \end{figure}
 \clearpage
 \section{Results}
+\subsection{G1 development validation on 200,000 flights}
+We sampled eligible targets without replacement, proportionally by UTC month, from January through October with seed 42. The July through October folds used only earlier flights for fitting. Both checkpoints use the same targets and retain congestion histories from the full source. Each cell gives the mean and population standard deviation across four folds and three training seeds. The table covers 240 validation outputs. LightGBM led at both checkpoints. All nine non-baseline configurations improved in mean average precision at one hour. The holdout remains closed pending the cohort decision and freeze.
+\begin{center}\small
+\begin{tabular}{lrrrr}\toprule
+ & \multicolumn{2}{c}{6 hours} & \multicolumn{2}{c}{1 hour} \\
+Model & ROC-AUC & AP & ROC-AUC & AP \\\midrule
+AdaBoost & 0.667 $\pm$ 0.014 & 0.339 $\pm$ 0.067 & 0.684 $\pm$ 0.013 & 0.377 $\pm$ 0.068 \\
+CatBoost & 0.684 $\pm$ 0.015 & 0.367 $\pm$ 0.070 & 0.697 $\pm$ 0.013 & 0.401 $\pm$ 0.070 \\
+Decision Tree & 0.673 $\pm$ 0.016 & 0.348 $\pm$ 0.071 & 0.687 $\pm$ 0.014 & 0.388 $\pm$ 0.074 \\
+Gradient Boosting & 0.678 $\pm$ 0.016 & 0.354 $\pm$ 0.070 & 0.690 $\pm$ 0.014 & 0.392 $\pm$ 0.071 \\
+LightGBM & 0.696 $\pm$ 0.014 & 0.378 $\pm$ 0.074 & 0.708 $\pm$ 0.014 & 0.416 $\pm$ 0.074 \\
+Majority & 0.500 $\pm$ 0.000 & 0.217 $\pm$ 0.045 & 0.500 $\pm$ 0.000 & 0.217 $\pm$ 0.045 \\
+PCA + Random Forest & 0.686 $\pm$ 0.014 & 0.364 $\pm$ 0.075 & 0.703 $\pm$ 0.013 & 0.407 $\pm$ 0.076 \\
+Matched no-PCA forest & 0.695 $\pm$ 0.014 & 0.377 $\pm$ 0.073 & 0.706 $\pm$ 0.014 & 0.412 $\pm$ 0.075 \\
+Random Forest & 0.695 $\pm$ 0.014 & 0.377 $\pm$ 0.073 & 0.706 $\pm$ 0.014 & 0.412 $\pm$ 0.075 \\
+XGBoost & 0.687 $\pm$ 0.015 & 0.369 $\pm$ 0.073 & 0.700 $\pm$ 0.014 & 0.405 $\pm$ 0.073 \\
+\bottomrule\end{tabular}\end{center}
+\subsection{Full-development benchmark progress}
+
 The completed G0 rows report schedule-only full-fold refits. G0 has identical
 predictor values across checkpoints, so the same fitted predictions support
 both horizons. Other configurations in this table remain pending.
@@ -392,7 +411,26 @@ Check with \texttt{src.selected\_calibration}.
 \textbf{Full-development validation (population audit); Pilot (PSI and calibration); Held-out test (closed).}
 Reporting-carrier domestic coverage limits transfer to other operators and international flights. Excluding cancellations and unusable departures conditions the target and undercounts congestion. January--October of one year cannot characterize recurring seasonality or the closed November--December regime. Carrier/airport effects are confounded by route mix and shared shocks.
 
-BTS monthly reporting is retrospective, not a live feed. A-SCHED and A-HISTORY are explicit operational interpretations, not evidence of schedule versioning or latency. D1 excludes unverified tail assignments from primary inputs; the G3 operational-feed and continuity assumptions remain pending approval. The zero development DST ambiguity count does not settle outcome-assisted schedule reconstruction in the fall-back test window. Arrival clocks have 153 scheduled mismatches, 79 actual mismatches and 16,783 actual arrivals not comparable; P2's Phase A file is unmasked and no arrival predictor is used. Weather unit conversions and public-domain terms have been reviewed, but PBI/PPG station identity, partial-null/zero-fill semantics and receipt/revision timing remain unresolved. The loader reads a mixed-period weather artifact; P2 did not run it. The published matrices use the canonical weather indicator.
+BTS monthly reporting is retrospective, not a live feed. A-SCHED and A-HISTORY are explicit operational interpretations, not evidence of schedule versioning or latency. D1 excludes unverified tail assignments from primary inputs; the G3 operational-feed and continuity assumptions remain pending approval. The cleaner excludes ambiguous local scheduled times during the fall-back hour. Arrival clocks have 153 scheduled mismatches, 79 actual mismatches and 16,783 actual arrivals not comparable; P2's Phase A file is unmasked and no arrival predictor is used. Weather unit conversions and public-domain terms have been reviewed, but PBI/PPG station identity, partial-null/zero-fill semantics and receipt/revision timing remain unresolved. The loader reads a mixed-period weather artifact; P2 did not run it. The published matrices use the canonical weather indicator.
 
 Full G0 and G1 feature drift, G0 tree and logistic calibration, and descriptive weather and inbound analyses use development flights. The selected boosting calibration and the month ablation use the paired pilot. Fold variation and repeated validation flights limit the interpretation of pooled seed spreads. Final test starts 2025-11-02 UTC; its flight count and results remain pending P1's single final run.
+\clearpage\appendix
+\section{G1 model input audit}
+The same availability rules apply at both checkpoints. Schedule fields assume a published schedule available at the checkpoint. Event-time congestion assumes that other flights' gate departures are observable when they occur.
+\begin{center}\small\begin{tabular}{@{}llp{0.44\linewidth}@{}}\toprule
+Input & Type & Justification \\\midrule
+\texttt{hour\_sin} & Known in advance & Scheduled UTC hour, cyclic sine component. \\
+\texttt{hour\_cos} & Known in advance & Scheduled UTC hour, cyclic cosine component. \\
+\texttt{dow\_sin} & Known in advance & Scheduled UTC weekday, cyclic sine component. \\
+\texttt{dow\_cos} & Known in advance & Scheduled UTC weekday, cyclic cosine component. \\
+\texttt{month} & Known in advance & UTC calendar month of the scheduled departure. \\
+\texttt{crs\_elapsed\_min} & Known in advance & Published scheduled duration in minutes. \\
+\texttt{distance} & Static & Published route distance. \\
+\texttt{carrier} & Known in advance & Scheduled operating carrier. \\
+\texttt{origin} & Known in advance & Scheduled departure airport. \\
+\texttt{dest} & Known in advance & Scheduled destination airport. \\
+\texttt{origin\_departures\_3h} & Observed by T & Count of other observed origin departures in the prior three hours. \\
+\texttt{origin\_late\_rate\_3h} & Observed by T & Late fraction among those observed departures. \\
+\bottomrule\end{tabular}\end{center}
+\href{https://github.com/oki-dokii/Flight-Departure-Delay-Prediction-/blob/main/COLUMN_AUDIT.csv}{Full source-field audit}
 \end{document}

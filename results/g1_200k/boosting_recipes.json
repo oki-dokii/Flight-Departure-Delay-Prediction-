@@ -1,0 +1,88 @@
+{
+  "models": {
+    "360": {
+      "adaboost": {
+        "native": false,
+        "parameters": {
+          "estimator__max_depth": 2,
+          "learning_rate": 0.1
+        },
+        "rounds": "training_selected"
+      },
+      "catboost": {
+        "native": false,
+        "parameters": {
+          "depth": 4,
+          "learning_rate": 0.1
+        },
+        "rounds": "training_selected"
+      },
+      "gradient_boosting": {
+        "native": false,
+        "parameters": {
+          "learning_rate": 0.1,
+          "max_depth": 2
+        },
+        "rounds": "training_selected"
+      },
+      "lightgbm": {
+        "native": false,
+        "parameters": {
+          "min_child_samples": 100,
+          "num_leaves": 31
+        },
+        "rounds": "training_selected"
+      },
+      "xgboost": {
+        "native": false,
+        "parameters": {
+          "learning_rate": 0.03,
+          "max_depth": 6
+        },
+        "rounds": "training_selected"
+      }
+    },
+    "60": {
+      "adaboost": {
+        "native": false,
+        "parameters": {
+          "estimator__max_depth": 1,
+          "learning_rate": 1.0
+        },
+        "rounds": "training_selected"
+      },
+      "catboost": {
+        "native": false,
+        "parameters": {
+          "depth": 4,
+          "learning_rate": 0.1
+        },
+        "rounds": "training_selected"
+      },
+      "gradient_boosting": {
+        "native": false,
+        "parameters": {
+          "learning_rate": 0.1,
+          "max_depth": 2
+        },
+        "rounds": "training_selected"
+      },
+      "lightgbm": {
+        "native": false,
+        "parameters": {
+          "min_child_samples": 100,
+          "num_leaves": 31
+        },
+        "rounds": "training_selected"
+      },
+      "xgboost": {
+        "native": false,
+        "parameters": {
+          "learning_rate": 0.03,
+          "max_depth": 6
+        },
+        "rounds": "training_selected"
+      }
+    }
+  }
+}

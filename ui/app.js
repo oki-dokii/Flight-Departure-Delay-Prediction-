@@ -68,10 +68,16 @@ function routeList() {
   display();
 }
 function results() {
-  layout('<h1>Compare Results</h1><label for="metric">Validation metric</label><select id="metric"><option value="pr_auc_mean">Average precision</option><option value="roc_auc_mean">ROC-AUC</option></select><p class="note">Mean across four chronological folds and three seeds for a fixed LightGBM model.</p>',
-    panel("Feature comparison","Development validation",'<div class="body" id="scores"></div>'));
+  layout('<h1>Compare Results</h1><label for="metric">Validation metric</label><select id="metric"><option value="pr_auc_mean">Average precision</option><option value="roc_auc_mean">ROC-AUC</option></select><p class="note">Four chronological folds and three seeds per checkpoint.</p>',
+    panel("Model comparison","200,000-flight G1 validation",'<div class="body" id="subset"></div>') +
+    panel("Feature comparison","Full-development LightGBM ablation",'<div class="body" id="scores"></div>'));
   const labels=["Schedule and route","+ Origin congestion","+ Surface weather","+ Inbound aircraft"];
   function update() {
+    const column = metric === "pr_auc_mean" ? 2 : 1;
+    const body = SUBSET_RESULTS.map(row =>
+      "<tr><td>"+escapeHTML(row[0])+"</td><td>"+escapeHTML(row[column])+"</td><td>"+escapeHTML(row[column+2])+"</td></tr>"
+    ).join("");
+    $("subset").innerHTML = "<h2>"+escapeHTML($("metric").selectedOptions[0].textContent)+"</h2><p>Mean ± standard deviation</p><div class='table-wrap'><table><thead><tr><th>Model</th><th>6 hours</th><th>1 hour</th></tr></thead><tbody>"+body+"</tbody></table></div>";
     const rows=labels.map((name,i)=>{
       const value=cp=>EXPLORER_DATA.ablation.find(r=>r.group==="G"+i && r.checkpoint_minutes===cp)[metric].toFixed(4);
       return '<tr><td><b>G'+i+'</b> · '+name+(i>=2?' <small>(exploratory)</small>':'')+'</td><td>'+value(360)+'</td><td>'+value(60)+'</td></tr>';
