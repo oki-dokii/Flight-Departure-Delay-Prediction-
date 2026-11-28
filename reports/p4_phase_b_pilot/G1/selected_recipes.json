@@ -1,0 +1,157 @@
+{
+  "classical_pair": "random_forest",
+  "classical_recipes": {
+    "360": {
+      "decision_tree": {
+        "family": "decision_tree",
+        "parameters": {
+          "classifier__ccp_alpha": 0.00014811387225026747,
+          "classifier__max_depth": 12,
+          "classifier__min_samples_leaf": 50
+        }
+      },
+      "majority": {
+        "family": "majority",
+        "parameters": {}
+      },
+      "pca_rf": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": 0.3,
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 64,
+          "classifier__n_jobs": 4
+        },
+        "scaled": true,
+        "variance": 0.9
+      },
+      "pca_rf_control": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": 0.3,
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 64,
+          "classifier__n_jobs": 4
+        },
+        "scaled": true
+      },
+      "random_forest": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": 0.3,
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 256,
+          "classifier__n_jobs": 4
+        }
+      }
+    },
+    "60": {
+      "decision_tree": {
+        "family": "decision_tree",
+        "parameters": {
+          "classifier__ccp_alpha": 1e-05,
+          "classifier__max_depth": 12,
+          "classifier__min_samples_leaf": 200
+        }
+      },
+      "majority": {
+        "family": "majority",
+        "parameters": {}
+      },
+      "pca_rf": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": 0.3,
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 64,
+          "classifier__n_jobs": 4
+        },
+        "scaled": true,
+        "variance": 0.9
+      },
+      "pca_rf_control": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": 0.3,
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 64,
+          "classifier__n_jobs": 4
+        },
+        "scaled": true
+      },
+      "random_forest": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": 0.3,
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 256,
+          "classifier__n_jobs": 4
+        }
+      }
+    }
+  },
+  "predictors": [
+    [
+      "hour_sin",
+      "numeric"
+    ],
+    [
+      "hour_cos",
+      "numeric"
+    ],
+    [
+      "dow_sin",
+      "numeric"
+    ],
+    [
+      "dow_cos",
+      "numeric"
+    ],
+    [
+      "month",
+      "numeric"
+    ],
+    [
+      "crs_elapsed_min",
+      "numeric"
+    ],
+    [
+      "distance",
+      "numeric"
+    ],
+    [
+      "carrier",
+      "categorical"
+    ],
+    [
+      "origin",
+      "categorical"
+    ],
+    [
+      "dest",
+      "categorical"
+    ],
+    [
+      "origin_departures_3h",
+      "numeric"
+    ],
+    [
+      "origin_late_rate_3h",
+      "numeric"
+    ]
+  ],
+  "rehearsal_fit_mode": "full_fold",
+  "seed": 42
+}

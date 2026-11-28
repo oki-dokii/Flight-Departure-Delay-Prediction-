@@ -1,0 +1,14 @@
+{
+  "mapping_rows": 349,
+  "mapping_sha256": "f49ba830dcdd81ff5d41dd00bcfb91e8b0353a4dc4d1db671ddf7dd3c8451ad1",
+  "catalog_sha256": "562ccc2a2733bbd1d551dd53e06058204d9bed93b77b9214ea6dbbda0a63b81f",
+  "catalog_source": "https://mesonet.agron.iastate.edu/geojson/network/AZOS.geojson",
+  "retrieved_date": "2026-11-25",
+  "distance_review_threshold_km": 5,
+  "caveat": "5 km is a review convention, not a coverage/identity guarantee; current catalog is not proof of 2025 sensor history",
+  "status_counts": {
+    "catalog_location_consistent": 347,
+    "pending_station_identity": 2
+  },
+  "development_weather_missingness": "pending checkpoint matrices; no whole-year coverage used"
+}

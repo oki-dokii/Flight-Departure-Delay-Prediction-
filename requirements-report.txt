@@ -1,0 +1,2 @@
+# PDF text extraction only; no model/runtime dependencies.
+pypdf==6.21.4

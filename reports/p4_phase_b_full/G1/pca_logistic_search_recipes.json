@@ -1,0 +1,87 @@
+{
+  "development_sha256": "3d406cd1331509abcec7bfa35c5ff142b3fe3075d30c3833709b5fec826622ba",
+  "feature_group": "G1",
+  "feature_sha256": {
+    "360": "e25ef579bb600cd506866f9881221e3cfcf2f999404abe593ff51af9245ffa4d",
+    "60": "03226bdabc469069e27f892ce47c9357cc4aa3775e8f677ef22e2fdebae571d9"
+  },
+  "fit_mode": "sampled",
+  "manifest_sha256": "4327e89b7969930603b714eae3079620ba770506191624fc8230e272614a87b8",
+  "predictors": [
+    [
+      "hour_sin",
+      "numeric"
+    ],
+    [
+      "hour_cos",
+      "numeric"
+    ],
+    [
+      "dow_sin",
+      "numeric"
+    ],
+    [
+      "dow_cos",
+      "numeric"
+    ],
+    [
+      "month",
+      "numeric"
+    ],
+    [
+      "crs_elapsed_min",
+      "numeric"
+    ],
+    [
+      "distance",
+      "numeric"
+    ],
+    [
+      "carrier",
+      "categorical"
+    ],
+    [
+      "origin",
+      "categorical"
+    ],
+    [
+      "dest",
+      "categorical"
+    ],
+    [
+      "origin_departures_3h",
+      "numeric"
+    ],
+    [
+      "origin_late_rate_3h",
+      "numeric"
+    ]
+  ],
+  "recipes": {
+    "360": {
+      "candidate": "logistic_95",
+      "control": {
+        "family": "logistic",
+        "parameters": {}
+      },
+      "with_pca": {
+        "family": "logistic",
+        "parameters": {},
+        "variance": 0.95
+      }
+    },
+    "60": {
+      "candidate": "logistic_95",
+      "control": {
+        "family": "logistic",
+        "parameters": {}
+      },
+      "with_pca": {
+        "family": "logistic",
+        "parameters": {},
+        "variance": 0.95
+      }
+    }
+  },
+  "revision": "0c419696e29dfe90be903ddb77c2a51028be41e1"
+}

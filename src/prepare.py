@@ -51,29 +51,13 @@ def departure_times(frame, zones, scheduled_minutes, actual_minutes, delay):
     for zone, members in zones.groupby(zones).groups.items():
         tz = ZoneInfo(zone)
         wall_clock = local_schedule.loc[members]
-        candidates = [
-            wall_clock.dt.tz_localize(tz, ambiguous=dst, nonexistent="NaT").dt.tz_convert("UTC")
-            for dst in (True, False)
-        ]
-
-        # DepDelay gives elapsed minutes and resolves the actual local calendar date.
-        # Validate the resulting wall clock against the independently published DepTime.
-        elapsed = pd.to_timedelta(delay.loc[members], unit="min")
-        expected_clock = actual_minutes.loc[members] % (24 * 60)
-        actual_candidates = [candidate + elapsed for candidate in candidates]
-        matches = []
-        for candidate in actual_candidates:
-            clock = candidate.dt.tz_convert(tz).dt
-            matches.append((clock.hour * 60 + clock.minute).eq(expected_clock))
-
-        first, second = candidates
-        first_matches, second_matches = matches
-        use_first = first_matches & (~second_matches | first.eq(second))
-        use_second = second_matches & ~first_matches
-        scheduled.loc[members] = first.where(use_first).fillna(second.where(use_second))
-        actual.loc[members] = actual_candidates[0].where(use_first).fillna(
-            actual_candidates[1].where(use_second)
-        )
+        # Two possible UTC instants cannot be distinguished from the schedule alone.
+        instant = wall_clock.dt.tz_localize(tz, ambiguous="NaT", nonexistent="NaT").dt.tz_convert("UTC")
+        observed = instant + pd.to_timedelta(delay.loc[members], unit="min")
+        clock = observed.dt.tz_convert(tz).dt
+        valid = (clock.hour * 60 + clock.minute).eq(actual_minutes.loc[members] % (24 * 60))
+        scheduled.loc[members] = instant.where(valid)
+        actual.loc[members] = observed.where(valid)
     return scheduled, actual
 
 

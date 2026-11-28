@@ -36,7 +36,24 @@ def revision():
     return result.stdout.strip() or "unknown"
 
 
-def evaluate(model_factory, X, development, seeds=SEEDS):
+def fit_indices(train, development, seed, mode):
+    if mode == "sampled":
+        return training_sample(train, development, seed)
+    if mode == "full_fold":
+        return train
+    raise ValueError(f"Unknown validation fit mode {mode!r}")
+
+
+def positive_scores(estimator, X, batch_size=50_000):
+    """Return the probability of LATE in row order, keeping transforms bounded."""
+    positive = np.flatnonzero(np.asarray(estimator.classes_) == 1).item()
+    return np.concatenate([
+        estimator.predict_proba(X.iloc[start:start + batch_size])[:, positive]
+        for start in range(0, len(X), batch_size)
+    ])
+
+
+def evaluate(model_factory, X, development, seeds=SEEDS, *, fit_mode="sampled"):
     """Fit a fresh model per fold/seed and return per-run and summary DataFrames.
 
     model_factory(seed) must return an unfitted estimator with fit, predict_proba
@@ -64,7 +81,7 @@ def evaluate(model_factory, X, development, seeds=SEEDS):
             raise ValueError(f"Fold {fold} requires both classes in train and validation")
         X_validate = X.iloc[validate]
         for seed in seeds:
-            sample = training_sample(train, development, seed)
+            sample = fit_indices(train, development, seed, fit_mode)
             X_seed, y_seed = X.iloc[sample], y.iloc[sample]
             estimators = {
                 "model": model_factory(seed),

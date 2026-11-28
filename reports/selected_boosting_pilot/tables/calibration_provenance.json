@@ -1,0 +1,490 @@
+{
+  "handoff": "reports/p5_month_pilot/handoff.json",
+  "handoff_sha256": "a505c9f815f0787463fca241067c32d82b563c1df9f3f417fa6493eaadd05008",
+  "mode": "selected_validation_exports_no_refit",
+  "feature_manifest": "data/sample/feature_manifest.json",
+  "manifest_sha256": "fcfbe360589bb4dfbe7fb1ee83f8c13c9bcf6fcf5d85c9991b12b6f81b3bae26",
+  "bootstrap_replicates": 200,
+  "files": [
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/1-42.parquet",
+      "sha256": "0739467bd75c39673fae2087c10a0ba2285e00392b06c99aebff97a3dc3b60cf"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/1-42.parquet",
+      "sha256": "f5a03ccbe5846ced3f1b8045387a29003103ccf24a0fbfb5662328e169ffa0e2"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/1-42.parquet",
+      "sha256": "0824d2ce61c31d2c5f1dd81eab5b68136228782d7a6dba780ddc0b89c2f7f26e"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/1-42.parquet",
+      "sha256": "1ac584a3e3450cc2249bb174148aa540e2e9bad0c0faf4e87525dafc7abd4bd5"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/1-42.parquet",
+      "sha256": "99645efa7607c0f528957bad1ce936d6059cac512178c51762141a07e5db66e1"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/1-73.parquet",
+      "sha256": "f8a8349b1ca58aea08f488ce7789f548b78c479d8bd871cf20fbc7a886abac95"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/1-73.parquet",
+      "sha256": "15f1c9929ef4331a7789d52be64d35a6270649dc8af851c8043226ff27669000"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/1-73.parquet",
+      "sha256": "1e75fd7311fff100f9d78bfcaec8e86c7f6f67fa45e55b893ad225e52175ba9e"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/1-73.parquet",
+      "sha256": "3b17d9667ff90600984ba786d52e9d91b4325b8498562658fc4b05222099e33a"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/1-73.parquet",
+      "sha256": "0c1c964794d7a1c770a6351927240c703ef7970a90c1247e8dc3cbc1e7e40d41"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/1-101.parquet",
+      "sha256": "bc7188455e1e420fbea9718256bf9b0ea03a68ccc071f4f3bb962bc91b01cb80"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/1-101.parquet",
+      "sha256": "828b9414bdf1ff42a80997a90bed3515ba067ebd7ffde0cd6d4b3a2520ece4b8"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/1-101.parquet",
+      "sha256": "f528ce71c2700a23ac2444227dc4d8451268911cd49f0004c9e770cac2504c5f"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/1-101.parquet",
+      "sha256": "5128e1f19e8c47db318209e8ea3473be1009d33537fbe96365be5f31618cf541"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/1-101.parquet",
+      "sha256": "ab875db732f64907df358b5798e88e90d805326f85336d8bc1e6b69c63f105b0"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/2-42.parquet",
+      "sha256": "f02313231a5b59db2e68143fe2d83bd7c8358c81a45f9ebe28b371f611b3f281"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/2-42.parquet",
+      "sha256": "cabfcc986fa658506dd8cf8028024b82e24fd4464cec6fa42bd15d21c34db879"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/2-42.parquet",
+      "sha256": "cc37ae60a8a9579dcd0b17b5d7bfef261eb16b55b4a76b96c3eadd526b04b943"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/2-42.parquet",
+      "sha256": "5d2645560c2a5714178f8e94c7945a88026382977fa19328ee654effec4af2b5"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/2-42.parquet",
+      "sha256": "0f003e5422b53304fbe188f1b588f480f181f857e7ea007b9e37bc29a382d21b"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/2-73.parquet",
+      "sha256": "2a14e342f86cd2103cbabeb06aafcb1e8652c46f066302ca1c118c70151dddab"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/2-73.parquet",
+      "sha256": "8641ae59bcce385f2be92c89742417d222011064aa75da3fd6bdf100921694fd"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/2-73.parquet",
+      "sha256": "9f7f76c104c4987170e37bf847c058fbddfcb10b8b7f3e14c295555a52da29f2"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/2-73.parquet",
+      "sha256": "bca1ad4b3e0100dce7b28a859a287f92b5f6404018f24d2f7e24a602879e7e4f"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/2-73.parquet",
+      "sha256": "b6ce13c3ae9651ec8760a95910471fa6e71ed886c0b580cced7bbff58b2b3935"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/2-101.parquet",
+      "sha256": "aa6e64a35a90f15eda957f187da3fbb3e99c1646bad5c2a3518f201e797fc605"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/2-101.parquet",
+      "sha256": "8cadeb5bfc4b376f69f877e1555d518e9eba06088a74ad6fdd31c4c3b94b7e02"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/2-101.parquet",
+      "sha256": "f4220213d0f6a149a431be5976b17b9d0d77368cff66fd38e41d2173a762bbe1"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/2-101.parquet",
+      "sha256": "7b32eb159b5b8c66509ec7b37d0bd3585ae6f53cfc32f0e7ff051c9b6f17248d"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/2-101.parquet",
+      "sha256": "57899f543a3fa3aca6a91f57b0580897564988738e9dca08917c3d54bec6a308"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/3-42.parquet",
+      "sha256": "9c21721892edbcea05ba68f252b1a4b5f9473ef3a27af6839d8db490889bd18e"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/3-42.parquet",
+      "sha256": "d7af80cb5af291acfee6d58282ffbd435bc7173eae91e00d04267e423f024d7c"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/3-42.parquet",
+      "sha256": "f1b43362e23905bc38b588cbf3868651d9f7ef047893a59341721f832c60a9d0"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/3-42.parquet",
+      "sha256": "ffb0620b533a247dd8c9e2e79cab855fab4431a028c315f668a242b7293cd061"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/3-42.parquet",
+      "sha256": "9087bf7f2c5401198a526c133ef351130f86f01cc43f48f96e4bd57031b18351"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/3-73.parquet",
+      "sha256": "b83264c9257faa89f4c67aaff0fabc9ca4ab4bf807514841ccc22c6b3296a4b5"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/3-73.parquet",
+      "sha256": "4b8614158f1694f8642b6dd2b38104972942fe2f5492c2e570b57ffaec916bd9"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/3-73.parquet",
+      "sha256": "f0a1492589ae52b50d89deedd3a4f7bed5e8570d61910a9d34c42f23e5af4112"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/3-73.parquet",
+      "sha256": "beaef18abdf245e52139cccba6268878abf7624d77a551b42df734b87c9a5d03"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/3-73.parquet",
+      "sha256": "6a2cc554264879a099828b33b78d960b0eaf51bb3339e27e3c7668e95e79988d"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/3-101.parquet",
+      "sha256": "a4117370fb6facf443fa103bfc45f30f9daa411af77b8fb49c85f3d4547f0a35"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/3-101.parquet",
+      "sha256": "15117ae14a4563c3a523f08a07bb930e77f695b896dcc9a85af91a4e37e51278"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/3-101.parquet",
+      "sha256": "bbd973269e5745998b7d1c3fea73f4783fcbc5cfde134d3af5ffcd03dfc18c56"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/3-101.parquet",
+      "sha256": "fa7a636ef851ac4f01fca2582c468c1b278ba6c203775aa41c79c822e4ced566"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/3-101.parquet",
+      "sha256": "34616f19110e03de720a023f6028428ca7eb14084b8547e38993f6e7267fc591"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/4-42.parquet",
+      "sha256": "655ef761c5b261f522caa7d631bf495d1eebe086779b8d172dc675bf6c036fe3"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/4-42.parquet",
+      "sha256": "10be9b90d60aa345a543dc79b6a1df1ad9da1e0ecb56ab54e4d3edf8468430fb"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/4-42.parquet",
+      "sha256": "2c93dc07521000418d6d4ba9cea06d6c3002305a50b191a1acf711b0249de811"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/4-42.parquet",
+      "sha256": "3116fdfe476555f658d8c94bfac6da203bcea3e1142a54a314395a2018412c34"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/4-42.parquet",
+      "sha256": "16186e6f952be03f3bd645b4718656a0aee3ef15da0153983e319cf1030922a4"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/4-73.parquet",
+      "sha256": "e6685d01616a66194f18cdaac1adfc943e7089540938d8b0f19d6cf01c607af0"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/4-73.parquet",
+      "sha256": "df62889fb8caf5e10941ae07c116dc730600cd125cac55cf91cf300a5da42381"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/4-73.parquet",
+      "sha256": "0e300c0aebb8f64318b322479acc67f1de8b62eae5537e1abcfa6cdb1f3bd6f0"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/4-73.parquet",
+      "sha256": "2ebd4b7a3058425542bded3d718a3d48c0626fbd355c42a8c5931260162a0f09"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/4-73.parquet",
+      "sha256": "5db62b096ba69811dfb41f03f7278b9c4fbfe2b175268fd4a6d8545a37f4fdf8"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/adaboost/4-101.parquet",
+      "sha256": "8eba57218bf827db589a780795d225d6a849e404448041c1957d6067af7c4210"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/gradient_boosting/4-101.parquet",
+      "sha256": "967311ecc08a21418e37ec35f04b6acc8700301ef2b47f6130b14a60fe4736be"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/xgboost/4-101.parquet",
+      "sha256": "cce618511f6aebad251c18a0d52b1a47a79c7ac15bc01987e446cd58b4d88d30"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/lightgbm/4-101.parquet",
+      "sha256": "c9698b37c4fde250f458f370b75303e846092f342cd0b49afa322817711acf87"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/360/catboost/4-101.parquet",
+      "sha256": "3754d4fc332c9cf73c698e89023158acc68f026e07b9a634d45c423d96fbd70e"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/1-42.parquet",
+      "sha256": "05540c02bdb103de960c9fbb5e72f04aec570ce8b184e4580f2d2c1d451050ee"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/1-42.parquet",
+      "sha256": "2f2e09aaa3ea05e9f1c84ae5eb1705371b4d13172e19bcef9ce828e40f1c98e6"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/1-42.parquet",
+      "sha256": "66787cb19c8a5f304b47484a918ee210a87ac05bd4f8ee3c3ef90c8f8e7590cc"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/1-42.parquet",
+      "sha256": "5c7b32dc0418230760a89890d9be9986ce9fd6e53a1743cb0a1069ef5bfa957f"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/1-42.parquet",
+      "sha256": "a2783ad4679188bb07d605ed0569fb014e9230f5627b7dd687a49aec33bc187d"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/1-73.parquet",
+      "sha256": "065a4d194770e4304e47f3955c4451d5217ed28b62d316ecf6cfde1507aa3752"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/1-73.parquet",
+      "sha256": "02220b07f0cc2cab943afd28d5903f3c188dd59727d2a7f3e635da561fbce251"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/1-73.parquet",
+      "sha256": "b3c09850e89249dcb7d9073284017d4330a38bde1580d22d0b0a7347a31dffc2"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/1-73.parquet",
+      "sha256": "16126211e15f594225e63d3190f8a0d7d12d1236e992f40264f7f2ac691708a9"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/1-73.parquet",
+      "sha256": "aebe94d2ffaa98b012e2908eb9742dcd5f68a42ea71794151202883e838091cd"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/1-101.parquet",
+      "sha256": "ec41b66df468fb8d1908a7434565f97d19d854512d2b4a5fe34e69d7365d9702"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/1-101.parquet",
+      "sha256": "e8be5c878a59ddb2446ab2ad1e340b57527d9c715117640f5f9ddfeb06e2b035"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/1-101.parquet",
+      "sha256": "5cc81556faa4ab7686ebfd4dcc4425d571083b63d0eaa2c6440bb63ecefd141c"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/1-101.parquet",
+      "sha256": "4216275c65929325d46167083b7aa15bb6767b880873540523baa01a831484ad"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/1-101.parquet",
+      "sha256": "2801fca9f620b4fea8778dd0037d9b4f312b2ba5053c02020d286c7ff8a741ab"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/2-42.parquet",
+      "sha256": "876508166a0ec7dda45be4fce02701fee9d28016ea6fc4f342ec602053ca12ed"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/2-42.parquet",
+      "sha256": "5b75e98ac9d26290365c40ea0a0905390f7f77ba3c63cb74803e061b214d8e44"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/2-42.parquet",
+      "sha256": "913ded1e6a997cde6eb4b2132955a9f8b19ceb5f0ca613df8626baadce80bbb1"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/2-42.parquet",
+      "sha256": "fcf0bcf29fd64e8ff19d8dbfeeafa3c5c93b59b479c63ab475d443e5013ee64e"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/2-42.parquet",
+      "sha256": "f628ede3869bd29260e2dac4f66acbc659b148ed5faf037c330910d307c347f6"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/2-73.parquet",
+      "sha256": "13aa44f65a2c46ce3d3365268ccdbec07683061a65a69089d705c50f6fba8e9f"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/2-73.parquet",
+      "sha256": "1ed9206bd499dc8baa454c7981b68c53fbe701095d9ab80f4128b3cbf8809b35"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/2-73.parquet",
+      "sha256": "9ffe54446aa6d5defb931bd31cbe9a2274d0d125338ddbd4585edd538281abb8"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/2-73.parquet",
+      "sha256": "a675e2fe6e50a9f050dc9fb39003d3298d059f9a198272c9d574ec9581295446"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/2-73.parquet",
+      "sha256": "f4e602d6c936f120b77cfd3d35ab26a5b3a41e1c70763f493858916ff3ebc18c"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/2-101.parquet",
+      "sha256": "dcc83a459afe2a4689db9d67e5cb62ac30edeb06d8b40e32936bbd800401dd1f"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/2-101.parquet",
+      "sha256": "130853ad7bf75362b7ef3f4b5abce0161296b7733985cccaee754b49844b7f75"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/2-101.parquet",
+      "sha256": "4ddf75434798fed8b7b4e3c4caa158eeca3b84dd6d35b0a0e65680db431d7a8c"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/2-101.parquet",
+      "sha256": "be11725cc821208561712b8a68937468ce5608bd29ded0a6824a58e6cffd4e3e"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/2-101.parquet",
+      "sha256": "574611d92bbae0922d3186b462b8feb1be98e8caa3419a3e67da303a51b34069"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/3-42.parquet",
+      "sha256": "895a51861cbc1e9f365fdfc46af86db860a2b0471a402c43dda1a370d3454061"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/3-42.parquet",
+      "sha256": "d9a3064a2dcfe2640a6bc59b0f2ec784ff958f231f013400c6a9f7f6b382e4a2"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/3-42.parquet",
+      "sha256": "c291887e550893b9fe31edd6e555668ee8488f6a5cb533ce441a5077fee2fc8b"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/3-42.parquet",
+      "sha256": "0fd4fd020b5634d2305ecfa6540b902d8b2437e3ae064e058d66af4f48c8b992"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/3-42.parquet",
+      "sha256": "0c922ce279ec89d4e22be4b0ea09fcd8f985bf01392c31b7e14ecc266fa53027"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/3-73.parquet",
+      "sha256": "b2b5497abae75f75c312d30783c1092eb0de81b1628cc0d18adabcbe0542bd6b"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/3-73.parquet",
+      "sha256": "72d2c5c259bd86de542e5ac1fd2fcbba10702be8b12b67871efc931c2e104b1d"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/3-73.parquet",
+      "sha256": "92236662375cb16a249f94d6e2c8eb69502701273eb8cfb5bf9c19e3540395c1"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/3-73.parquet",
+      "sha256": "a53cbcd97b78ea428434d17cfd533d281c3c06ebf07ab773f0618d5eb3e30018"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/3-73.parquet",
+      "sha256": "bec984cac118f889da14ebcd7adb5848e411bc89388f442593d6d1fb78388418"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/3-101.parquet",
+      "sha256": "2f77dcb69effaaec0a1ad88e4dd1a1cc3204360c20bd6b05f6a5d66fae36f692"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/3-101.parquet",
+      "sha256": "8b58d6eb189a40e69d5cff5672376a0f8a68615cc819ccc97f6ebc5744b75c2e"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/3-101.parquet",
+      "sha256": "b2b43135b59f3b68b952b751d74f1060971cb8ccee9bc403e4dccbe34d55f98d"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/3-101.parquet",
+      "sha256": "50b153f326c3426907e3689cc533a659e912f2f196c5a2bda1871fb1d30cb11b"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/3-101.parquet",
+      "sha256": "ae4e0aad1bd225729fff8789b83015ebb6794365fc805080e6ee9d9b6bfa20f7"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/4-42.parquet",
+      "sha256": "1b513a6d5e225a206131dacda346e8ea783f22e2f9dd7d916a488b42180e1c62"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/4-42.parquet",
+      "sha256": "0c9f053a6e36065a2e72ff091f27b07ed6950447984da5ed0dc843608f2c986d"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/4-42.parquet",
+      "sha256": "a120e574ebc4bf894d3978c4292ebd16349dcea30f5456d649dbbb8f5970b638"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/4-42.parquet",
+      "sha256": "b0ce5d11ba472c4291051e27567c15cc42ff71e18982c8cb58cce3f4365c7f57"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/4-42.parquet",
+      "sha256": "64f6752e73629fcbcaffdf47a439e72102665da06498b7a223ee3f2819351111"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/4-73.parquet",
+      "sha256": "33f4fffc3465348f0b595ce53ee471ae138dfb5ef6671babc466fc02c398bb11"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/4-73.parquet",
+      "sha256": "c716fc7aaf6be51134e49511f42446993da71141bd5017c67690e303cfb7b850"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/4-73.parquet",
+      "sha256": "60bb06f445974563058e9918034dbd4ed9045724140c2d7d163879fb12f596e4"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/4-73.parquet",
+      "sha256": "4a9906040a2869730f22096e7e0ba381b9bc1a859f07164b0db8fe93dd05beb0"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/4-73.parquet",
+      "sha256": "07ed5fa535ecc33809e89a99b6e5287500a469222dce729390cad5f13b4246d4"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/adaboost/4-101.parquet",
+      "sha256": "c94dc6f1fe778816888f1de32235add4578f50701f537591aca92bc60d24b7fa"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/gradient_boosting/4-101.parquet",
+      "sha256": "c8375ac629fa82725cffc7e45dd6ea61e7a7be700598b63e459ece2303162176"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/xgboost/4-101.parquet",
+      "sha256": "857dd5a17997b10b25012211c167f15cbeb91d7910c5d17a329779c3f4d27573"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/lightgbm/4-101.parquet",
+      "sha256": "c086caf8e647b637abcc16ae72b1b96f43367020fe4e9b1cfc79d340b7b8721e"
+    },
+    {
+      "path": "reports/p5_month_pilot/predictions/60/catboost/4-101.parquet",
+      "sha256": "ce507972976f4626596701553aca51036975df5af25d0d5d1ad16f19f0ecade7"
+    }
+  ]
+}

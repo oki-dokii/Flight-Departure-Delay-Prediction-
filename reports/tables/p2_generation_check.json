@@ -1,0 +1,16 @@
+{
+  "curated_unchanged": true,
+  "audit_identical": true,
+  "curated_sha256": {
+    "COLUMN_AUDIT.md": "cc8250f038fb6449de999d07459430046ffd9b58927886cd0e2a3e17edb5d704",
+    "reports/data_quality_issues.csv": "4b52a7484b73b36276e2f42c993469ce55d4bda63ee2433f1e4e138f60b0ae56",
+    "reports/eda_observations.md": "37c589554ac0f2a3fe2f84fe5feb4bf674855b048d7df7603098099134a83557",
+    "reports/limitations.md": "b0a9b52cb642f030ab67bce37fec05f7295949c47138417818747ae0d28f75f3",
+    "reports/p2_phase_b.md": "99b9d677c19009c25539ca9b8bf009c587a5dd7fb3fe8500392111537823e625",
+    "reports/drift_analysis.md": "5d1ba8a4ee53b1211dad8d1d9992d5b1ff20e60a9aa478705ec0989aa2028c98",
+    "reports/calibration_analysis.md": "bf659b8625db50984941c4101ee7c91bd7a35790305b73b21c65abd8d072b21d",
+    "reports/report.tex": "b0a6fa261a4d1bfda1526c555290406a5cb900d89cc589126b509ce947e90331",
+    "reports/audit_assumptions.json": "aa5cf8c4f995d01573d8cf166cd620f48511b5951a09c0dc7d2c141cb5177995"
+  },
+  "audit_sha256": "354c47f4f0b33e765f107fdb7deb8949bcc532b31b7f5647a98d8afb45198d2a"
+}

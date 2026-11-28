@@ -42,8 +42,8 @@ class PreparationTests(unittest.TestCase):
             frame, zones, hhmm_minutes(pd.Series([150, 100])),
             hhmm_minutes(pd.Series([110, 105])), pd.Series([20, 5]),
         )
-        self.assertEqual(scheduled.iloc[0], pd.Timestamp("2025-11-02 05:50Z"))
-        self.assertEqual(actual.iloc[0], pd.Timestamp("2025-11-02 06:10Z"))
+        self.assertTrue(pd.isna(scheduled.iloc[0]))
+        self.assertTrue(pd.isna(actual.iloc[0]))
         self.assertTrue(pd.isna(scheduled.iloc[1]))
         self.assertTrue(pd.isna(actual.iloc[1]))
 

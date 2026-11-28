@@ -33,3 +33,9 @@ The November and December source ZIPs reside in `data/raw/`. Both compressed-fil
 4. Use the aggregator with the selected validation runs and `--test-scores data/processed/final_once/scores.csv`. The prediction files contain flight ID, observed label and probability per model/checkpoint. The run record contains exact test start, eligible test flight count and training size.
 
 The full weather and ablation matrices are P3's deliverable. Publish their digests and frozen manifests when available, before the team authorizes final scoring.
+
+## Primary feature group and development cutoff verification
+
+The primary benchmark uses G1 (schedule and recent origin congestion). G0 is the schedule baseline. The G2 weather analysis is exploratory because the archive gives observation times and does not establish when operators received the reports. G3 is the retrospective tail-assignment ablation.
+
+The development check aligned the released G0 and G1 matrices with the audited development data by flight ID and rebuilt the schedule columns without departure outcomes. For each origin, an independent calculation counted actual departures and late departures in the inclusive three-hour interval ending at the checkpoint. It excluded the target flight whenever its own departure fell in that interval. All counts and late fractions matched the G1 matrices across 5,749,041 flights at each horizon. One target needed self-exclusion at one hour. See the [checkpoint counts](full_development_eda/cutoff_verification.json).

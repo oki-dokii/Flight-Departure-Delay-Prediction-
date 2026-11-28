@@ -1,0 +1,12 @@
+[
+  {
+    "checkpoint_minutes": 360,
+    "flights_verified": 5749041,
+    "self_exclusions": 0
+  },
+  {
+    "checkpoint_minutes": 60,
+    "flights_verified": 5749041,
+    "self_exclusions": 1
+  }
+]

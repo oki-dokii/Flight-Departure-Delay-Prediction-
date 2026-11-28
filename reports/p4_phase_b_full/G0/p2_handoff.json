@@ -1,0 +1,17 @@
+{
+  "feature_manifest": "data/processed/phase_b/manifest_G0.json",
+  "sources": [
+    {
+      "experiment": "data/processed/p4/full_scale/G0_tree/experiment.json",
+      "owner": "P4",
+      "predictions": "data/processed/p4/full_scale/G0_tree/predictions",
+      "runs": "data/processed/p4/full_scale/G0_tree/runs.csv"
+    },
+    {
+      "experiment": "data/processed/p4/full_scale/G0_logistic/control_experiment.json",
+      "owner": "P4",
+      "predictions": "data/processed/p4/full_scale/G0_logistic/predictions",
+      "runs": "data/processed/p4/full_scale/G0_logistic/control_runs.csv"
+    }
+  ]
+}

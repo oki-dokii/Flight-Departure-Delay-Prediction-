@@ -1,0 +1,15 @@
+checkpoint_minutes,fold,seed,node,depth,condition,train_support,train_late_rate
+360,4,42,0,0,All flights,17937,0.2183754250989574
+360,4,42,1,1,All flights AND hour_cos ≤ 0.1327,8919,0.1382441977800201
+360,4,42,2,2,All flights AND hour_cos ≤ 0.1327 AND hour_cos ≤ -0.5206,5818,0.1098315572361636
+360,4,42,39,2,All flights AND hour_cos ≤ 0.1327 AND hour_cos > -0.5206,3101,0.1915511125443405
+360,4,42,62,1,All flights AND hour_cos > 0.1327,9018,0.2976269682856509
+360,4,42,63,2,All flights AND hour_cos > 0.1327 AND month ≤ 4.5,4144,0.2364864864864864
+360,4,42,96,2,All flights AND hour_cos > 0.1327 AND month > 4.5,4874,0.3496101764464505
+60,4,42,0,0,All flights,17937,0.2183754250989574
+60,4,42,1,1,All flights AND hour_cos ≤ 0.1327,8919,0.1382441977800201
+60,4,42,2,2,All flights AND hour_cos ≤ 0.1327 AND hour_cos ≤ -0.5206,5818,0.1098315572361636
+60,4,42,39,2,All flights AND hour_cos ≤ 0.1327 AND hour_cos > -0.5206,3101,0.1915511125443405
+60,4,42,62,1,All flights AND hour_cos > 0.1327,9018,0.2976269682856509
+60,4,42,63,2,All flights AND hour_cos > 0.1327 AND month ≤ 4.5,4144,0.2364864864864864
+60,4,42,96,2,All flights AND hour_cos > 0.1327 AND month > 4.5,4874,0.3496101764464505

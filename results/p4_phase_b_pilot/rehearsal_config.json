@@ -1,0 +1,243 @@
+{
+  "classical_pair": "random_forest",
+  "classical_recipes": {
+    "360": {
+      "decision_tree": {
+        "family": "decision_tree",
+        "parameters": {
+          "classifier__ccp_alpha": 0,
+          "classifier__max_depth": 12,
+          "classifier__min_samples_leaf": 200
+        }
+      },
+      "majority": {
+        "family": "majority",
+        "parameters": {}
+      },
+      "pca_rf": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": "sqrt",
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 128,
+          "classifier__n_jobs": 2
+        },
+        "scaled": true,
+        "variance": 0.9
+      },
+      "pca_rf_control": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": "sqrt",
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 128,
+          "classifier__n_jobs": 2
+        },
+        "scaled": true
+      },
+      "random_forest": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": "sqrt",
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 128,
+          "classifier__n_jobs": 2
+        }
+      }
+    },
+    "60": {
+      "decision_tree": {
+        "family": "decision_tree",
+        "parameters": {
+          "classifier__ccp_alpha": 0,
+          "classifier__max_depth": 12,
+          "classifier__min_samples_leaf": 200
+        }
+      },
+      "majority": {
+        "family": "majority",
+        "parameters": {}
+      },
+      "pca_rf": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": "sqrt",
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 128,
+          "classifier__n_jobs": 2
+        },
+        "scaled": true,
+        "variance": 0.9
+      },
+      "pca_rf_control": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": "sqrt",
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 128,
+          "classifier__n_jobs": 2
+        },
+        "scaled": true
+      },
+      "random_forest": {
+        "family": "random_forest",
+        "parameters": {
+          "classifier__class_weight": null,
+          "classifier__max_depth": 24,
+          "classifier__max_features": "sqrt",
+          "classifier__min_samples_leaf": 10,
+          "classifier__n_estimators": 128,
+          "classifier__n_jobs": 2
+        }
+      }
+    }
+  },
+  "rehearsal_fit_mode": "full_fold",
+  "seed": 42,
+  "models": {
+    "360": {
+      "adaboost": {
+        "native": false,
+        "parameters": {
+          "estimator__max_depth": 2,
+          "learning_rate": 0.1
+        },
+        "rounds": "training_selected"
+      },
+      "catboost": {
+        "native": true,
+        "parameters": {
+          "depth": 4,
+          "learning_rate": 0.1
+        },
+        "rounds": "training_selected"
+      },
+      "gradient_boosting": {
+        "native": false,
+        "parameters": {
+          "learning_rate": 0.03,
+          "max_depth": 3
+        },
+        "rounds": "training_selected"
+      },
+      "lightgbm": {
+        "native": false,
+        "parameters": {
+          "min_child_samples": 20,
+          "num_leaves": 15
+        },
+        "rounds": "training_selected"
+      },
+      "xgboost": {
+        "native": false,
+        "parameters": {
+          "learning_rate": 0.1,
+          "max_depth": 3
+        },
+        "rounds": "training_selected"
+      }
+    },
+    "60": {
+      "adaboost": {
+        "native": false,
+        "parameters": {
+          "estimator__max_depth": 2,
+          "learning_rate": 0.1
+        },
+        "rounds": "training_selected"
+      },
+      "catboost": {
+        "native": true,
+        "parameters": {
+          "depth": 4,
+          "learning_rate": 0.1
+        },
+        "rounds": "training_selected"
+      },
+      "gradient_boosting": {
+        "native": false,
+        "parameters": {
+          "learning_rate": 0.03,
+          "max_depth": 3
+        },
+        "rounds": "training_selected"
+      },
+      "lightgbm": {
+        "native": false,
+        "parameters": {
+          "min_child_samples": 20,
+          "num_leaves": 15
+        },
+        "rounds": "training_selected"
+      },
+      "xgboost": {
+        "native": false,
+        "parameters": {
+          "learning_rate": 0.1,
+          "max_depth": 3
+        },
+        "rounds": "training_selected"
+      }
+    }
+  },
+  "predictors": [
+    [
+      "hour_sin",
+      "numeric"
+    ],
+    [
+      "hour_cos",
+      "numeric"
+    ],
+    [
+      "dow_sin",
+      "numeric"
+    ],
+    [
+      "dow_cos",
+      "numeric"
+    ],
+    [
+      "month",
+      "numeric"
+    ],
+    [
+      "crs_elapsed_min",
+      "numeric"
+    ],
+    [
+      "distance",
+      "numeric"
+    ],
+    [
+      "carrier",
+      "categorical"
+    ],
+    [
+      "origin",
+      "categorical"
+    ],
+    [
+      "dest",
+      "categorical"
+    ]
+  ],
+  "development_inputs": {
+    "manifest_sha256": "fcfbe360589bb4dfbe7fb1ee83f8c13c9bcf6fcf5d85c9991b12b6f81b3bae26",
+    "development_sha256": "8166d5f05de4ace74dd75d69ee2867686f45237105599a927f9a519382a29e57",
+    "feature_sha256": {
+      "360": "64c2c55a70e97c4e47185fad3beb32341b4e896055f270733de9ba7f64228970",
+      "60": "749d8779492934ae1576eb1a5263f079cb97ab277cd3f2ad23cf6a2e77f9c6f3"
+    }
+  }
+}

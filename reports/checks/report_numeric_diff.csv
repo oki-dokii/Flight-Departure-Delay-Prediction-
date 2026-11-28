@@ -1,0 +1,96 @@
+claim,label,value,expected,actual,status
+development_rows,Full-development validation,1,"5,749,041",5749041,pass
+development_rows,Full-development validation,2,21.3831,21.3831,pass
+eda_hour,Full-development validation,1,"5,749,041",5749041,pass
+eda_hour,Full-development validation,2,7.28,7.28,pass
+eda_hour,Full-development validation,3,33.53,33.53,pass
+eda_Reporting_Airline,Full-development validation,1,"5,749,041",5749041,pass
+eda_Reporting_Airline,Full-development validation,2,14.01,14.01,pass
+eda_Reporting_Airline,Full-development validation,3,27.02,27.02,pass
+eda_Origin,Full-development validation,1,"2,983,250",2983250,pass
+eda_Origin,Full-development validation,2,15.37,15.37,pass
+eda_Origin,Full-development validation,3,28.59,28.59,pass
+eda_route,Full-development validation,1,"155,569",155569,pass
+eda_route,Full-development validation,2,7.56,7.56,pass
+eda_route,Full-development validation,3,30.81,30.81,pass
+tail_completeness,Full-development validation,1,"5,749,041",5749041,pass
+scheduled_arrival,Full-development validation,1,153,153,pass
+actual_arrival,Full-development validation,1,79,79,pass
+missing_arrival,Full-development validation,1,"16,783",16783,pass
+population_validation_late,Full-development validation,1,28.44,28.44,pass
+population_validation_late,Full-development validation,2,22.55,22.55,pass
+population_validation_late,Full-development validation,3,16.56,16.56,pass
+population_validation_late,Full-development validation,4,19.35,19.35,pass
+population_train_late,Full-development validation,1,20.98,20.98,pass
+population_train_late,Full-development validation,2,22.12,22.12,pass
+population_train_late,Full-development validation,3,22.24,22.24,pass
+population_train_late,Full-development validation,4,21.65,21.65,pass
+decomposition_composition,Full-development validation,1,-0.040,-0.040,pass
+decomposition_composition,Full-development validation,2,-0.142,-0.142,pass
+decomposition_composition,Full-development validation,3,-0.227,-0.227,pass
+decomposition_composition,Full-development validation,4,-0.030,-0.030,pass
+decomposition_within,Full-development validation,1,+7.507,+7.507,pass
+decomposition_within,Full-development validation,2,+0.575,+0.575,pass
+decomposition_within,Full-development validation,3,-5.457,-5.457,pass
+decomposition_within,Full-development validation,4,-2.275,-2.275,pass
+lightgbm_fold_1,Pilot,1,0.4857,0.4857,pass
+lightgbm_fold_1,Pilot,2,0.2798,0.2798,pass
+lightgbm_fold_1,Pilot,3,0.5099,0.5099,pass
+lightgbm_fold_1,Pilot,4,0.3136,0.3136,pass
+lightgbm_fold_2,Pilot,1,0.4038,0.4038,pass
+lightgbm_fold_2,Pilot,2,0.2078,0.2078,pass
+lightgbm_fold_2,Pilot,3,0.4437,0.4437,pass
+lightgbm_fold_2,Pilot,4,0.2607,0.2607,pass
+lightgbm_fold_3,Pilot,1,0.3072,0.3072,pass
+lightgbm_fold_3,Pilot,2,0.1748,0.1748,pass
+lightgbm_fold_3,Pilot,3,0.3664,0.3664,pass
+lightgbm_fold_3,Pilot,4,0.2452,0.2452,pass
+lightgbm_fold_4,Pilot,1,0.3552,0.3552,pass
+lightgbm_fold_4,Pilot,2,0.2141,0.2141,pass
+lightgbm_fold_4,Pilot,3,0.3615,0.3615,pass
+lightgbm_fold_4,Pilot,4,0.2218,0.2218,pass
+seed_fold_variance_share,Pilot,1,99.07,99.07,pass
+seed_fold_variance_share,Pilot,2,99.76,99.76,pass
+seed_within_fold_seed_rms_std,Pilot,1,0.0064,0.0064,pass
+seed_within_fold_seed_rms_std,Pilot,2,0.0030,0.0030,pass
+default_lightgbm_brier,Pilot,1,0.1556,0.1556,pass
+default_lightgbm_brier,Pilot,2,0.1520,0.1520,pass
+default_lightgbm_brier_skill,Pilot,1,0.0862,0.0862,pass
+default_lightgbm_brier_skill,Pilot,2,0.1085,0.1085,pass
+default_lightgbm_ece,Pilot,1,0.0407,0.0407,pass
+default_lightgbm_ece,Pilot,2,0.0367,0.0367,pass
+default_lightgbm_calibration_bias,Pilot,1,+0.0204,+0.0204,pass
+default_lightgbm_calibration_bias,Pilot,2,+0.0140,+0.0140,pass
+reference_brier,Pilot,1,0.1711,0.1711,pass
+calibration_support,Pilot,1,240,240,pass
+calibration_support,Pilot,2,"480,000",480000,pass
+p5_adaboost,Pilot,1,0.682,0.682,pass
+p5_adaboost,Pilot,2,0.354,0.354,pass
+p5_adaboost,Pilot,3,0.697,0.697,pass
+p5_adaboost,Pilot,4,0.398,0.398,pass
+p5_gradient_boosting,Pilot,1,0.689,0.689,pass
+p5_gradient_boosting,Pilot,2,0.367,0.367,pass
+p5_gradient_boosting,Pilot,3,0.700,0.700,pass
+p5_gradient_boosting,Pilot,4,0.405,0.405,pass
+p5_xgboost,Pilot,1,0.697,0.697,pass
+p5_xgboost,Pilot,2,0.383,0.383,pass
+p5_xgboost,Pilot,3,0.700,0.700,pass
+p5_xgboost,Pilot,4,0.415,0.415,pass
+p5_lightgbm,Pilot,1,0.698,0.698,pass
+p5_lightgbm,Pilot,2,0.387,0.387,pass
+p5_lightgbm,Pilot,3,0.704,0.704,pass
+p5_lightgbm,Pilot,4,0.420,0.420,pass
+p5_catboost,Pilot,1,0.693,0.693,pass
+p5_catboost,Pilot,2,0.376,0.376,pass
+p5_catboost,Pilot,3,0.703,0.703,pass
+p5_catboost,Pilot,4,0.409,0.409,pass
+p5_ap_6,Pilot,1,0.387,0.387,pass
+p5_ap_6,Pilot,2,0.067,0.067,pass
+p5_alert_6,Pilot,1,46.0,46.0,pass
+p5_alert_6,Pilot,2,2.15,2.15,pass
+p5_ap_1,Pilot,1,0.420,0.420,pass
+p5_ap_1,Pilot,2,0.061,0.061,pass
+p5_alert_1,Pilot,1,50.3,50.3,pass
+p5_alert_1,Pilot,2,2.34,2.34,pass
+origin_history_psi,Pilot,1,0.1387,0.1387,pass
+origin_history_psi,Pilot,2,0.1156,0.1156,pass

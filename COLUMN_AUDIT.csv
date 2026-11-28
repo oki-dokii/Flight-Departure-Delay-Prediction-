@@ -9,7 +9,7 @@ FlightDate,string,known-in-advance,yes,yes,yes,Published schedule/calendar; assu
 Reporting_Airline,string,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
 DOT_ID_Reporting_Airline,int64,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
 IATA_CODE_Reporting_Airline,string,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
-Tail_Number,string,static,conditional,conditional,conditional,Final aircraft assignment is not proven available at checkpoint
+Tail_Number,string,static,conditional,conditional,conditional,D1: tail assignment unverified at T; excluded primary G0-G2; G3 pending named feed approval
 Flight_Number_Reporting_Airline,int64,known-in-advance,yes,yes,yes,Published schedule/calendar; assumes schedule known at checkpoint
 OriginAirportID,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
 OriginAirportSeqID,int64,static,yes,yes,yes,Route or carrier-independent airport geography known from schedule
@@ -109,9 +109,9 @@ Div5TotalGTime,double,outcome-like,no,no,no,Target-flight operational outcome; E
 Div5LongestGTime,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
 Div5WheelsOff,double,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
 Div5TailNum,string,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
-scheduled_departure_utc,"timestamp[ns, tz=UTC]",known-in-advance,conditional,conditional,conditional,Requires review of outcome-assisted DST reconstruction and arrival clock validation
+scheduled_departure_utc,"timestamp[ns, tz=UTC]",known-in-advance,conditional,conditional,conditional,A-SCHED: schedule known at T; development ambiguity count in p2 evidence; arrival review remains conditional
 actual_departure_utc,"timestamp[ns, tz=UTC]",outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
 LATE,uint8,outcome-like,no,no,no,Target-flight operational outcome; EDA/label only
-tail_number_missing,bool,static,conditional,conditional,conditional,Final aircraft assignment is not proven available at checkpoint
-scheduled_arrival_utc,"timestamp[ns, tz=UTC]",known-in-advance,conditional,conditional,conditional,Requires review of outcome-assisted DST reconstruction and arrival clock validation
+tail_number_missing,bool,static,conditional,conditional,conditional,D1: tail assignment unverified at T; excluded primary G0-G2; G3 pending named feed approval
+scheduled_arrival_utc,"timestamp[ns, tz=UTC]",known-in-advance,conditional,conditional,conditional,A-SCHED: schedule known at T; development ambiguity count in p2 evidence; arrival review remains conditional
 actual_arrival_utc,"timestamp[ns, tz=UTC]",outcome-like,no,no,no,Target-flight operational outcome; EDA/label only

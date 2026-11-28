@@ -1,0 +1,2209 @@
+[
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "hour_sin",
+    "internal_edges": [
+      -0.9762960076332092,
+      -0.9044551253318787,
+      -0.7933533191680908,
+      -0.659345805644989,
+      -0.4809887707233429,
+      -0.258819043636322,
+      -0.02181488461792469,
+      0.23344536125659943,
+      0.5
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "hour_cos",
+    "internal_edges": [
+      -0.9659258127212524,
+      -0.8549118638038635,
+      -0.5807029604911804,
+      -0.2079116851091385,
+      0.1736481785774231,
+      0.5037739872932434,
+      0.7372773289680481,
+      0.894934356212616,
+      0.972369909286499
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "dow_sin",
+    "internal_edges": [
+      -0.7818315029144287,
+      -0.4338837265968323,
+      0.0,
+      0.4338837265968323,
+      0.7818315029144287
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "dow_cos",
+    "internal_edges": [
+      -0.22252093255519867,
+      0.6234897971153259
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "month",
+    "internal_edges": [
+      2.0,
+      3.0,
+      4.0,
+      5.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "crs_elapsed_min",
+    "internal_edges": [
+      75.0,
+      90.0,
+      102.0,
+      116.0,
+      133.0,
+      151.0,
+      170.0,
+      195.0,
+      247.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "distance",
+    "internal_edges": [
+      240.0,
+      354.0,
+      461.0,
+      588.0,
+      700.0,
+      859.0,
+      997.0,
+      1195.0,
+      1654.5999999999985
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "carrier",
+    "categories": [
+      "AA",
+      "AS",
+      "B6",
+      "DL",
+      "F9",
+      "G4",
+      "MQ",
+      "NK",
+      "OH",
+      "OO",
+      "UA",
+      "WN",
+      "YX"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "origin",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "SMF",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "dest",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "origin_departures_3h",
+    "internal_edges": [
+      1.0,
+      3.0,
+      8.0,
+      17.0,
+      31.0,
+      47.0,
+      68.0,
+      105.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 1,
+    "feature": "origin_late_rate_3h",
+    "internal_edges": [
+      0.05000000074505806,
+      0.08474576473236084,
+      0.125,
+      0.1666666716337204,
+      0.23999999463558197,
+      0.375,
+      0.8888888955116272
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "hour_sin",
+    "internal_edges": [
+      -0.9743700623512268,
+      -0.8987940549850464,
+      -0.7928205728530865,
+      -0.646124005317688,
+      -0.4617486000061035,
+      -0.258819043636322,
+      -0.02181488461792469,
+      0.237685889005661,
+      0.5
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "hour_cos",
+    "internal_edges": [
+      -0.9659258127212524,
+      -0.8660253882408142,
+      -0.6087614297866821,
+      -0.237685889005661,
+      0.16934950649738312,
+      0.5,
+      0.7372773289680481,
+      0.8953220367431655,
+      0.9733792543411255
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "dow_sin",
+    "internal_edges": [
+      -0.7818315029144287,
+      -0.4338837265968323,
+      0.0,
+      0.4338837265968323,
+      0.7818315029144287
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "dow_cos",
+    "internal_edges": [
+      -0.22252093255519867,
+      0.6234897971153259
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "month",
+    "internal_edges": [
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "crs_elapsed_min",
+    "internal_edges": [
+      75.0,
+      90.0,
+      102.0,
+      116.0,
+      132.0,
+      150.0,
+      170.0,
+      195.0,
+      247.60000000000036
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "distance",
+    "internal_edges": [
+      238.0,
+      352.0,
+      458.2000000000007,
+      587.0,
+      696.0,
+      853.0,
+      994.0,
+      1197.0,
+      1660.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "carrier",
+    "categories": [
+      "AA",
+      "AS",
+      "B6",
+      "DL",
+      "F9",
+      "G4",
+      "MQ",
+      "NK",
+      "OH",
+      "OO",
+      "UA",
+      "WN",
+      "YX"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "origin",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "SMF",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "dest",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "origin_departures_3h",
+    "internal_edges": [
+      1.0,
+      3.0,
+      9.0,
+      17.0,
+      31.0,
+      48.0,
+      69.0,
+      106.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 2,
+    "feature": "origin_late_rate_3h",
+    "internal_edges": [
+      0.0555555559694767,
+      0.09181701838970185,
+      0.13262487202882767,
+      0.1818181872367859,
+      0.2571428716182709,
+      0.4166666567325592,
+      0.9655172228813171
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "hour_sin",
+    "internal_edges": [
+      -0.9743700623512268,
+      -0.9006982445716858,
+      -0.7933533191680908,
+      -0.6527597308158875,
+      -0.4694715738296509,
+      -0.258819043636322,
+      -0.02181488461792469,
+      0.23344536125659943,
+      0.5
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "hour_cos",
+    "internal_edges": [
+      -0.9659258127212524,
+      -0.8660253882408142,
+      -0.6087614297866821,
+      -0.237685889005661,
+      0.15212339162826538,
+      0.5,
+      0.7372773289680481,
+      0.8929789662361145,
+      0.9743700623512268
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "dow_sin",
+    "internal_edges": [
+      -0.7818315029144287,
+      -0.4338837265968323,
+      0.0,
+      0.4338837265968323,
+      0.7818315029144287
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "dow_cos",
+    "internal_edges": [
+      -0.22252093255519867,
+      0.6234897971153259
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "month",
+    "internal_edges": [
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "crs_elapsed_min",
+    "internal_edges": [
+      75.0,
+      90.0,
+      102.0,
+      115.0,
+      132.0,
+      150.0,
+      169.0,
+      195.0,
+      249.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "distance",
+    "internal_edges": [
+      237.0,
+      351.0,
+      456.0,
+      585.0,
+      692.0,
+      853.0,
+      994.0,
+      1197.0,
+      1671.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "carrier",
+    "categories": [
+      "AA",
+      "AS",
+      "B6",
+      "DL",
+      "F9",
+      "G4",
+      "HA",
+      "MQ",
+      "NK",
+      "OH",
+      "OO",
+      "UA",
+      "WN",
+      "YX"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "origin",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "dest",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "origin_departures_3h",
+    "internal_edges": [
+      1.0,
+      3.0,
+      9.0,
+      17.0,
+      31.0,
+      48.0,
+      69.0,
+      107.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 3,
+    "feature": "origin_late_rate_3h",
+    "internal_edges": [
+      0.009982174821198096,
+      0.05746184252202516,
+      0.09375,
+      0.13461539149284363,
+      0.1847687631845475,
+      0.2575913697481156,
+      0.42105263471603394,
+      0.9655172228813171
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "hour_sin",
+    "internal_edges": [
+      -0.9743700623512268,
+      -0.9025852680206299,
+      -0.7933533191680908,
+      -0.659345805644989,
+      -0.4771587550640106,
+      -0.258819043636322,
+      -0.026176948100328445,
+      0.22495105862617493,
+      0.5
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "hour_cos",
+    "internal_edges": [
+      -0.9659258127212524,
+      -0.8660253882408142,
+      -0.6087614297866821,
+      -0.2529131770133949,
+      0.15212339162826538,
+      0.4962165057659149,
+      0.7349134564399741,
+      0.8910065293312073,
+      0.9743700623512268
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "dow_sin",
+    "internal_edges": [
+      -0.7818315029144287,
+      -0.4338837265968323,
+      0.0,
+      0.4338837265968323,
+      0.7818315029144287
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "dow_cos",
+    "internal_edges": [
+      -0.22252093255519867,
+      0.6234897971153259
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "month",
+    "internal_edges": [
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "crs_elapsed_min",
+    "internal_edges": [
+      75.0,
+      90.0,
+      101.0,
+      115.0,
+      131.0,
+      150.0,
+      169.0,
+      194.0,
+      249.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "distance",
+    "internal_edges": [
+      236.0,
+      349.0,
+      454.6000000000022,
+      583.0,
+      689.0,
+      852.0,
+      992.0,
+      1199.0,
+      1671.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "carrier",
+    "categories": [
+      "AA",
+      "AS",
+      "B6",
+      "DL",
+      "F9",
+      "G4",
+      "HA",
+      "MQ",
+      "NK",
+      "OH",
+      "OO",
+      "UA",
+      "WN",
+      "YX"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "origin",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "dest",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "origin_departures_3h",
+    "internal_edges": [
+      1.0,
+      3.0,
+      8.0,
+      17.0,
+      31.0,
+      48.0,
+      68.0,
+      108.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 360,
+    "fold": 4,
+    "feature": "origin_late_rate_3h",
+    "internal_edges": [
+      0.05541596934199359,
+      0.09090909361839294,
+      0.12903225421905518,
+      0.17834395170211792,
+      0.25,
+      0.4000000059604645,
+      0.9463772177696228
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "hour_sin",
+    "internal_edges": [
+      -0.9762960076332092,
+      -0.9044551253318787,
+      -0.7933533191680908,
+      -0.659345805644989,
+      -0.4809887707233429,
+      -0.258819043636322,
+      -0.02181488461792469,
+      0.23344536125659943,
+      0.5
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "hour_cos",
+    "internal_edges": [
+      -0.9659258127212524,
+      -0.8549118638038635,
+      -0.5807029604911804,
+      -0.2079116851091385,
+      0.1736481785774231,
+      0.5037739872932434,
+      0.7372773289680481,
+      0.894934356212616,
+      0.972369909286499
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "dow_sin",
+    "internal_edges": [
+      -0.7818315029144287,
+      -0.4338837265968323,
+      0.0,
+      0.4338837265968323,
+      0.7818315029144287
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "dow_cos",
+    "internal_edges": [
+      -0.22252093255519867,
+      0.6234897971153259
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "month",
+    "internal_edges": [
+      2.0,
+      3.0,
+      4.0,
+      5.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "crs_elapsed_min",
+    "internal_edges": [
+      75.0,
+      90.0,
+      102.0,
+      116.0,
+      133.0,
+      151.0,
+      170.0,
+      195.0,
+      247.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "distance",
+    "internal_edges": [
+      240.0,
+      354.0,
+      461.0,
+      588.0,
+      700.0,
+      859.0,
+      997.0,
+      1195.0,
+      1654.5999999999985
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "carrier",
+    "categories": [
+      "AA",
+      "AS",
+      "B6",
+      "DL",
+      "F9",
+      "G4",
+      "MQ",
+      "NK",
+      "OH",
+      "OO",
+      "UA",
+      "WN",
+      "YX"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "origin",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "SMF",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "dest",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "origin_departures_3h",
+    "internal_edges": [
+      2.0,
+      8.0,
+      16.0,
+      27.0,
+      40.0,
+      53.0,
+      70.0,
+      92.0,
+      136.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 1,
+    "feature": "origin_late_rate_3h",
+    "internal_edges": [
+      0.01785714365541935,
+      0.0555555559694767,
+      0.08695652335882187,
+      0.11999999731779099,
+      0.15740740299224854,
+      0.20000000298023224,
+      0.2647058963775635,
+      0.3697799891233444
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "hour_sin",
+    "internal_edges": [
+      -0.9743700623512268,
+      -0.8987940549850464,
+      -0.7928205728530865,
+      -0.646124005317688,
+      -0.4617486000061035,
+      -0.258819043636322,
+      -0.02181488461792469,
+      0.237685889005661,
+      0.5
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "hour_cos",
+    "internal_edges": [
+      -0.9659258127212524,
+      -0.8660253882408142,
+      -0.6087614297866821,
+      -0.237685889005661,
+      0.16934950649738312,
+      0.5,
+      0.7372773289680481,
+      0.8953220367431655,
+      0.9733792543411255
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "dow_sin",
+    "internal_edges": [
+      -0.7818315029144287,
+      -0.4338837265968323,
+      0.0,
+      0.4338837265968323,
+      0.7818315029144287
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "dow_cos",
+    "internal_edges": [
+      -0.22252093255519867,
+      0.6234897971153259
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "month",
+    "internal_edges": [
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "crs_elapsed_min",
+    "internal_edges": [
+      75.0,
+      90.0,
+      102.0,
+      116.0,
+      132.0,
+      150.0,
+      170.0,
+      195.0,
+      247.60000000000036
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "distance",
+    "internal_edges": [
+      238.0,
+      352.0,
+      458.2000000000007,
+      587.0,
+      696.0,
+      853.0,
+      994.0,
+      1197.0,
+      1660.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "carrier",
+    "categories": [
+      "AA",
+      "AS",
+      "B6",
+      "DL",
+      "F9",
+      "G4",
+      "MQ",
+      "NK",
+      "OH",
+      "OO",
+      "UA",
+      "WN",
+      "YX"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "origin",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "SMF",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "dest",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "origin_departures_3h",
+    "internal_edges": [
+      2.0,
+      7.0,
+      15.0,
+      27.0,
+      40.0,
+      53.0,
+      69.0,
+      91.0,
+      137.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 2,
+    "feature": "origin_late_rate_3h",
+    "internal_edges": [
+      0.02222222276031971,
+      0.05882352963089943,
+      0.09090909361839294,
+      0.125,
+      0.1666666716337204,
+      0.21544494926929497,
+      0.2839346945285798,
+      0.4000000059604645
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "hour_sin",
+    "internal_edges": [
+      -0.9743700623512268,
+      -0.9006982445716858,
+      -0.7933533191680908,
+      -0.6527597308158875,
+      -0.4694715738296509,
+      -0.258819043636322,
+      -0.02181488461792469,
+      0.23344536125659943,
+      0.5
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "hour_cos",
+    "internal_edges": [
+      -0.9659258127212524,
+      -0.8660253882408142,
+      -0.6087614297866821,
+      -0.237685889005661,
+      0.15212339162826538,
+      0.5,
+      0.7372773289680481,
+      0.8929789662361145,
+      0.9743700623512268
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "dow_sin",
+    "internal_edges": [
+      -0.7818315029144287,
+      -0.4338837265968323,
+      0.0,
+      0.4338837265968323,
+      0.7818315029144287
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "dow_cos",
+    "internal_edges": [
+      -0.22252093255519867,
+      0.6234897971153259
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "month",
+    "internal_edges": [
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "crs_elapsed_min",
+    "internal_edges": [
+      75.0,
+      90.0,
+      102.0,
+      115.0,
+      132.0,
+      150.0,
+      169.0,
+      195.0,
+      249.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "distance",
+    "internal_edges": [
+      237.0,
+      351.0,
+      456.0,
+      585.0,
+      692.0,
+      853.0,
+      994.0,
+      1197.0,
+      1671.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "carrier",
+    "categories": [
+      "AA",
+      "AS",
+      "B6",
+      "DL",
+      "F9",
+      "G4",
+      "HA",
+      "MQ",
+      "NK",
+      "OH",
+      "OO",
+      "UA",
+      "WN",
+      "YX"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "origin",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "dest",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "origin_departures_3h",
+    "internal_edges": [
+      2.0,
+      7.0,
+      15.0,
+      27.0,
+      40.0,
+      53.0,
+      69.0,
+      91.0,
+      139.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 3,
+    "feature": "origin_late_rate_3h",
+    "internal_edges": [
+      0.022727273404598236,
+      0.05882352963089943,
+      0.09330570101737978,
+      0.12820513546466827,
+      0.1666666716337204,
+      0.2183908075094223,
+      0.2857142984867096,
+      0.4000000059604645
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "hour_sin",
+    "internal_edges": [
+      -0.9743700623512268,
+      -0.9025852680206299,
+      -0.7933533191680908,
+      -0.659345805644989,
+      -0.4771587550640106,
+      -0.258819043636322,
+      -0.026176948100328445,
+      0.22495105862617493,
+      0.5
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "hour_cos",
+    "internal_edges": [
+      -0.9659258127212524,
+      -0.8660253882408142,
+      -0.6087614297866821,
+      -0.2529131770133949,
+      0.15212339162826538,
+      0.4962165057659149,
+      0.7349134564399741,
+      0.8910065293312073,
+      0.9743700623512268
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "dow_sin",
+    "internal_edges": [
+      -0.7818315029144287,
+      -0.4338837265968323,
+      0.0,
+      0.4338837265968323,
+      0.7818315029144287
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "dow_cos",
+    "internal_edges": [
+      -0.22252093255519867,
+      0.6234897971153259
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "month",
+    "internal_edges": [
+      2.0,
+      3.0,
+      4.0,
+      5.0,
+      6.0,
+      7.0,
+      8.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "crs_elapsed_min",
+    "internal_edges": [
+      75.0,
+      90.0,
+      101.0,
+      115.0,
+      131.0,
+      150.0,
+      169.0,
+      194.0,
+      249.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "distance",
+    "internal_edges": [
+      236.0,
+      349.0,
+      454.6000000000022,
+      583.0,
+      689.0,
+      852.0,
+      992.0,
+      1199.0,
+      1671.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "carrier",
+    "categories": [
+      "AA",
+      "AS",
+      "B6",
+      "DL",
+      "F9",
+      "G4",
+      "HA",
+      "MQ",
+      "NK",
+      "OH",
+      "OO",
+      "UA",
+      "WN",
+      "YX"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "origin",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DAL",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "dest",
+    "categories": [
+      "ATL",
+      "AUS",
+      "BNA",
+      "BOS",
+      "BWI",
+      "CLT",
+      "DCA",
+      "DEN",
+      "DFW",
+      "DTW",
+      "EWR",
+      "FLL",
+      "IAH",
+      "JFK",
+      "LAS",
+      "LAX",
+      "LGA",
+      "MCO",
+      "MDW",
+      "MIA",
+      "MSP",
+      "ORD",
+      "PHL",
+      "PHX",
+      "SAN",
+      "SEA",
+      "SFO",
+      "SLC",
+      "TPA"
+    ],
+    "rare_share_threshold": 0.01,
+    "other": "explicit shared rare/unseen bucket",
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "origin_departures_3h",
+    "internal_edges": [
+      2.0,
+      7.0,
+      15.0,
+      27.0,
+      40.0,
+      53.0,
+      69.0,
+      90.0,
+      139.0
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  },
+  {
+    "checkpoint_minutes": 60,
+    "fold": 4,
+    "feature": "origin_late_rate_3h",
+    "internal_edges": [
+      0.018691588193178177,
+      0.05593971200287345,
+      0.0903954803943634,
+      0.125,
+      0.16416379511356363,
+      0.21052631735801697,
+      0.2763157784938812,
+      0.3868768215179449
+    ],
+    "outer_edges": [
+      "-inf",
+      "inf"
+    ],
+    "missing": "separate"
+  }
+]

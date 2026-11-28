@@ -12,9 +12,10 @@ from sklearn.pipeline import make_pipeline
 from sklearn.preprocessing import FunctionTransformer
 
 from src.alert_metrics import alert_metrics
-from src.evaluate import SEEDS, revision, training_sample
+from src.evaluate import SEEDS, positive_scores, revision, training_sample
 from src.models_boosting import MODELS, make_booster
 from src.models_classical import MISSING_CATEGORY, classical_factories
+from src.phase_b_classical import build_fits, file_digest, id_digest, load_experiment, write_json
 from src.run_classical import checkpoint_features, paired_metadata, read_manifest
 from src.splits import GAP, OBSERVED, TIME, get_folds
 
@@ -59,10 +60,15 @@ def pipeline(name, schema, seed, params, native, rounds):
 
 def tune_run(X, meta, train, valid, seed, make):
     sampled = training_sample(train, meta, seed)
-    times = meta[TIME].iloc[sampled]
+    model, rounds = fit_with_stopping(X, meta, sampled, make)
+    return model, rounds, sampled
+
+
+def fit_with_stopping(X, meta, rows, make):
+    times = meta[TIME].iloc[rows]
     boundary = times.max().floor("D") - pd.Timedelta(days=13)
-    inner = sampled[((times < boundary - GAP) & (meta[OBSERVED].iloc[sampled] < boundary - GAP)).to_numpy()]
-    stop = sampled[(times >= boundary).to_numpy()]
+    inner = rows[((times < boundary - GAP) & (meta[OBSERVED].iloc[rows] < boundary - GAP)).to_numpy()]
+    stop = rows[(times >= boundary).to_numpy()]
     y = meta.LATE
     if min(y.iloc[a].nunique() for a in (inner, stop)) < 2:
         raise ValueError("Inner training and trailing validation each require both classes")
@@ -70,11 +76,12 @@ def tune_run(X, meta, train, valid, seed, make):
     for rounds in (10, 30, 60):
         candidate = make(rounds).fit(X.iloc[inner], y.iloc[inner])
         score = average_precision_score(y.iloc[stop], candidate.predict_proba(X.iloc[stop])[:, 1])
+        del candidate
         if score <= best:
             break
         best, chosen = score, rounds
-    model = make(chosen).fit(X.iloc[sampled], y.iloc[sampled])
-    return model, chosen, sampled
+    model = make(chosen).fit(X.iloc[rows], y.iloc[rows])
+    return model, chosen
 
 
 def scores(y, p):
@@ -149,8 +156,98 @@ def run(manifest, output):
     pd.DataFrame(explanations).to_csv(output/"shap.csv",index=False)
 
 
+def run_matched(manifest, output, classical, audit):
+    """Evaluate P5 on the same feature data and fit rows as a P4 export."""
+    identity = json.loads((classical / "experiment.json").read_text())
+    group, mode = identity["feature_group"], identity["fit_mode"]
+    inputs, schema, meta = load_experiment(manifest, group, identity["pilot"], audit)
+    actual = dict(revision=revision(), development_release=inputs.release, feature_revision=inputs.revision,
+                  development_sha256=file_digest(inputs.development), manifest_sha256=inputs.fingerprint,
+                  feature_sha256={str(cp.minutes): file_digest(cp.path) for cp in inputs.checkpoints},
+                  audit_sha256=file_digest(audit) if audit else None, cohort_ids_sha256=id_digest(meta.index))
+    if any(identity[key] != value for key, value in actual.items()):
+        raise ValueError("P4 export was produced on different inputs or a different revision")
+    output.mkdir(parents=True, exist_ok=True)
+    fits = build_fits(meta, dict.fromkeys(("sampled", mode)))
+    ops = pd.read_csv(classical / "runs.csv").rename(columns={"checkpoint_minutes": "checkpoint"}).to_dict("records")
+    candidates, explanations, recipes = [], [], {}
+    selected_runs = []
+    run_id = "p5-" + identity["run_id"]
+    for cp in inputs.checkpoints:
+        X = checkpoint_features(cp, inputs.schema, meta.index).loc[:, schema.columns]
+        selected = {}
+        best = (-1.0, None)
+        for model in MODELS:
+            records = []
+            for native in (False, True) if model in ("lightgbm", "catboost") else (False,):
+                for index, params in enumerate(GRIDS[model]):
+                    recipe = {"parameters": params, "native": native, "rounds": "training_selected"}
+                    for train, valid, keys in fits["sampled"]:
+                        row, estimator, probabilities = matched_fit(model, recipe, schema, X, meta, train, valid, keys, cp.minutes, group)
+                        records.append(dict(row, candidate=index, native=native))
+                        del estimator
+            candidates.extend(records)
+            ranking = pd.DataFrame(records).groupby(["native", "candidate"]).pr_auc.mean()
+            native, index = ranking.idxmax()
+            selected[model] = dict(parameters=GRIDS[model][index], native=bool(native), rounds="training_selected")
+            if ranking.max() > best[0]:
+                best = (ranking.max(), model)
+        recipes[str(cp.minutes)] = selected
+        for model, recipe in selected.items():
+            for train, valid, keys in fits[mode]:
+                row, estimator, probabilities = matched_fit(model, recipe, schema, X, meta, train, valid, keys, cp.minutes, group)
+                ops.append(row)
+                selected_runs.append({**row, "checkpoint_minutes": cp.minutes})
+                directory = output / "predictions" / str(cp.minutes) / model
+                directory.mkdir(parents=True, exist_ok=True)
+                validation = meta.iloc[valid]
+                validation.LATE.to_frame().assign(
+                    probability=probabilities, day=validation[TIME].dt.floor("D"),
+                    model=model, checkpoint_minutes=cp.minutes, fold=keys["fold"],
+                    seed=keys["seed"], fit_mode=mode, feature_group=group, run_id=run_id,
+                ).reset_index().to_parquet(directory / f'{keys["fold"]}-{keys["seed"]}.parquet', index=False)
+                if model == best[1] and keys["fold"] == 4 and keys["seed"] == SEEDS[0]:
+                    sample = X.iloc[valid].sample(n=min(128, len(valid)), random_state=SEEDS[0])
+                    impact = shap_sample(estimator, X.iloc[train], sample, SEEDS[0])
+                    explanations.extend(dict(checkpoint=cp.minutes, model=model, feature=feature, mean_abs_shap=value)
+                                        for feature, value in impact.items())
+                del estimator
+            print(f"Matched P5 {group} {cp.minutes}m {model}", flush=True)
+        del X
+    pd.DataFrame(candidates).to_csv(output / "candidates.csv", index=False)
+    pd.DataFrame(ops).to_csv(output / "operations.csv", index=False)
+    pd.DataFrame(explanations).to_csv(output / "shap.csv", index=False)
+    write_json(output / "experiment.json", actual | {"run_id": run_id} |
+               {key: identity[key] for key in ("feature_group", "pilot", "fit_mode")})
+    pd.DataFrame(selected_runs).to_csv(output / "selected_runs.csv", index=False)
+    write_json(output / "p2_handoff.json", dict(feature_manifest=str(manifest), sources=[dict(
+        owner="P5", experiment=str(output / "experiment.json"), runs=str(output / "selected_runs.csv"),
+        predictions=str(output / "predictions"))]))
+    write_json(output / "boosting_recipes.json", {"models": recipes})
+
+
+def matched_fit(name, recipe, schema, X, meta, train, valid, keys, minutes, group):
+    start = perf_counter()
+
+    def make(rounds):
+        return pipeline(name, schema, keys["seed"], recipe["parameters"], recipe["native"], rounds)
+
+    estimator, rounds = fit_with_stopping(X, meta, train, make)
+    p = positive_scores(estimator, X.iloc[valid])
+    row = dict(model=name, checkpoint=minutes, feature_group=group, revision=revision(), **keys,
+               parameters=json.dumps(recipe, sort_keys=True), rounds=rounds, runtime_seconds=perf_counter() - start,
+               **scores(meta.LATE.iloc[valid], p))
+    return row, estimator, p
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
-    run(**vars(parser.parse_args()))
+    parser.add_argument("--classical-run", type=Path, help="Use the selected P4 export and its exact cohort")
+    parser.add_argument("--audit", type=Path)
+    args = parser.parse_args()
+    if args.classical_run:
+        run_matched(args.manifest, args.output, args.classical_run, args.audit)
+    else:
+        run(args.manifest, args.output)

@@ -1,5 +1,7 @@
 # Development observations
 
+Evidence label: **Full-development validation (descriptive)**. **Held-out test** is closed; score cells remain blank.
+
 Late prevalence: 21.38%. Median delay: -2 minutes; 99th percentile: 223 minutes.
 
 LATE: 2 displayed groups; 5,749,041 flights represented. Highest displayed late fraction 100.00%; lowest 0.00%. These comparisons are descriptive and unadjusted for route mix.

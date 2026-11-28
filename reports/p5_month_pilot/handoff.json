@@ -1,0 +1,11 @@
+{
+  "feature_manifest": "data/sample/feature_manifest.json",
+  "sources": [
+    {
+      "owner": "P5",
+      "experiment": "reports/p5_month_pilot/experiment.json",
+      "runs": "reports/p5_month_pilot/selected_runs.csv",
+      "predictions": "reports/p5_month_pilot/predictions"
+    }
+  ]
+}

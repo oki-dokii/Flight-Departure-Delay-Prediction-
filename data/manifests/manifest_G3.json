@@ -1,0 +1,117 @@
+{
+  "development": {
+    "path": "data/processed/flights_development_phase_b.parquet",
+    "release": "phase-b-data-v1"
+  },
+  "feature_spec_revision": "phase-b-v1",
+  "checkpoints": [
+    {
+      "offset_minutes": 360,
+      "path": "data/processed/phase_b/features_G3_360m.parquet",
+      "source_release": "phase-b-data-v1"
+    },
+    {
+      "offset_minutes": 60,
+      "path": "data/processed/phase_b/features_G3_60m.parquet",
+      "source_release": "phase-b-data-v1"
+    }
+  ],
+  "predictors": [
+    {
+      "name": "hour_sin",
+      "role": "numeric"
+    },
+    {
+      "name": "hour_cos",
+      "role": "numeric"
+    },
+    {
+      "name": "dow_sin",
+      "role": "numeric"
+    },
+    {
+      "name": "dow_cos",
+      "role": "numeric"
+    },
+    {
+      "name": "month",
+      "role": "numeric"
+    },
+    {
+      "name": "crs_elapsed_min",
+      "role": "numeric"
+    },
+    {
+      "name": "distance",
+      "role": "numeric"
+    },
+    {
+      "name": "carrier",
+      "role": "categorical"
+    },
+    {
+      "name": "origin",
+      "role": "categorical"
+    },
+    {
+      "name": "dest",
+      "role": "categorical"
+    },
+    {
+      "name": "origin_departures_3h",
+      "role": "numeric"
+    },
+    {
+      "name": "origin_late_rate_3h",
+      "role": "numeric"
+    },
+    {
+      "name": "wx_temp_c",
+      "role": "numeric"
+    },
+    {
+      "name": "wx_wind_speed_kt",
+      "role": "numeric"
+    },
+    {
+      "name": "wx_wind_gust_kt",
+      "role": "numeric"
+    },
+    {
+      "name": "wx_visibility_mi",
+      "role": "numeric"
+    },
+    {
+      "name": "wx_precip_1h_mm",
+      "role": "numeric"
+    },
+    {
+      "name": "weather_missing",
+      "role": "indicator"
+    },
+    {
+      "name": "inbound_missing_no_tail",
+      "role": "indicator"
+    },
+    {
+      "name": "inbound_first_leg_of_day",
+      "role": "indicator"
+    },
+    {
+      "name": "inbound_not_landed_by_T",
+      "role": "indicator"
+    },
+    {
+      "name": "inbound_arrival_delay_min",
+      "role": "numeric"
+    },
+    {
+      "name": "turnaround_buffer_min",
+      "role": "numeric"
+    },
+    {
+      "name": "inbound_prior_late",
+      "role": "indicator"
+    }
+  ]
+}

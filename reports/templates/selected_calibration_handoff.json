@@ -1,0 +1,17 @@
+{
+  "feature_manifest": "data/manifests/manifest_G2.json",
+  "sources": [
+    {
+      "owner": "P4",
+      "experiment": "data/processed/p4/full_g2/experiment.json",
+      "runs": "data/processed/p4/full_g2/runs.csv",
+      "predictions": "data/processed/p4/full_g2/predictions"
+    },
+    {
+      "owner": "P5",
+      "experiment": "data/processed/p5/full_g2/experiment.json",
+      "runs": "data/processed/p5/full_g2/selected_runs.csv",
+      "predictions": "data/processed/p5/full_g2/predictions"
+    }
+  ]
+}

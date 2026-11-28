@@ -1,0 +1,48 @@
+{
+  "seed": 42,
+  "rows": 200000,
+  "eligible": 5749040,
+  "months": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10
+  ],
+  "eligible_by_month": [
+    519661,
+    496436,
+    595356,
+    579442,
+    599417,
+    600960,
+    616011,
+    596812,
+    559894,
+    585051
+  ],
+  "sampled_by_month": [
+    18078,
+    17270,
+    20712,
+    20158,
+    20853,
+    20906,
+    21430,
+    20762,
+    19478,
+    20353
+  ],
+  "source_sha256": {
+    "flights_development_phase_b.parquet": "3d406cd1331509abcec7bfa35c5ff142b3fe3075d30c3833709b5fec826622ba",
+    "features_G0_360m.parquet": "474ee9e2c090b03859aed8d464c72d0b598e12cd48c9233f6315c6734897efc2",
+    "features_G0_60m.parquet": "55a830e8512744b72d729a9a892065b5979e37b91b87be63f97f2eca3dfe23e3",
+    "features_G1_360m.parquet": "e25ef579bb600cd506866f9881221e3cfcf2f999404abe593ff51af9245ffa4d",
+    "features_G1_60m.parquet": "03226bdabc469069e27f892ce47c9357cc4aa3775e8f677ef22e2fdebae571d9"
+  }
+}
